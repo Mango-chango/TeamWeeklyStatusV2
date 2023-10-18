@@ -7,7 +7,7 @@ namespace TeamWeeklyStatus.Infrastructure
     {
         public TeamWeeklyStatusContext CreateDbContext(string[] args)
         {
-            string azureSqlConnection = "Data Source=mangochango.database.windows.net;Initial Catalog=team-weekly-status;User ID=linovallejo;Password=TitiEuropa#24;Connect Timeout=60;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+            string azureSqlConnection = "conn string here";
 
             var optionsBuilder = new DbContextOptionsBuilder<TeamWeeklyStatusContext>();
             optionsBuilder.UseSqlServer(azureSqlConnection);
