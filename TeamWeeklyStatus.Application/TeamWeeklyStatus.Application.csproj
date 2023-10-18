@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TeamWeeklyStatus.Domain\TeamWeeklyStatus.Domain.csproj" />
+    <ProjectReference Include="..\TeamWeeklyStatus.Infrastructure\TeamWeeklyStatus.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
