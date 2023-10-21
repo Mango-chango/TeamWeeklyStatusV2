@@ -33,7 +33,9 @@ namespace TeamWeeklyStatus.Application.Services
             {
                 IsValid = true,
                 Role = role,
-                TeamName = member.Team.Name
+                TeamName = member.Team.Name,
+                MemberId = member.MemberId,
+                MemberName = member.Member.Name
             };
         }
     }

@@ -28,6 +28,9 @@ const SignIn: React.FC = () => {
 
     if (response && response.success) {
         userStore.getState().setRole(response.role as "TeamLead" | "CurrentWeekReporter" | "Normal" | null);
+        userStore.getState().setTeamName(response.teamName as string | '');
+        userStore.getState().setMemberId(response.memberId as number | 0);
+        userStore.getState().setMemberName(response.memberName as string | '');
         navigate("/weekly-status");
     } else {
         setError("Invalid email address. Please check and try again.");

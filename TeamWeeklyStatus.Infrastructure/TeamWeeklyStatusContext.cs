@@ -38,34 +38,10 @@ namespace TeamWeeklyStatus.Infrastructure
                 .HasForeignKey(ws => ws.MemberId);
 
             modelBuilder
-                .Entity<WeeklyStatus>()
-                .Property(e => e.DoneThisWeek)
-                .HasConversion(
-                    v => string.Join(',', v),
-                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
-                )
-                .Metadata.SetValueComparer(
-                    new ValueComparer<List<string>>(
-                        (c1, c2) => c1.SequenceEqual(c2),
-                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                        c => c.ToList()
-                    )
-                );
-
-            modelBuilder
-                .Entity<WeeklyStatus>()
-                .Property(e => e.PlanForNextWeek)
-                .HasConversion(
-                    v => string.Join(',', v),
-                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
-                )
-                .Metadata.SetValueComparer(
-                    new ValueComparer<List<string>>(
-                        (c1, c2) => c1.SequenceEqual(c2),
-                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                        c => c.ToList()
-                    )
-                );
+                .Entity<DoneThisWeekTask>()
+                .HasOne(p => p.WeeklyStatus)
+                .WithMany(b => b.DoneThisWeekTasks)
+                .HasForeignKey(p => p.WeeklyStatusId);
 
             modelBuilder
                 .Entity<WeeklyStatus>()

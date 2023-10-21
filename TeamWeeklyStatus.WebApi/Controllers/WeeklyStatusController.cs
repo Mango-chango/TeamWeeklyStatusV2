@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Infrastructure.Repositories;
+using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
@@ -8,28 +11,55 @@ namespace TeamWeeklyStatus.WebApi.Controllers
     [ApiController]
     public class WeeklyStatusController : ControllerBase
     {
-        private readonly IRepository<WeeklyStatus> _statusRepository;
+        private readonly IWeeklyStatusService _weeklyStatusService;
 
-        public WeeklyStatusController(IRepository<WeeklyStatus> statusRepository)
+        public WeeklyStatusController(IWeeklyStatusService weeklyStatusService)
         {
-            _statusRepository = statusRepository;
+            _weeklyStatusService = weeklyStatusService;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<WeeklyStatus>> GetStatuses()
+        [HttpPost("GetByMemberIdAndStartDate", Name = "GetWeeklyStatusByMemberByStartDate")]
+        public async Task<IActionResult> GetWeeklyStatusByMemberByStartDate([FromBody] WeeklyStatusGetRequest request)
         {
-            return Ok(_statusRepository.GetAll());
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<WeeklyStatus> GetStatus(int id)
-        {
-            var status = _statusRepository.GetById(id);
-            if (status == null)
+            var weeklyStatus = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync(request.MemberId, request.WeekStartDate);
+            if (weeklyStatus == null)
             {
                 return NotFound();
             }
-            return Ok(status);
+            return Ok(weeklyStatus);
+        }
+
+        [HttpPost("Add", Name = "SaveWeeklyStatus")]
+        public async Task<IActionResult> SaveWeeklyStatus([FromBody] WeeklyStatusPostRequest request)
+        {
+            var weeklyStatusDto = new WeeklyStatusDTO
+            {
+                MemberId = request.MemberId,
+                WeekStartDate = request.WeekStartDate,
+                DoneThisWeek = request.DoneThisWeek,
+                PlanForNextWeek = request.PlanForNextWeek,
+                Blockers = request.Blockers,
+                UpcomingPTO = request.UpcomingPTO,
+            };
+            var newWeeklyStatus = await _weeklyStatusService.AddWeeklyStatusAsync(weeklyStatusDto);
+            return Ok(newWeeklyStatus);
+        }
+
+        [HttpPut("Edit", Name = "UpdateWeeklyStatus")]
+        public async Task<IActionResult> UpdateWeeklyStatus([FromBody] WeeklyStatusPostRequest request)
+        {
+            var weeklyStatusDto = new WeeklyStatusDTO
+            {
+                Id = request.Id,
+                MemberId = request.MemberId,
+                WeekStartDate = request.WeekStartDate,
+                DoneThisWeek = request.DoneThisWeek,
+                PlanForNextWeek = request.PlanForNextWeek,
+                Blockers = request.Blockers,
+                UpcomingPTO = request.UpcomingPTO,
+            };
+            var updatedWeeklyStatus = await _weeklyStatusService.UpdateWeeklyStatusAsync(weeklyStatusDto);
+            return Ok(updatedWeeklyStatus);
         }
     }
 }

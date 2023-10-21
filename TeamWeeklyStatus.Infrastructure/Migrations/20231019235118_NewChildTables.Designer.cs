@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TeamWeeklyStatus.Infrastructure;
 
@@ -11,9 +12,11 @@ using TeamWeeklyStatus.Infrastructure;
 namespace TeamWeeklyStatus.Infrastructure.Migrations
 {
     [DbContext(typeof(TeamWeeklyStatusContext))]
-    partial class TeamWeeklyStatusContextModelSnapshot : ModelSnapshot
+    [Migration("20231019235118_NewChildTables")]
+    partial class NewChildTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,12 +137,14 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Blockers")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
                     b.Property<string>("UpcomingPTO")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("WeekStartDate")
