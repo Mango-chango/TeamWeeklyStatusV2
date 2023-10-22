@@ -21,13 +21,25 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [HttpPost("GetByMemberIdAndStartDate", Name = "GetWeeklyStatusByMemberByStartDate")]
         public async Task<IActionResult> GetWeeklyStatusByMemberByStartDate([FromBody] WeeklyStatusGetRequest request)
         {
-            var weeklyStatus = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync(request.MemberId, request.WeekStartDate);
+            var weeklyStatus = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, request.WeekStartDate);
             if (weeklyStatus == null)
             {
                 return NotFound();
             }
             return Ok(weeklyStatus);
         }
+
+        [HttpPost("GetAllWeeklyStatusesByStartDate", Name = "GetAllWeeklyStatusesByStartDate")]
+        public async Task<IActionResult> GetAllWeeklyStatusesByStartDate([FromBody] WeeklyStatusGetRequest request)
+        {
+            var weeklyStatuses = await _weeklyStatusService.GetAllWeeklyStatusesByStartDateAsync(request.WeekStartDate);
+            if (weeklyStatuses == null)
+            {
+                return NotFound();
+            }
+            return Ok(weeklyStatuses);
+        }
+
 
         [HttpPost("Add", Name = "SaveWeeklyStatus")]
         public async Task<IActionResult> SaveWeeklyStatus([FromBody] WeeklyStatusPostRequest request)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TeamWeeklyStatus.Domain.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
@@ -24,7 +25,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<WeeklyStatus> GetWeeklyStatusAsync(int id)
+        public async Task<WeeklyStatus> GetWeeklyStatusByIdAsync(int id)
         {
             return await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
@@ -47,17 +48,25 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 );
         }
 
-        Task<List<WeeklyStatus>> IWeeklyStatusRepository.GetWeeklyStatusesAsync()
+        public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate)
         {
-            throw new NotImplementedException();
-        }
+            // Get all team members
+            var allTeamMembers = await _context.Members.ToListAsync();
 
-        Task<List<WeeklyStatus>> IWeeklyStatusRepository.GetWeeklyStatusesByTeamMemberAsync(
-            int teamId,
-            int memberId
-        )
-        {
-            throw new NotImplementedException();
+            // Get all weekly statuses for the given date
+            var weeklyStatusesForDate = await _context.WeeklyStatuses
+                .Include(ws => ws.Member)
+                .Where(ws => ws.WeekStartDate == weekStartDate)
+                .ToListAsync();
+
+            // Create a result list with member names and their weekly status if it exists
+            var result = allTeamMembers.Select(member => new WeeklyStatusWithMemberNameDTO
+            {
+                MemberName = member.Name,
+                WeeklyStatus = weeklyStatusesForDate.FirstOrDefault(ws => ws.Member.Id == member.Id)
+            }).OrderBy(dto => dto.MemberName).ToList();
+
+            return result;
         }
 
         public async Task<WeeklyStatus> UpdateWeeklyStatusAsync(WeeklyStatus weeklyStatus)

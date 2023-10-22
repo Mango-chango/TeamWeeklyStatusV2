@@ -1,4 +1,5 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Domain.DTOs;
 
 namespace TeamWeeklyStatus.Application.Interfaces
 {
@@ -10,14 +11,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
 
         Task<WeeklyStatusDTO> GetWeeklyStatusByMemberByStartDateAsync(int memberId, DateTime startDate);
 
-        WeeklyStatusDTO GetStatusForWeek(int teamId, DateTime weekStartDate);
-
-        List<WeeklyStatusDTO> GetStatusesForTeamMember(int teamId, int memberId);
-
-        List<WeeklyStatusDTO> GetStatusesForTeam(int teamId);
-
-        List<WeeklyStatusDTO> GetStatusesForTeam(int teamId, DateTime startDate);
-
+        Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(DateTime weekStartDate);
 
     }
 }

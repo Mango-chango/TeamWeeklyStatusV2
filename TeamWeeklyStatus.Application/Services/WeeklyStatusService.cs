@@ -1,5 +1,6 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Domain.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Infrastructure.Repositories;
 
@@ -39,16 +40,9 @@ namespace TeamWeeklyStatus.Application.Services
             return weeklyStatusDto;
         }
 
-        public WeeklyStatusDTO GetStatusForWeek(int teamId, DateTime weekStartDate)
-        {
-            // Logic to get all the members' statuses' for a specific week
-            return new WeeklyStatusDTO(); // Placeholder
-        }
+        public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(DateTime weekStartDate) =>
+            await _repository.GetAllWeeklyStatusesByDateAsync(weekStartDate);
 
-        public void UpdateStatusForWeek(int memberId, WeeklyStatusDTO weeklyStatus)
-        {
-            // Logic to update a member's status for a specific week
-        }
 
         public async Task<WeeklyStatusDTO> AddWeeklyStatusAsync(WeeklyStatusDTO weeklyStatusDto)
         {
@@ -70,7 +64,7 @@ namespace TeamWeeklyStatus.Application.Services
 
         public async Task<WeeklyStatusDTO> UpdateWeeklyStatusAsync(WeeklyStatusDTO weeklyStatusDto)
         {
-            var existingStatus = await _repository.GetWeeklyStatusAsync((int)weeklyStatusDto.Id);
+            var existingStatus = await _repository.GetWeeklyStatusByIdAsync((int)weeklyStatusDto.Id);
 
             if (existingStatus == null)
             {
@@ -89,26 +83,6 @@ namespace TeamWeeklyStatus.Application.Services
             var updatedStatus = await _repository.UpdateWeeklyStatusAsync(existingStatus);
 
             return weeklyStatusDto;
-        }
-
-        WeeklyStatusDTO IWeeklyStatusService.GetStatusForWeek(int teamId, DateTime weekStartDate)
-        {
-            throw new NotImplementedException();
-        }
-
-        List<WeeklyStatusDTO> IWeeklyStatusService.GetStatusesForTeamMember(int teamId, int memberId)
-        {
-            throw new NotImplementedException();
-        }
-
-        List<WeeklyStatusDTO> IWeeklyStatusService.GetStatusesForTeam(int teamId)
-        {
-            throw new NotImplementedException();
-        }
-
-        List<WeeklyStatusDTO> IWeeklyStatusService.GetStatusesForTeam(int teamId, DateTime startDate)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using TeamWeeklyStatus.Domain.Entities;
+﻿using TeamWeeklyStatus.Domain.DTOs;
+using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
 {
@@ -7,9 +8,8 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
         Task<WeeklyStatus> AddWeeklyStatusAsync(WeeklyStatus weeklyStatus);
         Task<WeeklyStatus> UpdateWeeklyStatusAsync(WeeklyStatus weeklyStatus);
         Task<WeeklyStatus> DeleteWeeklyStatusAsync(int id);
-        Task<WeeklyStatus> GetWeeklyStatusAsync(int id);
+        Task<WeeklyStatus> GetWeeklyStatusByIdAsync(int id);
+        Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate);
         Task<WeeklyStatus> GetWeeklyStatusByMemberByStartDateAsync(int memberId, DateTime startDate);
-        Task<List<WeeklyStatus>> GetWeeklyStatusesAsync();
-        Task<List<WeeklyStatus>> GetWeeklyStatusesByTeamMemberAsync(int teamId, int memberId);
     }
 }

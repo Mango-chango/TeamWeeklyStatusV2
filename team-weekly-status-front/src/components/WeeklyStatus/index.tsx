@@ -28,7 +28,6 @@ const WeeklyStatus: React.FC = () => {
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
 
-  //const startDate = moment().startOf("week").toDate();
   const endDate = moment().endOf("week").toDate();
   const nextWeekStart = moment().add(1, "weeks").startOf("isoWeek");
   const nextWeekEnd = moment().add(1, "weeks").endOf("isoWeek");

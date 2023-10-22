@@ -4,6 +4,7 @@ import { userStore } from './store';
 
 const SignIn = React.lazy(() => import('./components/SignIn'));
 const WeeklyStatus = React.lazy(() => import('./components/WeeklyStatus'));
+const StatusReporting = React.lazy(() => import('./components/StatusReporting/index'));
 
 const AppRoutes: React.FC = () => {
     const { role } = userStore();
@@ -11,7 +12,8 @@ const AppRoutes: React.FC = () => {
     return (
         <Routes>
             <Route path="/" element={<SignIn />} />
-            <Route path="/weekly-status" element={<WeeklyStatus role={role} />} />
+            <Route path="/weekly-status" element={<WeeklyStatus />} />
+            <Route path="/status-reporting" element={<StatusReporting />} />
         </Routes>
     );
 }

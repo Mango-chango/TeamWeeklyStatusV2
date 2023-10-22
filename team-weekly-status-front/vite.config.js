@@ -27,6 +27,8 @@ if (!certificateName) {
 const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
+const apiBaseUrl = "https://localhost:7100";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [plugin()],
@@ -37,25 +39,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "^/weatherforecast": {
-        target: "https://localhost:7100/",
+      "^/api/": {
+        target: apiBaseUrl,
         secure: false,
-      },
-      "^/api/User/validate": {
-        target: "https://localhost:7100/",
-        secure: false,
-      },
-      "^/api/WeeklyStatus/Add": {
-        target: "https://localhost:7100/",
-        secure: false,
-      },
-      "^/api/WeeklyStatus/GetByMemberIdAndStartDate": {
-        target: "https://localhost:7100/",
-        secure: false,
-      },
-      "^/api/WeeklyStatus/Edit": {
-        target: "https://localhost:7100/",
-        secure: false,
+        rewrite: (path) => path.startsWith('/api/') ? path : `/api${path}`
       },
     },
     port: 5173,
@@ -64,4 +51,5 @@ export default defineConfig({
       cert: fs.readFileSync(certFilePath),
     },
   },
+  
 });
