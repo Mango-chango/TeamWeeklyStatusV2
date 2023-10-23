@@ -4,6 +4,7 @@ import moment from "moment";
 import { userStore } from "../../store";
 import { WeeklyStatusData } from "../../types/WeeklyStatus.types";
 import { makeApiRequest } from "../../services/apiHelper";
+import { useNavigate } from 'react-router-dom';
 
 interface WeeklyStatusProps {
   role: "TeamLead" | "CurrentWeekReporter" | "Normal";
@@ -31,6 +32,8 @@ const WeeklyStatus: React.FC = () => {
   const endDate = moment().endOf("week").toDate();
   const nextWeekStart = moment().add(1, "weeks").startOf("isoWeek");
   const nextWeekEnd = moment().add(1, "weeks").endOf("isoWeek");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Subscribe to memberId changes
@@ -152,12 +155,15 @@ const WeeklyStatus: React.FC = () => {
 
   const displaySuccessMessage = () => {
     setSuccess(true);
-  
+
     setTimeout(() => {
       setSuccess(false);
     }, 5000);
   };
-  
+
+  const statusReporting = () => {
+    navigate('/status-reporting');  
+  }
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
@@ -281,6 +287,9 @@ const WeeklyStatus: React.FC = () => {
         >
           <Button variant="primary" type="submit" className="w-100 mt-3">
             Save
+          </Button>
+          <Button variant="secondary" type="submit" className="w-100 mt-3" onClick={statusReporting}>
+            Report
           </Button>
         </Form.Group>
       </Form>

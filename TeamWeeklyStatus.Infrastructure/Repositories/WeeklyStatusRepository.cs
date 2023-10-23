@@ -48,7 +48,9 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 );
         }
 
-        public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate)
+        public async Task<
+            IEnumerable<WeeklyStatusWithMemberNameDTO>
+        > GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate)
         {
             // Get all team members
             var allTeamMembers = await _context.Members.ToListAsync();
@@ -56,15 +58,42 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             // Get all weekly statuses for the given date
             var weeklyStatusesForDate = await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
+                .Include(ws => ws.DoneThisWeekTasks)
+                .Include(ws => ws.PlanForNextWeekTasks)
                 .Where(ws => ws.WeekStartDate == weekStartDate)
                 .ToListAsync();
 
             // Create a result list with member names and their weekly status if it exists
-            var result = allTeamMembers.Select(member => new WeeklyStatusWithMemberNameDTO
-            {
-                MemberName = member.Name,
-                WeeklyStatus = weeklyStatusesForDate.FirstOrDefault(ws => ws.Member.Id == member.Id)
-            }).OrderBy(dto => dto.MemberName).ToList();
+            var result = allTeamMembers
+                .Select(member =>
+                {
+                    var matchingStatus = weeklyStatusesForDate.FirstOrDefault(
+                        ws => ws.Member.Id == member.Id
+                    );
+                    return new WeeklyStatusWithMemberNameDTO
+                    {
+                        MemberName = member.Name,
+                        WeeklyStatus =
+                            matchingStatus != null
+                                ? new WeeklyStatusDTO
+                                {
+                                    Id = matchingStatus.Id,
+                                    WeekStartDate = matchingStatus.WeekStartDate,
+                                    DoneThisWeek = matchingStatus.DoneThisWeekTasks
+                                        .Select(task => task.TaskDescription)
+                                        .ToList(),
+                                    PlanForNextWeek = matchingStatus.PlanForNextWeekTasks
+                                        .Select(task => task.TaskDescription)
+                                        .ToList(),
+                                    Blockers = matchingStatus.Blockers,
+                                    UpcomingPTO = matchingStatus.UpcomingPTO,
+                                    MemberId = matchingStatus.MemberId,
+                                }
+                                : null
+                    };
+                })
+                .OrderBy(dto => dto.MemberName)
+                .ToList();
 
             return result;
         }
