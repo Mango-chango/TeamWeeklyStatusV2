@@ -11,6 +11,9 @@
     "predev": "node aspnetcore-https.js"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^40.0.0",
+    "@ckeditor/ckeditor5-clipboard": "^40.0.0",
+    "@ckeditor/ckeditor5-react": "^6.1.0",
     "@fontsource/roboto": "^5.0.8",
     "@types/node": "^16.18.39",
     "@types/react-bootstrap": "^0.32.33",

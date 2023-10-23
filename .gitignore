@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /TeamWeeklyStatus.WebApi/appsettings.json
+team-weekly-status-front/package-lock.json
+/team-weekly-status-front/package-lock.json
