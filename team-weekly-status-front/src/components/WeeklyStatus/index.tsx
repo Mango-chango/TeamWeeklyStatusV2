@@ -4,7 +4,7 @@ import moment from "moment";
 import { userStore } from "../../store";
 import { WeeklyStatusData } from "../../types/WeeklyStatus.types";
 import { makeApiRequest } from "../../services/apiHelper";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 interface WeeklyStatusProps {
   role: "TeamLead" | "CurrentWeekReporter" | "Normal";
@@ -162,8 +162,8 @@ const WeeklyStatus: React.FC = () => {
   };
 
   const statusReporting = () => {
-    navigate('/status-reporting');  
-  }
+    navigate("/status-reporting");
+  };
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
@@ -283,14 +283,36 @@ const WeeklyStatus: React.FC = () => {
         </Form.Group>
         <Form.Group
           controlId="submitButton"
-          style={{ width: "20%", marginLeft: "auto", marginRight: "auto" }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            paddingTop: "20px",
+            paddingBottom: "40px",
+          }}
         >
-          <Button variant="primary" type="submit" className="w-100 mt-3">
-            Save
+          <Button
+            variant="primary"
+            type="submit"
+            style={{ marginRight: "10px" }}
+          >
+            Save Weekly Status
           </Button>
-          <Button variant="secondary" type="submit" className="w-100 mt-3" onClick={statusReporting}>
-            Report
-          </Button>
+
+          {role === "CurrentWeekReporter" && (
+            <Button
+              variant="primary"
+              onClick={statusReporting}
+              style={{ marginRight: "10px" }}
+            >
+              Report
+            </Button>
+          )}
+
+          {role === "CurrentWeekReporter" && (
+            <Button variant="primary" onClick={statusReporting}>
+              Assign Reporter
+            </Button>
+          )}
         </Form.Group>
       </Form>
     </div>

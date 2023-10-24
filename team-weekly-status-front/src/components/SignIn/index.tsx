@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, Alert, Row, Col } from "react-bootstrap";
-import { userStore } from '../../store';
+import { userStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../services/apiHelper";
 import { UserValidationResult } from "../../types/WeeklyStatus.types";
@@ -21,19 +21,24 @@ const SignIn: React.FC = () => {
     };
 
     const response: UserValidationResult = await makeApiRequest(
-        "/User/validate",
-        "POST",
-        authRequest
+      "/User/validate",
+      "POST",
+      authRequest
     );
 
     if (response && response.success) {
-        userStore.getState().setRole(response.role as "TeamLead" | "CurrentWeekReporter" | "Normal" | null);
-        userStore.getState().setTeamName(response.teamName as string | '');
-        userStore.getState().setMemberId(response.memberId as number | 0);
-        userStore.getState().setMemberName(response.memberName as string | '');
-        navigate("/weekly-status");
+      userStore
+        .getState()
+        .setRole(
+          response.role as "TeamLead" | "CurrentWeekReporter" | "Normal" | null
+        );
+      userStore.getState().setTeamName(response.teamName as string | "");
+      userStore.getState().setMemberId(response.memberId as number | 0);
+      userStore.getState().setMemberName(response.memberName as string | "");
+      userStore.getState().setIsAuthenticated(true);
+      navigate("/weekly-status");
     } else {
-        setError("Invalid email address. Please check and try again.");
+      setError("Invalid email address. Please check and try again.");
     }
   };
 
