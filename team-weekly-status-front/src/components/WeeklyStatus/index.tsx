@@ -165,6 +165,10 @@ const WeeklyStatus: React.FC = () => {
     navigate("/status-reporting");
   };
 
+  const assignReporter = () => {
+    navigate("/assign-reporter");
+  };
+
   return (
     <div className="d-flex flex-column align-items-center mt-5">
       <Form onSubmit={handleSubmit} style={{ width: "70%" }}>
@@ -282,7 +286,7 @@ const WeeklyStatus: React.FC = () => {
           />
         </Form.Group>
         <Form.Group
-          controlId="submitButton"
+          controlId="buttons"
           style={{
             display: "flex",
             justifyContent: "center",
@@ -308,8 +312,8 @@ const WeeklyStatus: React.FC = () => {
             </Button>
           )}
 
-          {role === "CurrentWeekReporter" && (
-            <Button variant="primary" onClick={statusReporting}>
+          {role === "TeamLead" && (
+            <Button variant="primary" onClick={assignReporter}>
               Assign Reporter
             </Button>
           )}

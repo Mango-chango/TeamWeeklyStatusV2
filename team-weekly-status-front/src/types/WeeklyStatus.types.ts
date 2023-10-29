@@ -23,3 +23,9 @@ export interface UserValidationResult {
   memberId: number;
   memberName: string;
 }
+
+export type Member = {
+  id: number;
+  name: string;
+  email?: string;
+};

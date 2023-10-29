@@ -41,6 +41,7 @@ builder.Services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
 builder.Services.AddScoped<IWeeklyStatusRepository, WeeklyStatusRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IWeeklyStatusService, WeeklyStatusService>();
+builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
 
 var app = builder.Build();
 

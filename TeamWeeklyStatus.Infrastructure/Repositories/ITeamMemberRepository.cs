@@ -11,5 +11,9 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
         Task<TeamMember> DeleteTeamMemberAsync(int teamId, int memberId);
 
         Task<TeamMember> GetByEmailWithTeamData(string email);
+
+        Task<IEnumerable<Member>> GetMembersWithoutCurrentReporter();
+
+        Task AssignReporter(int memberId);
     }
 }

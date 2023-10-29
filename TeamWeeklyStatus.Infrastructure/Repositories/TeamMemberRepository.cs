@@ -43,5 +43,30 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .Include(m => m.Member)
                 .FirstOrDefaultAsync(m => m.Member.Email == email);
         }
+
+        public async Task<IEnumerable<Member>> GetMembersWithoutCurrentReporter()
+        {
+            return await _context.TeamMembers
+                .Include(tm => tm.Member)
+                .Where(tm => tm.IsCurrentWeekReporter != true)
+                .Select(tm => tm.Member)
+                .ToListAsync();
+        }
+
+
+        public async Task AssignReporter(int memberId)
+        {
+            var currentReporter = _context.TeamMembers.SingleOrDefault(tm => tm.IsCurrentWeekReporter == true);
+            if (currentReporter != null)
+            {
+                currentReporter.IsCurrentWeekReporter = false;
+            }
+
+            var newReporter = _context.TeamMembers.Single(tm => tm.MemberId == memberId);
+            newReporter.IsCurrentWeekReporter = true;
+
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

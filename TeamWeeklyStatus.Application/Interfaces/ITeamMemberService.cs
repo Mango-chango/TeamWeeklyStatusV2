@@ -1,4 +1,5 @@
-﻿using TeamWeeklyStatus.Domain.Entities;
+﻿using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Application.Interfaces
 {
@@ -9,5 +10,10 @@ namespace TeamWeeklyStatus.Application.Interfaces
         Task<TeamMember> AddTeamMemberAsync(TeamMember teamMember);
         Task<TeamMember> UpdateTeamMemberAsync(TeamMember teamMember);
         Task<TeamMember> DeleteTeamMemberAsync(int teamId, int memberId);
+
+        Task<IEnumerable<MemberDTO>> GetMembersWithoutCurrentReporter();
+
+        Task AssignReporter(int memberId);
+
     }
 }
