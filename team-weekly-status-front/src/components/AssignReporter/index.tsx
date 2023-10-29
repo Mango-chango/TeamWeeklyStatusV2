@@ -3,6 +3,7 @@ import { ListGroup, Button, Alert, Form } from "react-bootstrap";
 import { makeApiRequest } from "../../services/apiHelper";
 import { Member } from "../../types/WeeklyStatus.types";
 import { useNavigate } from "react-router-dom";
+import './styles.css';
 
 const AssignReporter: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
@@ -77,18 +78,12 @@ const AssignReporter: React.FC = () => {
       </ListGroup>
       <Form.Group
         controlId="buttons"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          paddingTop: "20px",
-          paddingBottom: "40px",
-        }}
+        className="form__buttons"
       >
         <Button
           onClick={handleSave}
           disabled={!selectedMemberId}
           className="mt-3"
-          style={{ marginRight: "10px" }}
         >
           Save
         </Button>

@@ -4,6 +4,7 @@ import { userStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../services/apiHelper";
 import { UserValidationResult } from "../../types/WeeklyStatus.types";
+import './styles.css';
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const SignIn: React.FC = () => {
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
-      <Form onSubmit={handleSubmit} style={{ width: "600px" }}>
+      <Form onSubmit={handleSubmit} className="form__container">
         <Form.Group controlId="formEmailPrefix">
           <Form.Label>User</Form.Label>
           <Row>
@@ -63,14 +64,8 @@ const SignIn: React.FC = () => {
         </Form.Group>
         <Form.Group
           as={Row}
-          className="mb-3"
+          className="mb-3 form__buttons"
           controlId="Boton"
-          style={{
-            paddingTop: "15px",
-            marginLeft: "auto",
-            marginRight: "auto",
-            paddingLeft: "150px",
-          }}
         >
           <Col sm={10}>
             <Button variant="primary" type="submit" className="w-100 mt-3">

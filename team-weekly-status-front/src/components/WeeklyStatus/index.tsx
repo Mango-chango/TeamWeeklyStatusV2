@@ -5,6 +5,7 @@ import { userStore } from "../../store";
 import { WeeklyStatusData } from "../../types/WeeklyStatus.types";
 import { makeApiRequest } from "../../services/apiHelper";
 import { useNavigate } from "react-router-dom";
+import './styles.css';
 
 interface WeeklyStatusProps {
   role: "TeamLead" | "CurrentWeekReporter" | "Normal";
@@ -171,7 +172,7 @@ const WeeklyStatus: React.FC = () => {
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
-      <Form onSubmit={handleSubmit} style={{ width: "70%" }}>
+      <Form onSubmit={handleSubmit} className="form__container">
         <h2>Team {teamName}</h2>
         <h3>Welcome {memberName}!</h3>
         <h3>
@@ -189,8 +190,8 @@ const WeeklyStatus: React.FC = () => {
           </Alert>
         )}
         {/* What was done this week: */}
-        <Form.Group controlId="doneThisWeek" style={{ paddingTop: "20px" }}>
-          <Form.Label style={{ fontWeight: "bold" }}>
+        <Form.Group controlId="doneThisWeek" className="form__group">
+          <Form.Label className="form__label">
             What was done this week:
           </Form.Label>
           {doneThisWeek.map((task, index) => (
@@ -222,8 +223,8 @@ const WeeklyStatus: React.FC = () => {
           </Button>
         </Form.Group>
         {/* Plan for Next Week */}
-        <Form.Group controlId="planForNextWeek" style={{ paddingTop: "20px" }}>
-          <Form.Label style={{ fontWeight: "bold" }}>
+        <Form.Group controlId="planForNextWeek" className="form__group">
+          <Form.Label className="form__label">
             Plan for Next Week
           </Form.Label>
           {planForNextWeek.map((plan, index) => (
@@ -257,8 +258,8 @@ const WeeklyStatus: React.FC = () => {
         </Form.Group>
 
         {/* Upcoming PTO */}
-        <Form.Group controlId="upcomingPTO" style={{ paddingTop: "20px" }}>
-          <Form.Label style={{ fontWeight: "bold" }}>Upcoming PTO</Form.Label>
+        <Form.Group controlId="upcomingPTO" className="form__group">
+          <Form.Label className="form__label">Upcoming PTO</Form.Label>
           <Form.Control
             type="date"
             value={selectedDate || ""}
@@ -269,15 +270,15 @@ const WeeklyStatus: React.FC = () => {
         </Form.Group>
 
         <div className="mt-2">
-          <span style={{ fontWeight: "bold" }}>Selected dates: </span>
+          <span className="form__label">Selected dates: </span>
           {upcomingPTO
             .map((dateStr) => moment(dateStr).format("MMM DD"))
             .join(", ")}
         </div>
 
         {/* Blockers */}
-        <Form.Group controlId="blockers" style={{ paddingTop: "20px" }}>
-          <Form.Label style={{ fontWeight: "bold" }}>Blockers</Form.Label>
+        <Form.Group controlId="blockers" className="form__group">
+          <Form.Label className="form__label">Blockers</Form.Label>
           <Form.Control
             as="textarea"
             rows={3}
@@ -287,17 +288,12 @@ const WeeklyStatus: React.FC = () => {
         </Form.Group>
         <Form.Group
           controlId="buttons"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: "20px",
-            paddingBottom: "40px",
-          }}
+          className="form__btngroup"
         >
           <Button
             variant="primary"
             type="submit"
-            style={{ marginRight: "10px" }}
+            className="form__btn"
           >
             Save Weekly Status
           </Button>
@@ -306,7 +302,7 @@ const WeeklyStatus: React.FC = () => {
             <Button
               variant="primary"
               onClick={statusReporting}
-              style={{ marginRight: "10px" }}
+              className="form__btn"
             >
               Report
             </Button>

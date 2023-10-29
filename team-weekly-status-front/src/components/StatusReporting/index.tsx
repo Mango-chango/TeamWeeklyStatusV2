@@ -6,10 +6,12 @@ import {
   TeamWeeklyStatusData,
 } from "../../types/WeeklyStatus.types";
 import moment from "moment";
-import "./reporting.css";
+import "./styles.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { Button, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const StatusReporting: React.FC = () => {
   const { role, teamName, memberName, memberId } = userStore();
@@ -24,6 +26,8 @@ const StatusReporting: React.FC = () => {
   const [startDate, setStartDate] = useState(initialStartDate);
 
   const endDate = moment().endOf("week").toDate();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLocalTeamName(teamName);
@@ -84,13 +88,14 @@ const StatusReporting: React.FC = () => {
         });
         htmlContent += `</ul>`;
         htmlContent += `<h4>Blockers:</h4>`;
-        htmlContent += `<p>${weeklyStatus?.blockers}</p>`;
+        htmlContent += `<p>${weeklyStatus?.blockers || "None"}</p>`;
         htmlContent += `<h4>Upcoming PTO:</h4>`;
-        htmlContent += `<ul>`;
-        weeklyStatus?.upcomingPTO?.forEach((date) => {
-          htmlContent += `<li>${moment(date).format("MMM DD")}</li>`;
-        });
-        htmlContent += `</ul>`;
+        const datesList = weeklyStatus?.upcomingPTO?.map((date) =>
+          moment(date).format("MMM DD")
+        );
+        if (datesList && datesList.length) {
+          htmlContent += datesList.join(", ");
+        }
       });
 
     return htmlContent;
@@ -98,9 +103,13 @@ const StatusReporting: React.FC = () => {
 
   const editorData = generateHTML();
 
+  const handleBack = async () => {
+    navigate("/weekly-status");
+  };
+
   return (
     <>
-      <div className="card mt-5 centered-div">
+      <div className="card mt-5 div__container">
         <div className="card-body card-content">
           <CKEditor
             editor={ClassicEditor}
@@ -123,15 +132,20 @@ const StatusReporting: React.FC = () => {
               ],
             }}
           />
-
         </div>
       </div>
 
-      <div className="d-flex flex-column mt-2 centered-left-aligned-content">
-        <span style={{ fontWeight: "bolder" }}>
-          Members still not reported:
+      <div className="d-flex flex-column mt-2 div__secondary">
+        <span className="div__secondary__content">
+          Folks who have not yet reported:
         </span>{" "}
         {unreportedMembers.map((member) => member.memberName).join(", ")}
+      </div>
+
+      <div className="form__buttons">
+        <Button variant="secondary" onClick={handleBack} className="mt-3 ml-2">
+          Back
+        </Button>
       </div>
     </>
   );
