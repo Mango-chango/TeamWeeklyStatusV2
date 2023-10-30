@@ -7,11 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamWeeklyStatus.WebApi", "
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "team-weekly-status-front", "team-weekly-status-front\team-weekly-status-front.esproj", "{2D1684B7-41D2-4EE5-90C3-DC9A1E38DD95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamWeeklyStatus.Domain", "TeamWeeklyStatus.Domain\TeamWeeklyStatus.Domain.csproj", "{C35BA6B6-5353-4F99-A135-C5349DAD9FA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamWeeklyStatus.Domain", "TeamWeeklyStatus.Domain\TeamWeeklyStatus.Domain.csproj", "{C35BA6B6-5353-4F99-A135-C5349DAD9FA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamWeeklyStatus.Infrastructure", "TeamWeeklyStatus.Infrastructure\TeamWeeklyStatus.Infrastructure.csproj", "{91080FB6-746D-4056-9BC4-94D8FC92B06C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamWeeklyStatus.Infrastructure", "TeamWeeklyStatus.Infrastructure\TeamWeeklyStatus.Infrastructure.csproj", "{91080FB6-746D-4056-9BC4-94D8FC92B06C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamWeeklyStatus.Application", "TeamWeeklyStatus.Application\TeamWeeklyStatus.Application.csproj", "{056E1252-A3B7-4692-836C-83ADD01F4E98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamWeeklyStatus.Application", "TeamWeeklyStatus.Application\TeamWeeklyStatus.Application.csproj", "{056E1252-A3B7-4692-836C-83ADD01F4E98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamWeeklyStatus.Application.Tests", "TeamWeeklyStatus.Application.Tests\TeamWeeklyStatus.Application.Tests.csproj", "{7BDDC8F7-094F-41A8-863F-3DF794261D54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{056E1252-A3B7-4692-836C-83ADD01F4E98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{056E1252-A3B7-4692-836C-83ADD01F4E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{056E1252-A3B7-4692-836C-83ADD01F4E98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BDDC8F7-094F-41A8-863F-3DF794261D54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BDDC8F7-094F-41A8-863F-3DF794261D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BDDC8F7-094F-41A8-863F-3DF794261D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BDDC8F7-094F-41A8-863F-3DF794261D54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
