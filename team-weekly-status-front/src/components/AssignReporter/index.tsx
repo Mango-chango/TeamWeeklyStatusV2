@@ -71,6 +71,7 @@ const AssignReporter: React.FC = () => {
             key={member.id}
             active={selectedMemberId === member.id}
             onClick={() => setSelectedMemberId(member.id)}
+            className="list__item"
           >
             {member.name}
           </ListGroup.Item>

@@ -8,3 +8,7 @@
 .form__buttons .btn {
     margin-right: 20px;
 }
+
+.list__item {
+    cursor: pointer;
+}
