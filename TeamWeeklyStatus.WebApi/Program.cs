@@ -9,6 +9,11 @@ using TeamWeeklyStatus.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "wwwroot";
+});
+
 var sqlServerConnectionString = builder.Configuration.GetConnectionString("AzureSqlConnection");
 
 builder.Services.AddDbContext<TeamWeeklyStatusContext>(
@@ -46,16 +51,20 @@ builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseRouting();
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
