@@ -33,6 +33,7 @@ const WeeklyStatus: React.FC = () => {
   const endDate = moment().endOf("week").toDate();
   const nextWeekStart = moment().add(1, "weeks").startOf("isoWeek");
   const nextWeekEnd = moment().add(1, "weeks").endOf("isoWeek");
+  const inTwoMonths = moment().add(2, "months").endOf("isoWeek");
 
   const navigate = useNavigate();
 
@@ -264,7 +265,7 @@ const WeeklyStatus: React.FC = () => {
             type="date"
             value={selectedDate || ""}
             min={nextWeekStart.format("YYYY-MM-DD")}
-            max={nextWeekEnd.format("YYYY-MM-DD")}
+            max={inTwoMonths.format("YYYY-MM-DD")}
             onChange={handleDateChange}
           />
         </Form.Group>

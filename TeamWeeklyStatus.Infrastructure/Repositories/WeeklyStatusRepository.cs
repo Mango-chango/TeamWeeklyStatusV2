@@ -39,14 +39,21 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             DateTime startDate
         )
         {
+            // Ensure that startDate only contains the date component
+            var dateOnly = new DateTime(startDate.Year, startDate.Month, startDate.Day, 0, 0, 0, startDate.Kind);
+
             return await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
                 .Include(ws => ws.DoneThisWeekTasks)
                 .Include(ws => ws.PlanForNextWeekTasks)
                 .FirstOrDefaultAsync(
-                    ws => ws.Member.Id == memberId && ws.WeekStartDate == startDate
+                    ws => ws.Member.Id == memberId &&
+                          ws.WeekStartDate.Year == dateOnly.Year &&
+                          ws.WeekStartDate.Month == dateOnly.Month &&
+                          ws.WeekStartDate.Day == dateOnly.Day
                 );
         }
+
 
         public async Task<
             IEnumerable<WeeklyStatusWithMemberNameDTO>
@@ -55,12 +62,16 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             // Get all team members
             var allTeamMembers = await _context.Members.ToListAsync();
 
+            var dateOnly = new DateTime(weekStartDate.Year, weekStartDate.Month, weekStartDate.Day, 0, 0, 0, weekStartDate.Kind);
+
             // Get all weekly statuses for the given date
             var weeklyStatusesForDate = await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
                 .Include(ws => ws.DoneThisWeekTasks)
                 .Include(ws => ws.PlanForNextWeekTasks)
-                .Where(ws => ws.WeekStartDate == weekStartDate)
+                .Where(ws => ws.WeekStartDate.Year == dateOnly.Year &&
+                          ws.WeekStartDate.Month == dateOnly.Month &&
+                          ws.WeekStartDate.Day == dateOnly.Day)
                 .ToListAsync();
 
             // Create a result list with member names and their weekly status if it exists
