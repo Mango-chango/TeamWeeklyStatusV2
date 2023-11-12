@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System.Text.Json;
@@ -48,6 +50,21 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IWeeklyStatusService, WeeklyStatusService>();
 builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/";
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = "91039693581-hprbpbenb5fjgm5ccq73d72cpu1o4ptf.apps.googleusercontent.com";
+        options.ClientSecret = "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";
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -62,6 +79,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

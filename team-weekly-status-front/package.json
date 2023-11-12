@@ -16,6 +16,7 @@
     "@ckeditor/ckeditor5-clipboard": "^40.0.0",
     "@ckeditor/ckeditor5-react": "^6.1.0",
     "@fontsource/roboto": "^5.0.8",
+    "@react-oauth/google": "^0.11.1",
     "@types/node": "^16.18.39",
     "@types/react-bootstrap": "^0.32.33",
     "axios": "^1.5.1",
