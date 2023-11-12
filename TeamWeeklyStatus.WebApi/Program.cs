@@ -61,8 +61,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddGoogle(options =>
     {
-        options.ClientId = "91039693581-hprbpbenb5fjgm5ccq73d72cpu1o4ptf.apps.googleusercontent.com";
-        options.ClientSecret = "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";
+        options.ClientId = "clientid.apps.googleusercontent.com";
+        options.ClientSecret = "secret";
     });
 
 var app = builder.Build();
