@@ -29,3 +29,11 @@ export type Member = {
   name: string;
   email?: string;
 };
+
+export interface GoogleLoginResponse {
+  success: boolean;
+  role: "TeamLead" | "CurrentWeekReporter" | "Normal" | null;
+  teamName: string | "";
+  memberId: number | 0;
+  memberName: string | "";
+}

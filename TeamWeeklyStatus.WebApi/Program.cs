@@ -8,6 +8,7 @@ using TeamWeeklyStatus.Application.Services;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Infrastructure;
 using TeamWeeklyStatus.Infrastructure.Repositories;
+using TeamWeeklyStatus.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,10 @@ builder.Services.AddScoped<IWeeklyStatusRepository, WeeklyStatusRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IWeeklyStatusService, WeeklyStatusService>();
 builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
+builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+
+var googleClientId = builder.Configuration["GoogleClientId"];
+var googleClientSecret = builder.Configuration["GoogleClientSecret"];
 
 builder.Services.AddAuthentication(options =>
 {
@@ -61,8 +66,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddGoogle(options =>
     {
-        options.ClientId = "clientid.apps.googleusercontent.com";
-        options.ClientSecret = "secret";
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
     });
 
 var app = builder.Build();
