@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System.Text.Json;
@@ -6,6 +8,7 @@ using TeamWeeklyStatus.Application.Services;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Infrastructure;
 using TeamWeeklyStatus.Infrastructure.Repositories;
+using TeamWeeklyStatus.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +50,25 @@ builder.Services.AddScoped<IWeeklyStatusRepository, WeeklyStatusRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IWeeklyStatusService, WeeklyStatusService>();
 builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
+builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+
+var googleClientId = builder.Configuration["GoogleClientId"];
+var googleClientSecret = builder.Configuration["GoogleClientSecret"];
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/";
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
+    });
 
 var app = builder.Build();
 
@@ -62,6 +84,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
