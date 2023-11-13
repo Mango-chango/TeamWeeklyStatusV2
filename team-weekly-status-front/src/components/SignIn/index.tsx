@@ -35,14 +35,6 @@ const SignIn: React.FC = () => {
     loadGoogleScript();
   }, []);
 
-  // interface GoogleLoginResponse {
-  //   success: boolean;
-  //   role: "TeamLead" | "CurrentWeekReporter" | "Normal" | null;
-  //   teamName: string | "";
-  //   memberId: number | 0;
-  //   memberName: string | "";
-  // }
-
   const handleGoogleLogin = async (response: any) => {
     const idToken = response.credential;
     console.log("idToken=", idToken);
@@ -81,6 +73,8 @@ const SignIn: React.FC = () => {
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
+      <h2>Welcome to the Team Weekly Status App!</h2>
+      <h3>Sign in using your MangoChango account</h3>
       <GoogleLogin
         data-testid="google-login"
         onSuccess={handleGoogleLogin}
