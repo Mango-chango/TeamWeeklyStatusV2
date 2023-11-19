@@ -15,6 +15,8 @@ namespace TeamWeeklyStatus.Infrastructure
         public DbSet<TeamMember> TeamMembers { get; set; }
         public DbSet<WeeklyStatus> WeeklyStatuses { get; set; }
 
+        public DbSet<Subtask> Subtasks { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TeamMember>().HasKey(tm => new { tm.TeamId, tm.MemberId });

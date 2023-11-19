@@ -42,11 +42,15 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [HttpPost("Add", Name = "SaveWeeklyStatus")]
         public async Task<IActionResult> SaveWeeklyStatus([FromBody] WeeklyStatusPostRequest request)
         {
-            var weeklyStatusDto = new WeeklyStatusDTO
+            var weeklyStatusDto = new Domain.DTOs.WeeklyStatusDTO
             {
                 MemberId = request.MemberId,
                 WeekStartDate = request.WeekStartDate,
-                DoneThisWeek = request.DoneThisWeek,
+                DoneThisWeek = request.DoneThisWeek.Select(dtw => new Domain.DTOs.DoneThisWeekTaskDTO
+                {
+                    TaskDescription = dtw.TaskDescription,
+                    Subtasks = dtw.Subtasks.Select(sub => new Domain.DTOs.SubtaskDTO { Description = sub.Description }).ToList()
+                }).ToList(),
                 PlanForNextWeek = request.PlanForNextWeek,
                 Blockers = request.Blockers,
                 UpcomingPTO = request.UpcomingPTO,
@@ -58,12 +62,16 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [HttpPut("Edit", Name = "UpdateWeeklyStatus")]
         public async Task<IActionResult> UpdateWeeklyStatus([FromBody] WeeklyStatusPostRequest request)
         {
-            var weeklyStatusDto = new WeeklyStatusDTO
+            var weeklyStatusDto = new Domain.DTOs.WeeklyStatusDTO
             {
                 Id = request.Id,
                 MemberId = request.MemberId,
                 WeekStartDate = request.WeekStartDate,
-                DoneThisWeek = request.DoneThisWeek,
+                DoneThisWeek = request.DoneThisWeek.Select(dtw => new Domain.DTOs.DoneThisWeekTaskDTO
+                {
+                    TaskDescription = dtw.TaskDescription,
+                    Subtasks = dtw.Subtasks.Select(sub => new Domain.DTOs.SubtaskDTO { Description = sub.Description }).ToList()
+                }).ToList(),
                 PlanForNextWeek = request.PlanForNextWeek,
                 Blockers = request.Blockers,
                 UpcomingPTO = request.UpcomingPTO,

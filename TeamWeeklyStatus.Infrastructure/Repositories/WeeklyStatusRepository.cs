@@ -40,74 +40,63 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
         )
         {
             // Ensure that startDate only contains the date component
-            var dateOnly = new DateTime(startDate.Year, startDate.Month, startDate.Day, 0, 0, 0, startDate.Kind);
+            var dateOnly = new DateTime(
+                startDate.Year,
+                startDate.Month,
+                startDate.Day,
+                0,
+                0,
+                0,
+                startDate.Kind
+            );
 
             return await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
                 .Include(ws => ws.DoneThisWeekTasks)
                 .Include(ws => ws.PlanForNextWeekTasks)
                 .FirstOrDefaultAsync(
-                    ws => ws.Member.Id == memberId &&
-                          ws.WeekStartDate.Year == dateOnly.Year &&
-                          ws.WeekStartDate.Month == dateOnly.Month &&
-                          ws.WeekStartDate.Day == dateOnly.Day
+                    ws =>
+                        ws.Member.Id == memberId
+                        && ws.WeekStartDate.Year == dateOnly.Year
+                        && ws.WeekStartDate.Month == dateOnly.Month
+                        && ws.WeekStartDate.Day == dateOnly.Day
                 );
         }
 
-
-        public async Task<
-            IEnumerable<WeeklyStatusWithMemberNameDTO>
-        > GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate)
+        public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate)
         {
-            // Get all team members
-            var allTeamMembers = await _context.Members.ToListAsync();
+            var dateOnly = weekStartDate.Date;
 
-            var dateOnly = new DateTime(weekStartDate.Year, weekStartDate.Month, weekStartDate.Day, 0, 0, 0, weekStartDate.Kind);
-
-            // Get all weekly statuses for the given date
             var weeklyStatusesForDate = await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
                 .Include(ws => ws.DoneThisWeekTasks)
+                    .ThenInclude(dtw => dtw.Subtasks)  // Assuming there's a Subtasks navigation property
                 .Include(ws => ws.PlanForNextWeekTasks)
-                .Where(ws => ws.WeekStartDate.Year == dateOnly.Year &&
-                          ws.WeekStartDate.Month == dateOnly.Month &&
-                          ws.WeekStartDate.Day == dateOnly.Day)
+                .Where(ws => ws.WeekStartDate.Date == dateOnly)
                 .ToListAsync();
 
-            // Create a result list with member names and their weekly status if it exists
-            var result = allTeamMembers
-                .Select(member =>
+            var result = weeklyStatusesForDate.Select(ws => new WeeklyStatusWithMemberNameDTO
+            {
+                MemberName = ws.Member.Name,
+                WeeklyStatus = new WeeklyStatusDTO
                 {
-                    var matchingStatus = weeklyStatusesForDate.FirstOrDefault(
-                        ws => ws.Member.Id == member.Id
-                    );
-                    return new WeeklyStatusWithMemberNameDTO
+                    Id = ws.Id,
+                    WeekStartDate = ws.WeekStartDate,
+                    DoneThisWeek = ws.DoneThisWeekTasks.Select(dtw => new DoneThisWeekTaskDTO
                     {
-                        MemberName = member.Name,
-                        WeeklyStatus =
-                            matchingStatus != null
-                                ? new WeeklyStatusDTO
-                                {
-                                    Id = matchingStatus.Id,
-                                    WeekStartDate = matchingStatus.WeekStartDate,
-                                    DoneThisWeek = matchingStatus.DoneThisWeekTasks
-                                        .Select(task => task.TaskDescription)
-                                        .ToList(),
-                                    PlanForNextWeek = matchingStatus.PlanForNextWeekTasks
-                                        .Select(task => task.TaskDescription)
-                                        .ToList(),
-                                    Blockers = matchingStatus.Blockers,
-                                    UpcomingPTO = matchingStatus.UpcomingPTO,
-                                    MemberId = matchingStatus.MemberId,
-                                }
-                                : null
-                    };
-                })
-                .OrderBy(dto => dto.MemberName)
-                .ToList();
+                        TaskDescription = dtw.TaskDescription,
+                        Subtasks = dtw.Subtasks.Select(st => new SubtaskDTO { Description = st.Description }).ToList()  // Map subtasks descriptions
+                    }).ToList(),
+                    PlanForNextWeek = ws.PlanForNextWeekTasks.Select(task => task.TaskDescription).ToList(),
+                    Blockers = ws.Blockers,
+                    UpcomingPTO = ws.UpcomingPTO,
+                    MemberId = ws.MemberId,
+                }
+            }).OrderBy(dto => dto.MemberName).ToList();
 
             return result;
         }
+
 
         public async Task<WeeklyStatus> UpdateWeeklyStatusAsync(WeeklyStatus weeklyStatus)
         {
@@ -115,5 +104,33 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return weeklyStatus;
         }
+
+        public async Task AddSubtasksAsync(IEnumerable<Subtask> subtasks)
+        {
+            await _context.Subtasks.AddRangeAsync(subtasks);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateSubtasksAsync(IEnumerable<Subtask> subtasks)
+        {
+            foreach (var subtask in subtasks)
+            {
+                var existingSubtask = await _context.Subtasks.FindAsync(subtask.Id);
+                if (existingSubtask != null)
+                {
+                    // Update properties
+                    existingSubtask.Description = subtask.Description;
+                    // ... update other properties as necessary
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        //public async Task DeleteSubtasksAsync(IEnumerable<int> subtaskIds)
+        //{
+        //    var subtasksToDelete = _context.Subtasks.Where(st => subtaskIds.Contains(st.Id));
+        //    _context.Subtasks.RemoveRange(subtasksToDelete);
+        //    await _context.SaveChangesAsync();
+        //}
     }
 }
