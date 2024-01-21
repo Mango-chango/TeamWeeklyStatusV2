@@ -1,8 +1,12 @@
 import WeeklyStatus from "../components/WeeklyStatus/index";
+export interface TaskWithSubtasks {
+  taskDescription: string;
+  subtasks: string[];
+}
 export interface WeeklyStatusData {
   id: number;
   weekStartDate: Date | string;
-  doneThisWeek: string[];
+  doneThisWeek: TaskWithSubtasks[];
   planForNextWeek: string[];
   upcomingPTO: (Date | string)[];
   blockers: string;

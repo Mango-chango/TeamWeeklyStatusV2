@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Alert, Row, Col } from "react-bootstrap";
 import moment from "moment";
 import { userStore } from "../../store";
-import { WeeklyStatusData } from "../../types/WeeklyStatus.types";
+import {
+  WeeklyStatusData,
+  TaskWithSubtasks,
+} from "../../types/WeeklyStatus.types";
 import { makeApiRequest } from "../../services/apiHelper";
 import { useNavigate } from "react-router-dom";
-import './styles.css';
+import "./styles.css";
 
 interface WeeklyStatusProps {
   role: "TeamLead" | "CurrentWeekReporter" | "Normal";
@@ -19,7 +22,9 @@ const WeeklyStatus: React.FC = () => {
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [existingWeeklyStatus, setExistingWeeklyStatus] =
     useState<WeeklyStatusData | null>(null);
-  const [doneThisWeek, setDoneThisWeek] = useState<string[]>([""]);
+    const [doneThisWeek, setDoneThisWeek] = useState<TaskWithSubtasks[]>([
+      { taskDescription: "", subtasks: [""] } // Default value with empty task and subtasks
+    ]);
   const [planForNextWeek, setPlanForNextWeek] = useState<string[]>([""]);
   const [blockers, setBlockers] = useState<string>("");
   const [upcomingPTO, setUpcomingPTO] = useState<string[]>([]);
@@ -77,15 +82,54 @@ const WeeklyStatus: React.FC = () => {
     fetchExistingStatus();
   }, [localMemberId, startDate]);
 
+  const handleSubtaskChange = (
+    taskIndex: number,
+    subtaskIndex: number,
+    value: string,
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((currentTasks) => {
+      const newTasks = [...currentTasks];
+      newTasks[taskIndex].subtasks[subtaskIndex] = value;
+      return newTasks;
+    });
+  };
+
+  const addSubtask = (
+    taskIndex: number,
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((currentTasks) => {
+      const newTasks = [...currentTasks];
+      newTasks[taskIndex].subtasks.push("");
+      return newTasks;
+    });
+  };
+
+  const removeSubtask = (
+    taskIndex: number,
+    subtaskIndex: number,
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((currentTasks) => {
+      const newTasks = [...currentTasks];
+      newTasks[taskIndex].subtasks.splice(subtaskIndex, 1);
+      return newTasks;
+    });
+  };
+
   const handleTaskChange = (
     index: number,
     value: string,
-    setFunction: React.Dispatch<React.SetStateAction<string[]>>
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
-    const newTasks = [...doneThisWeek];
-    newTasks[index] = value;
-    setFunction(newTasks);
+    setFunction(currentTasks => {
+      const newTasks = [...currentTasks];
+      newTasks[index] = { ...newTasks[index], task: value };
+      return newTasks;
+    });
   };
+  
 
   const handlePlanChange = (index: number, value: string) => {
     const newPlans = [...planForNextWeek];
@@ -110,14 +154,17 @@ const WeeklyStatus: React.FC = () => {
   };
 
   const addTask = (
-    setFunction: React.Dispatch<React.SetStateAction<string[]>>
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
-    setFunction((prev) => [...prev, ""]);
+    setFunction((prev) => [
+      ...prev,
+      { task: "", subtasks: [] }
+    ]);
   };
 
   const removeTask = (
     index: number,
-    setFunction: React.Dispatch<React.SetStateAction<string[]>>
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
     setFunction((prev) => prev.filter((_, idx) => idx !== index));
   };
@@ -128,7 +175,10 @@ const WeeklyStatus: React.FC = () => {
     const dataToSubmit: WeeklyStatusData = {
       id: existingWeeklyStatus?.id || 0,
       weekStartDate: startDate,
-      doneThisWeek,
+      doneThisWeek: doneThisWeek.map(task => ({
+        taskDescription: task.taskDescription,
+        subtasks: task.subtasks.map(subtask => subtask )
+      })),
       planForNextWeek,
       upcomingPTO,
       blockers,
@@ -195,23 +245,49 @@ const WeeklyStatus: React.FC = () => {
           <Form.Label className="form__label">
             What was done this week:
           </Form.Label>
-          {doneThisWeek.map((task, index) => (
-            <div key={index} className="mb-2">
+          {doneThisWeek.map((taskWithSubtasks, taskIndex) => (
+            <div key={taskIndex} className="mb-2">
               <Row>
                 <Col>
                   <Form.Control
                     type="text"
-                    placeholder={`Task ${index + 1}`}
-                    value={task}
+                    placeholder={`Task ${taskIndex + 1}`}
+                    value={taskWithSubtasks.task}
                     onChange={(e) =>
-                      handleTaskChange(index, e.target.value, setDoneThisWeek)
+                      handleTaskChange(
+                        taskIndex,
+                        e.target.value,
+                        setDoneThisWeek
+                      )
                     }
                   />
+                  {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
+                    <Form.Control
+                      key={subtaskIndex}
+                      type="text"
+                      placeholder={`Subtask ${subtaskIndex + 1}`}
+                      value={subtask}
+                      onChange={(e) =>
+                        handleSubtaskChange(
+                          taskIndex,
+                          subtaskIndex,
+                          e.target.value,
+                          setDoneThisWeek
+                        )
+                      }
+                    />
+                  ))}
+                  <Button
+                    variant="secondary"
+                    onClick={() => addSubtask(taskIndex, setDoneThisWeek)}
+                  >
+                    Add Subtask
+                  </Button>
                 </Col>
                 <Col xs="auto">
                   <Button
                     variant="danger"
-                    onClick={() => removeTask(index, setDoneThisWeek)}
+                    onClick={() => removeTask(taskIndex, setDoneThisWeek)}
                   >
                     Remove
                   </Button>
@@ -225,9 +301,7 @@ const WeeklyStatus: React.FC = () => {
         </Form.Group>
         {/* Plan for Next Week */}
         <Form.Group controlId="planForNextWeek" className="form__group">
-          <Form.Label className="form__label">
-            Plan for Next Week
-          </Form.Label>
+          <Form.Label className="form__label">Plan for Next Week</Form.Label>
           {planForNextWeek.map((plan, index) => (
             <div key={index} className="mb-2">
               <Row>
@@ -287,15 +361,8 @@ const WeeklyStatus: React.FC = () => {
             onChange={(e) => setBlockers(e.target.value)}
           />
         </Form.Group>
-        <Form.Group
-          controlId="buttons"
-          className="form__btngroup"
-        >
-          <Button
-            variant="primary"
-            type="submit"
-            className="form__btn"
-          >
+        <Form.Group controlId="buttons" className="form__btngroup">
+          <Button variant="primary" type="submit" className="form__btn">
             Save Weekly Status
           </Button>
 

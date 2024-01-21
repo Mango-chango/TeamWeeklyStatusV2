@@ -45,6 +45,6 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "jest": "^27.4.3",
     "ts-jest": "^27.1.5",
-    "vite": "^4.4.5"
+    "vite": "^4.5.2"
   }
 }
