@@ -1,7 +1,11 @@
 import WeeklyStatus from "../components/WeeklyStatus/index";
+
+export interface Subtask {
+  subtaskDescription: string;
+}
 export interface TaskWithSubtasks {
   taskDescription: string;
-  subtasks: string[];
+  subtasks: Subtask[];
 }
 export interface WeeklyStatusData {
   id: number;

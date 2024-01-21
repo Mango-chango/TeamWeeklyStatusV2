@@ -49,7 +49,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
                 DoneThisWeek = request.DoneThisWeek.Select(dtw => new Domain.DTOs.DoneThisWeekTaskDTO
                 {
                     TaskDescription = dtw.TaskDescription,
-                    Subtasks = dtw.Subtasks.Select(sub => new Domain.DTOs.SubtaskDTO { Description = sub.Description }).ToList()
+                    Subtasks = dtw.Subtasks.Select(sub => new Domain.DTOs.SubtaskDTO { Description = sub.SubtaskDescription }).ToList()
                 }).ToList(),
                 PlanForNextWeek = request.PlanForNextWeek,
                 Blockers = request.Blockers,
@@ -70,7 +70,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
                 DoneThisWeek = request.DoneThisWeek.Select(dtw => new Domain.DTOs.DoneThisWeekTaskDTO
                 {
                     TaskDescription = dtw.TaskDescription,
-                    Subtasks = dtw.Subtasks.Select(sub => new Domain.DTOs.SubtaskDTO { Description = sub.Description }).ToList()
+                    Subtasks = dtw.Subtasks.Select(sub => new Domain.DTOs.SubtaskDTO { Description = sub.SubtaskDescription }).ToList()
                 }).ToList(),
                 PlanForNextWeek = request.PlanForNextWeek,
                 Blockers = request.Blockers,

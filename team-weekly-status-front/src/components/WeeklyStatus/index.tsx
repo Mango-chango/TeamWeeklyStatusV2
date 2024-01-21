@@ -5,6 +5,7 @@ import { userStore } from "../../store";
 import {
   WeeklyStatusData,
   TaskWithSubtasks,
+  Subtask,
 } from "../../types/WeeklyStatus.types";
 import { makeApiRequest } from "../../services/apiHelper";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +23,9 @@ const WeeklyStatus: React.FC = () => {
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [existingWeeklyStatus, setExistingWeeklyStatus] =
     useState<WeeklyStatusData | null>(null);
-    const [doneThisWeek, setDoneThisWeek] = useState<TaskWithSubtasks[]>([
-      { taskDescription: "", subtasks: [""] } // Default value with empty task and subtasks
-    ]);
+  const [doneThisWeek, setDoneThisWeek] = useState<TaskWithSubtasks[]>([
+    { taskDescription: "", subtasks: [{ subtaskDescription: "" }] }, // Ensuring subtasks are an array of Subtask objects
+  ]);
   const [planForNextWeek, setPlanForNextWeek] = useState<string[]>([""]);
   const [blockers, setBlockers] = useState<string>("");
   const [upcomingPTO, setUpcomingPTO] = useState<string[]>([]);
@@ -90,7 +91,9 @@ const WeeklyStatus: React.FC = () => {
   ) => {
     setFunction((currentTasks) => {
       const newTasks = [...currentTasks];
-      newTasks[taskIndex].subtasks[subtaskIndex] = value;
+      newTasks[taskIndex].subtasks[subtaskIndex] = {
+        subtaskDescription: value,
+      };
       return newTasks;
     });
   };
@@ -101,7 +104,7 @@ const WeeklyStatus: React.FC = () => {
   ) => {
     setFunction((currentTasks) => {
       const newTasks = [...currentTasks];
-      newTasks[taskIndex].subtasks.push("");
+      newTasks[taskIndex].subtasks.push({ subtaskDescription: "" });
       return newTasks;
     });
   };
@@ -123,13 +126,12 @@ const WeeklyStatus: React.FC = () => {
     value: string,
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
-    setFunction(currentTasks => {
+    setFunction((currentTasks) => {
       const newTasks = [...currentTasks];
-      newTasks[index] = { ...newTasks[index], task: value };
+      newTasks[index] = { ...newTasks[index], taskDescription: value };
       return newTasks;
     });
   };
-  
 
   const handlePlanChange = (index: number, value: string) => {
     const newPlans = [...planForNextWeek];
@@ -156,15 +158,26 @@ const WeeklyStatus: React.FC = () => {
   const addTask = (
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
-    setFunction((prev) => [
-      ...prev,
-      { task: "", subtasks: [] }
-    ]);
+    setFunction((prev) => [...prev, { taskDescription: "", subtasks: [] }]);
+  };
+
+  const addTask1 = (
+    setFunction: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    setFunction((prev) => [...prev, ""]);
   };
 
   const removeTask = (
     index: number,
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
+
+  const removeTask1 = (
+    index: number,
+    setFunction: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
     setFunction((prev) => prev.filter((_, idx) => idx !== index));
   };
@@ -175,9 +188,11 @@ const WeeklyStatus: React.FC = () => {
     const dataToSubmit: WeeklyStatusData = {
       id: existingWeeklyStatus?.id || 0,
       weekStartDate: startDate,
-      doneThisWeek: doneThisWeek.map(task => ({
+      doneThisWeek: doneThisWeek.map((task) => ({
         taskDescription: task.taskDescription,
-        subtasks: task.subtasks.map(subtask => subtask )
+        subtasks: task.subtasks.map((subtask) => ({
+          subtaskDescription: subtask.subtaskDescription,
+        })),
       })),
       planForNextWeek,
       upcomingPTO,
@@ -252,7 +267,7 @@ const WeeklyStatus: React.FC = () => {
                   <Form.Control
                     type="text"
                     placeholder={`Task ${taskIndex + 1}`}
-                    value={taskWithSubtasks.task}
+                    value={taskWithSubtasks.taskDescription}
                     onChange={(e) =>
                       handleTaskChange(
                         taskIndex,
@@ -266,7 +281,7 @@ const WeeklyStatus: React.FC = () => {
                       key={subtaskIndex}
                       type="text"
                       placeholder={`Subtask ${subtaskIndex + 1}`}
-                      value={subtask}
+                      value={subtask.subtaskDescription}
                       onChange={(e) =>
                         handleSubtaskChange(
                           taskIndex,
@@ -316,7 +331,7 @@ const WeeklyStatus: React.FC = () => {
                 <Col xs="auto">
                   <Button
                     variant="danger"
-                    onClick={() => removeTask(index, setPlanForNextWeek)}
+                    onClick={() => removeTask1(index, setPlanForNextWeek)}
                   >
                     Remove
                   </Button>
@@ -326,7 +341,7 @@ const WeeklyStatus: React.FC = () => {
           ))}
           <Button
             variant="secondary"
-            onClick={() => addTask(setPlanForNextWeek)}
+            onClick={() => addTask1(setPlanForNextWeek)}
           >
             Add Plan
           </Button>

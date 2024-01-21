@@ -2,7 +2,7 @@
 {
     public class SubtaskDTO
     {
-        public string Description { get; set; }
+        public string SubtaskDescription { get; set; }
     }
 
     public class DoneThisWeekTaskDTO
