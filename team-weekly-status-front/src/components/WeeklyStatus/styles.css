@@ -20,3 +20,7 @@
 .form__btn {
     margin-right: 20px;
 }
+
+.form__group__subtask {
+    padding-left: 10px;
+}

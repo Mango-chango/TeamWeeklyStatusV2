@@ -29,12 +29,12 @@ namespace TeamWeeklyStatus.Application.Services
             {
                 Id = weeklyStatus.Id,
                 WeekStartDate = weeklyStatus.WeekStartDate,
-                DoneThisWeek = weeklyStatus.DoneThisWeekTasks.Select(task => new DoneThisWeekTaskDTO
+                DoneThisWeek = weeklyStatus.DoneThisWeek.Select(task => new DoneThisWeekTaskDTO
                 {
                     TaskDescription = task.TaskDescription,
-                    Subtasks = task.Subtasks.Select(subtask => new SubtaskDTO { Description = subtask.Description }).ToList()
+                    Subtasks = task.Subtasks.Select(subtask => new SubtaskDTO { SubtaskDescription = subtask.SubtaskDescription }).ToList()
                 }).ToList(),
-                PlanForNextWeek = weeklyStatus.PlanForNextWeekTasks.Select(task => task.TaskDescription).ToList(),
+                PlanForNextWeek = weeklyStatus.PlanForNextWeek.Select(task => task).ToList(),
                 Blockers = weeklyStatus.Blockers,
                 UpcomingPTO = weeklyStatus.UpcomingPTO,
                 MemberId = weeklyStatus.MemberId,
@@ -58,7 +58,7 @@ namespace TeamWeeklyStatus.Application.Services
                     // Assuming there is a Subtasks property which is a collection of subtask entities
                     Subtasks = dtw.Subtasks.Select(st => new Subtask
                     {
-                        Description = st.Description,
+                        Description = st.SubtaskDescription,
                     }).ToList()
                 }).ToList(),
                 PlanForNextWeekTasks = weeklyStatusDto.PlanForNextWeek.Select(desc => new PlanForNextWeekTask { TaskDescription = desc }).ToList(),
@@ -94,7 +94,7 @@ namespace TeamWeeklyStatus.Application.Services
                 // Similar subtask update logic as for AddWeeklyStatusAsync
                 Subtasks = dtw.Subtasks.Select(st => new Subtask
                 {
-                    Description = st.Description
+                    Description = st.SubtaskDescription
                 }).ToList()
             }).ToList(); 
             

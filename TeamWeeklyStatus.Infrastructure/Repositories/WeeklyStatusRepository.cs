@@ -34,7 +34,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .FirstOrDefaultAsync(ws => ws.Id == id);
         }
 
-        public async Task<WeeklyStatus> GetWeeklyStatusByMemberByStartDateAsync(
+        public async Task<WeeklyStatusDTO> GetWeeklyStatusByMemberByStartDateAsync(
             int memberId,
             DateTime startDate
         )
@@ -50,9 +50,10 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 startDate.Kind
             );
 
-            return await _context.WeeklyStatuses
+            var weeklyStatus = await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
                 .Include(ws => ws.DoneThisWeekTasks)
+                .ThenInclude(dtw => dtw.Subtasks)
                 .Include(ws => ws.PlanForNextWeekTasks)
                 .FirstOrDefaultAsync(
                     ws =>
@@ -61,42 +62,92 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                         && ws.WeekStartDate.Month == dateOnly.Month
                         && ws.WeekStartDate.Day == dateOnly.Day
                 );
+
+            var result = new WeeklyStatusDTO
+            {
+                Id = weeklyStatus.Id,
+                WeekStartDate = weeklyStatus.WeekStartDate,
+                DoneThisWeek = weeklyStatus.DoneThisWeekTasks
+                    .Select(
+                        dtw =>
+                            new DoneThisWeekTaskDTO
+                            {
+                                TaskDescription = dtw.TaskDescription,
+                                Subtasks = dtw.Subtasks
+                                    .Select(
+                                        st => new SubtaskDTO { SubtaskDescription = st.Description }
+                                    )
+                                    .ToList() // Map subtasks descriptions
+                            }
+                    )
+                    .ToList(),
+                PlanForNextWeek = weeklyStatus.PlanForNextWeekTasks
+                    .Select(task => task.TaskDescription)
+                    .ToList(),
+                Blockers = weeklyStatus.Blockers,
+                UpcomingPTO = weeklyStatus.UpcomingPTO,
+                MemberId = weeklyStatus.MemberId,
+            };
+
+            return result;
         }
 
-        public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate)
+        public async Task<
+            IEnumerable<WeeklyStatusWithMemberNameDTO>
+        > GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate)
         {
             var dateOnly = weekStartDate.Date;
 
             var weeklyStatusesForDate = await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
                 .Include(ws => ws.DoneThisWeekTasks)
-                    .ThenInclude(dtw => dtw.Subtasks)  // Assuming there's a Subtasks navigation property
+                .ThenInclude(dtw => dtw.Subtasks) // Assuming there's a Subtasks navigation property
                 .Include(ws => ws.PlanForNextWeekTasks)
                 .Where(ws => ws.WeekStartDate.Date == dateOnly)
                 .ToListAsync();
 
-            var result = weeklyStatusesForDate.Select(ws => new WeeklyStatusWithMemberNameDTO
-            {
-                MemberName = ws.Member.Name,
-                WeeklyStatus = new WeeklyStatusDTO
-                {
-                    Id = ws.Id,
-                    WeekStartDate = ws.WeekStartDate,
-                    DoneThisWeek = ws.DoneThisWeekTasks.Select(dtw => new DoneThisWeekTaskDTO
-                    {
-                        TaskDescription = dtw.TaskDescription,
-                        Subtasks = dtw.Subtasks.Select(st => new SubtaskDTO { Description = st.Description }).ToList()  // Map subtasks descriptions
-                    }).ToList(),
-                    PlanForNextWeek = ws.PlanForNextWeekTasks.Select(task => task.TaskDescription).ToList(),
-                    Blockers = ws.Blockers,
-                    UpcomingPTO = ws.UpcomingPTO,
-                    MemberId = ws.MemberId,
-                }
-            }).OrderBy(dto => dto.MemberName).ToList();
+            var result = weeklyStatusesForDate
+                .Select(
+                    ws =>
+                        new WeeklyStatusWithMemberNameDTO
+                        {
+                            MemberName = ws.Member.Name,
+                            WeeklyStatus = new WeeklyStatusDTO
+                            {
+                                Id = ws.Id,
+                                WeekStartDate = ws.WeekStartDate,
+                                DoneThisWeek = ws.DoneThisWeekTasks
+                                    .Select(
+                                        dtw =>
+                                            new DoneThisWeekTaskDTO
+                                            {
+                                                TaskDescription = dtw.TaskDescription,
+                                                Subtasks = dtw.Subtasks
+                                                    .Select(
+                                                        st =>
+                                                            new SubtaskDTO
+                                                            {
+                                                                SubtaskDescription = st.Description
+                                                            }
+                                                    )
+                                                    .ToList() // Map subtasks descriptions
+                                            }
+                                    )
+                                    .ToList(),
+                                PlanForNextWeek = ws.PlanForNextWeekTasks
+                                    .Select(task => task.TaskDescription)
+                                    .ToList(),
+                                Blockers = ws.Blockers,
+                                UpcomingPTO = ws.UpcomingPTO,
+                                MemberId = ws.MemberId,
+                            }
+                        }
+                )
+                .OrderBy(dto => dto.MemberName)
+                .ToList();
 
             return result;
         }
-
 
         public async Task<WeeklyStatus> UpdateWeeklyStatusAsync(WeeklyStatus weeklyStatus)
         {

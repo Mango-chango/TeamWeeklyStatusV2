@@ -31,7 +31,7 @@ const WeeklyStatus: React.FC = () => {
   const [upcomingPTO, setUpcomingPTO] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<boolean>(false);
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -174,7 +174,6 @@ const WeeklyStatus: React.FC = () => {
     setFunction((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-
   const removeTask1 = (
     index: number,
     setFunction: React.Dispatch<React.SetStateAction<string[]>>
@@ -216,7 +215,7 @@ const WeeklyStatus: React.FC = () => {
       displaySuccessMessage();
     } catch (err) {
       setSuccess(false);
-      setError("An error occurred. Please try again.");
+      displayErrorMessage();
     }
   };
 
@@ -226,6 +225,14 @@ const WeeklyStatus: React.FC = () => {
     setTimeout(() => {
       setSuccess(false);
     }, 5000);
+  };
+
+  const displayErrorMessage = () => {
+    setError(true);
+
+    setTimeout(() => {
+      setError(false);
+    }, 8000);
   };
 
   const statusReporting = () => {
@@ -255,6 +262,7 @@ const WeeklyStatus: React.FC = () => {
             {error}
           </Alert>
         )}
+
         {/* What was done this week: */}
         <Form.Group controlId="doneThisWeek" className="form__group">
           <Form.Label className="form__label">
@@ -290,6 +298,7 @@ const WeeklyStatus: React.FC = () => {
                           setDoneThisWeek
                         )
                       }
+                      className="form__group__subtask"
                     />
                   ))}
                   <Button
@@ -314,6 +323,7 @@ const WeeklyStatus: React.FC = () => {
             Add Task
           </Button>
         </Form.Group>
+
         {/* Plan for Next Week */}
         <Form.Group controlId="planForNextWeek" className="form__group">
           <Form.Label className="form__label">Plan for Next Week</Form.Label>

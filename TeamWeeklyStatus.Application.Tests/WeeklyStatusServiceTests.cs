@@ -21,12 +21,12 @@ namespace TeamWeeklyStatus.Application.Tests
         public async Task GetWeeklyStatusByMemberByStartDateAsync_WithValidData_ReturnsCorrectDto()
         {
             // Arrange
-            var mockWeeklyStatus = new WeeklyStatus
+            var mockWeeklyStatus = new WeeklyStatusDTO
             {
                 Id = 1,
                 WeekStartDate = new DateTime(2023, 10, 17),
-                DoneThisWeekTasks = new List<DoneThisWeekTask> { new DoneThisWeekTask { TaskDescription = "Task 1", Subtasks = new List<Subtask>() /* Populate if needed */ } },
-                PlanForNextWeekTasks = new List<PlanForNextWeekTask> { new PlanForNextWeekTask { TaskDescription = "Plan 1" } },
+                DoneThisWeek = new List<DoneThisWeekTaskDTO> { new DoneThisWeekTaskDTO { TaskDescription = "Task 1", Subtasks = new List<SubtaskDTO>() /* Populate if needed */ } },
+                PlanForNextWeek = new List<string> { "Plan 1"},
                 Blockers = "None",
                 UpcomingPTO = new List<DateTime> { new DateTime(2023, 10, 24) },
                 MemberId = 2
@@ -40,7 +40,7 @@ namespace TeamWeeklyStatus.Application.Tests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(mockWeeklyStatus.Id, result.Id);
-            Assert.Equal(mockWeeklyStatus.DoneThisWeekTasks.Select(t => t.TaskDescription), result.DoneThisWeek.Select(t => t.TaskDescription));
+            Assert.Equal(mockWeeklyStatus.DoneThisWeek.Select(t => t.TaskDescription), result.DoneThisWeek.Select(t => t.TaskDescription));
             // Add more assertions here for subtasks if needed
         }
 
