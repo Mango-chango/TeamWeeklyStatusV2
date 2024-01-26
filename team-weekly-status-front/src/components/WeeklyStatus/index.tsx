@@ -103,6 +103,7 @@ const WeeklyStatus: React.FC = () => {
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
     setFunction((currentTasks) => {
+      console.log('Adding subtask');
       const newTasks = [...currentTasks];
       newTasks[taskIndex].subtasks.push({ subtaskDescription: "" });
       return newTasks;
@@ -189,9 +190,11 @@ const WeeklyStatus: React.FC = () => {
       weekStartDate: startDate,
       doneThisWeek: doneThisWeek.map((task) => ({
         taskDescription: task.taskDescription,
-        subtasks: task.subtasks.map((subtask) => ({
-          subtaskDescription: subtask.subtaskDescription,
-        })),
+        subtasks: task.subtasks
+          .filter((subtask) => subtask.subtaskDescription.trim() !== "")
+          .map((subtask) => ({
+            subtaskDescription: subtask.subtaskDescription,
+          })),
       })),
       planForNextWeek,
       upcomingPTO,
@@ -285,21 +288,22 @@ const WeeklyStatus: React.FC = () => {
                     }
                   />
                   {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
-                    <Form.Control
-                      key={subtaskIndex}
-                      type="text"
-                      placeholder={`Subtask ${subtaskIndex + 1}`}
-                      value={subtask.subtaskDescription}
-                      onChange={(e) =>
-                        handleSubtaskChange(
-                          taskIndex,
-                          subtaskIndex,
-                          e.target.value,
-                          setDoneThisWeek
-                        )
-                      }
-                      className="form__group__subtask"
-                    />
+                    <div className="form__group__subtask" key={subtaskIndex}>
+                      <Form.Control
+                        key={subtaskIndex}
+                        type="text"
+                        placeholder={`Subtask ${subtaskIndex + 1}`}
+                        value={subtask.subtaskDescription}
+                        onChange={(e) =>
+                          handleSubtaskChange(
+                            taskIndex,
+                            subtaskIndex,
+                            e.target.value,
+                            setDoneThisWeek
+                          )
+                        }
+                      />
+                    </div>
                   ))}
                   <Button
                     variant="secondary"

@@ -10,7 +10,7 @@ import "./styles.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { Button, Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 const StatusReporting: React.FC = () => {
@@ -77,8 +77,16 @@ const StatusReporting: React.FC = () => {
         htmlContent += `<h3>${memberName}</h3>`;
         htmlContent += `<h4>What was done this week:</h4>`;
         htmlContent += `<ul>`;
-        weeklyStatus?.doneThisWeek?.forEach((task: string) => {
-          htmlContent += `<li>${task}</li>`;
+        weeklyStatus?.doneThisWeek?.forEach(taskWithSubtasks => {
+          htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
+          if (taskWithSubtasks.subtasks && taskWithSubtasks.subtasks.length > 0) {
+            htmlContent += `<ul>`;
+            taskWithSubtasks.subtasks.forEach(subtask => {
+              htmlContent += `<li>${subtask.subtaskDescription}</li>`;
+            });
+            htmlContent += `</ul>`;
+          }
+          htmlContent += `</li>`;
         });
         htmlContent += `</ul>`;
         htmlContent += `<h4>Plan for next week:</h4>`;
@@ -88,12 +96,12 @@ const StatusReporting: React.FC = () => {
         });
         htmlContent += `</ul>`;
         htmlContent += `<h4>Blockers:</h4>`;
-        htmlContent += `<p>${weeklyStatus?.blockers || "None"}</p>`;
+        htmlContent += `<p>${weeklyStatus?.blockers ?? "None"}</p>`;
         htmlContent += `<h4>Upcoming PTO:</h4>`;
         const datesList = weeklyStatus?.upcomingPTO?.map((date) =>
           moment(date).format("MMM DD")
         );
-        if (datesList && datesList.length) {
+        if (datesList?.length) {
           htmlContent += datesList.join(", ");
         }
       });
