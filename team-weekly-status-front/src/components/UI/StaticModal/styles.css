@@ -1,0 +1,14 @@
+.modal-dialog {
+  max-width: 60%; 
+}
+
+.modal-body {
+  margin-top: -40px;
+  max-width: 90%;
+  margin-left: 40px;
+}
+
+.card {
+  min-width: 100% ;
+  flex-direction: row ;
+}

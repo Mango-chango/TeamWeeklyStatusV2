@@ -63,6 +63,11 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                         && ws.WeekStartDate.Day == dateOnly.Day
                 );
 
+            if (weeklyStatus == null)
+            {
+                return null;
+            }
+
             var result = new WeeklyStatusDTO
             {
                 Id = weeklyStatus.Id,
@@ -105,6 +110,12 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .Include(ws => ws.PlanForNextWeekTasks)
                 .Where(ws => ws.WeekStartDate.Date == dateOnly)
                 .ToListAsync();
+
+
+            if (weeklyStatusesForDate == null)
+            {
+                return null;
+            }
 
             var result = weeklyStatusesForDate
                 .Select(

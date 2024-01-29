@@ -10,6 +10,8 @@ import {
 import { makeApiRequest } from "../../services/apiHelper";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
+import ReportPreview from "../ReportPreview/index";
+import StaticModal from "../UI/StaticModal";
 
 interface WeeklyStatusProps {
   role: "TeamLead" | "CurrentWeekReporter" | "Normal";
@@ -35,6 +37,8 @@ const WeeklyStatus: React.FC = () => {
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
+
+  const [showModal, setShowModal] = useState(false);
 
   const endDate = moment().endOf("week").toDate();
   const nextWeekStart = moment().add(1, "weeks").startOf("isoWeek");
@@ -103,7 +107,7 @@ const WeeklyStatus: React.FC = () => {
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
     setFunction((currentTasks) => {
-      console.log('Adding subtask');
+      console.log("Adding subtask");
       const newTasks = [...currentTasks];
       newTasks[taskIndex].subtasks.push({ subtaskDescription: "" });
       return newTasks;
@@ -246,6 +250,9 @@ const WeeklyStatus: React.FC = () => {
     navigate("/assign-reporter");
   };
 
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
   return (
     <div className="d-flex flex-column align-items-center mt-5">
       <Form onSubmit={handleSubmit} className="form__container">
@@ -303,14 +310,39 @@ const WeeklyStatus: React.FC = () => {
                           )
                         }
                       />
+                      <Button
+                        variant="danger"
+                        onClick={() =>
+                          removeSubtask(
+                            taskIndex,
+                            subtaskIndex,
+                            setDoneThisWeek
+                          )
+                        }
+                        className="btn-icon"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="bi bi-trash"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                        </svg>
+                      </Button>
                     </div>
                   ))}
-                  <Button
-                    variant="secondary"
-                    onClick={() => addSubtask(taskIndex, setDoneThisWeek)}
-                  >
-                    Add Subtask
-                  </Button>
+                  <div className="form__btn__subtask">
+                    <Button
+                      variant="secondary"
+                      onClick={() => addSubtask(taskIndex, setDoneThisWeek)}
+                    >
+                      Add Subtask
+                    </Button>
+                  </div>
                 </Col>
                 <Col xs="auto">
                   <Button
@@ -410,6 +442,18 @@ const WeeklyStatus: React.FC = () => {
               Assign Reporter
             </Button>
           )}
+
+          <Button onClick={handleShowModal} variant="primary">
+            Preview Report
+          </Button>
+
+          <StaticModal
+            show={showModal}
+            onHide={handleCloseModal}
+            onClose={handleCloseModal}
+          >
+            <ReportPreview />
+          </StaticModal>
         </Form.Group>
       </Form>
     </div>

@@ -1,26 +1,39 @@
 .form__container {
-    width: 70%;
+  width: 900px !important;
 }
 
 .form__group {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 .form__label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .form__btngroup {
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-    padding-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  padding-bottom: 40px;
 }
 
 .form__btn {
-    margin-right: 20px;
+  margin-right: 20px;
 }
 
 .form__group__subtask {
+  padding-left: 10px;
+  padding-top: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.form__group__subtask .form-control {
+  flex-grow: 1; /* Allows the input to take up available space */
+  margin-right: 0.5rem; /* Adds some space between input and button */
+}
+
+.form__btn__subtask {
     padding-left: 10px;
+    padding-top: 2px;  
 }
