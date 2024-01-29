@@ -17,17 +17,16 @@ namespace TeamWeeklyStatus.Application.Tests
             _mockRepository = new Mock<IWeeklyStatusRepository>();
             _weeklyStatusService = new WeeklyStatusService(_mockRepository.Object);
         }
-
         [Fact]
         public async Task GetWeeklyStatusByMemberByStartDateAsync_WithValidData_ReturnsCorrectDto()
         {
             // Arrange
-            var mockWeeklyStatus = new WeeklyStatus
+            var mockWeeklyStatus = new WeeklyStatusDTO
             {
                 Id = 1,
                 WeekStartDate = new DateTime(2023, 10, 17),
-                DoneThisWeekTasks = new List<DoneThisWeekTask> { new DoneThisWeekTask { TaskDescription = "Task 1" } },
-                PlanForNextWeekTasks = new List<PlanForNextWeekTask> { new PlanForNextWeekTask { TaskDescription = "Plan 1" } },
+                DoneThisWeek = new List<DoneThisWeekTaskDTO> { new DoneThisWeekTaskDTO { TaskDescription = "Task 1", Subtasks = new List<SubtaskDTO>() /* Populate if needed */ } },
+                PlanForNextWeek = new List<string> { "Plan 1"},
                 Blockers = "None",
                 UpcomingPTO = new List<DateTime> { new DateTime(2023, 10, 24) },
                 MemberId = 2
@@ -41,8 +40,10 @@ namespace TeamWeeklyStatus.Application.Tests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(mockWeeklyStatus.Id, result.Id);
-            Assert.Equal(mockWeeklyStatus.DoneThisWeekTasks.First().TaskDescription, result.DoneThisWeek.First());
+            Assert.Equal(mockWeeklyStatus.DoneThisWeek.Select(t => t.TaskDescription), result.DoneThisWeek.Select(t => t.TaskDescription));
+            // Add more assertions here for subtasks if needed
         }
+
 
         [Fact]
         public async Task AddWeeklyStatusAsync_WithValidData_ReturnsAddedDtoWithId()
@@ -51,15 +52,19 @@ namespace TeamWeeklyStatus.Application.Tests
             var dto = new WeeklyStatusDTO
             {
                 WeekStartDate = new DateTime(2023, 10, 17),
-                DoneThisWeek = new List<string> { "Task 1" },
-                PlanForNextWeek = new List<string> { "Plan 1" },
+                DoneThisWeek = new List<DoneThisWeekTaskDTO>
+        {
+            new DoneThisWeekTaskDTO { TaskDescription = "Task 1" } // Assuming DoneThisWeekTaskDTO has a TaskDescription property
+        },
+                PlanForNextWeek = new List<string> { "Plan 1" }, // Assuming PlanForNextWeek is still a List<string>
                 Blockers = "None",
                 UpcomingPTO = new List<DateTime> { new DateTime(2023, 10, 24) },
                 MemberId = 2
             };
             var mockAddedStatus = new WeeklyStatus
             {
-                Id = 3
+                Id = 3,
+                // Other properties need to be set up if they are used in the method
             };
             _mockRepository.Setup(repo => repo.AddWeeklyStatusAsync(It.IsAny<WeeklyStatus>()))
                            .ReturnsAsync(mockAddedStatus);
@@ -71,5 +76,6 @@ namespace TeamWeeklyStatus.Application.Tests
             Assert.NotNull(result);
             Assert.Equal(mockAddedStatus.Id, result.Id);
         }
+
     }
 }

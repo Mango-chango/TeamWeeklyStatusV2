@@ -2,10 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Alert, Row, Col } from "react-bootstrap";
 import moment from "moment";
 import { userStore } from "../../store";
-import { WeeklyStatusData } from "../../types/WeeklyStatus.types";
+import {
+  WeeklyStatusData,
+  TaskWithSubtasks,
+  Subtask,
+} from "../../types/WeeklyStatus.types";
 import { makeApiRequest } from "../../services/apiHelper";
 import { useNavigate } from "react-router-dom";
-import './styles.css';
+import "./styles.css";
+import ReportPreview from "../ReportPreview/index";
+import StaticModal from "../UI/StaticModal";
 
 interface WeeklyStatusProps {
   role: "TeamLead" | "CurrentWeekReporter" | "Normal";
@@ -19,16 +25,20 @@ const WeeklyStatus: React.FC = () => {
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [existingWeeklyStatus, setExistingWeeklyStatus] =
     useState<WeeklyStatusData | null>(null);
-  const [doneThisWeek, setDoneThisWeek] = useState<string[]>([""]);
+  const [doneThisWeek, setDoneThisWeek] = useState<TaskWithSubtasks[]>([
+    { taskDescription: "", subtasks: [{ subtaskDescription: "" }] }, // Ensuring subtasks are an array of Subtask objects
+  ]);
   const [planForNextWeek, setPlanForNextWeek] = useState<string[]>([""]);
   const [blockers, setBlockers] = useState<string>("");
   const [upcomingPTO, setUpcomingPTO] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<boolean>(false);
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
+
+  const [showModal, setShowModal] = useState(false);
 
   const endDate = moment().endOf("week").toDate();
   const nextWeekStart = moment().add(1, "weeks").startOf("isoWeek");
@@ -77,14 +87,55 @@ const WeeklyStatus: React.FC = () => {
     fetchExistingStatus();
   }, [localMemberId, startDate]);
 
+  const handleSubtaskChange = (
+    taskIndex: number,
+    subtaskIndex: number,
+    value: string,
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((currentTasks) => {
+      const newTasks = [...currentTasks];
+      newTasks[taskIndex].subtasks[subtaskIndex] = {
+        subtaskDescription: value,
+      };
+      return newTasks;
+    });
+  };
+
+  const addSubtask = (
+    taskIndex: number,
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((currentTasks) => {
+      console.log("Adding subtask");
+      const newTasks = [...currentTasks];
+      newTasks[taskIndex].subtasks.push({ subtaskDescription: "" });
+      return newTasks;
+    });
+  };
+
+  const removeSubtask = (
+    taskIndex: number,
+    subtaskIndex: number,
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((currentTasks) => {
+      const newTasks = [...currentTasks];
+      newTasks[taskIndex].subtasks.splice(subtaskIndex, 1);
+      return newTasks;
+    });
+  };
+
   const handleTaskChange = (
     index: number,
     value: string,
-    setFunction: React.Dispatch<React.SetStateAction<string[]>>
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
-    const newTasks = [...doneThisWeek];
-    newTasks[index] = value;
-    setFunction(newTasks);
+    setFunction((currentTasks) => {
+      const newTasks = [...currentTasks];
+      newTasks[index] = { ...newTasks[index], taskDescription: value };
+      return newTasks;
+    });
   };
 
   const handlePlanChange = (index: number, value: string) => {
@@ -110,12 +161,25 @@ const WeeklyStatus: React.FC = () => {
   };
 
   const addTask = (
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((prev) => [...prev, { taskDescription: "", subtasks: [] }]);
+  };
+
+  const addTask1 = (
     setFunction: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
     setFunction((prev) => [...prev, ""]);
   };
 
   const removeTask = (
+    index: number,
+    setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
+  ) => {
+    setFunction((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
+  const removeTask1 = (
     index: number,
     setFunction: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
@@ -128,7 +192,14 @@ const WeeklyStatus: React.FC = () => {
     const dataToSubmit: WeeklyStatusData = {
       id: existingWeeklyStatus?.id || 0,
       weekStartDate: startDate,
-      doneThisWeek,
+      doneThisWeek: doneThisWeek.map((task) => ({
+        taskDescription: task.taskDescription,
+        subtasks: task.subtasks
+          .filter((subtask) => subtask.subtaskDescription.trim() !== "")
+          .map((subtask) => ({
+            subtaskDescription: subtask.subtaskDescription,
+          })),
+      })),
       planForNextWeek,
       upcomingPTO,
       blockers,
@@ -151,7 +222,7 @@ const WeeklyStatus: React.FC = () => {
       displaySuccessMessage();
     } catch (err) {
       setSuccess(false);
-      setError("An error occurred. Please try again.");
+      displayErrorMessage();
     }
   };
 
@@ -163,6 +234,14 @@ const WeeklyStatus: React.FC = () => {
     }, 5000);
   };
 
+  const displayErrorMessage = () => {
+    setError(true);
+
+    setTimeout(() => {
+      setError(false);
+    }, 8000);
+  };
+
   const statusReporting = () => {
     navigate("/status-reporting");
   };
@@ -170,6 +249,9 @@ const WeeklyStatus: React.FC = () => {
   const assignReporter = () => {
     navigate("/assign-reporter");
   };
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
@@ -190,28 +272,82 @@ const WeeklyStatus: React.FC = () => {
             {error}
           </Alert>
         )}
+
         {/* What was done this week: */}
         <Form.Group controlId="doneThisWeek" className="form__group">
           <Form.Label className="form__label">
             What was done this week:
           </Form.Label>
-          {doneThisWeek.map((task, index) => (
-            <div key={index} className="mb-2">
+          {doneThisWeek.map((taskWithSubtasks, taskIndex) => (
+            <div key={taskIndex} className="mb-2">
               <Row>
                 <Col>
                   <Form.Control
                     type="text"
-                    placeholder={`Task ${index + 1}`}
-                    value={task}
+                    placeholder={`Task ${taskIndex + 1}`}
+                    value={taskWithSubtasks.taskDescription}
                     onChange={(e) =>
-                      handleTaskChange(index, e.target.value, setDoneThisWeek)
+                      handleTaskChange(
+                        taskIndex,
+                        e.target.value,
+                        setDoneThisWeek
+                      )
                     }
                   />
+                  {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
+                    <div className="form__group__subtask" key={subtaskIndex}>
+                      <Form.Control
+                        key={subtaskIndex}
+                        type="text"
+                        placeholder={`Subtask ${subtaskIndex + 1}`}
+                        value={subtask.subtaskDescription}
+                        onChange={(e) =>
+                          handleSubtaskChange(
+                            taskIndex,
+                            subtaskIndex,
+                            e.target.value,
+                            setDoneThisWeek
+                          )
+                        }
+                      />
+                      <Button
+                        variant="danger"
+                        onClick={() =>
+                          removeSubtask(
+                            taskIndex,
+                            subtaskIndex,
+                            setDoneThisWeek
+                          )
+                        }
+                        className="btn-icon"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="bi bi-trash"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                        </svg>
+                      </Button>
+                    </div>
+                  ))}
+                  <div className="form__btn__subtask">
+                    <Button
+                      variant="secondary"
+                      onClick={() => addSubtask(taskIndex, setDoneThisWeek)}
+                    >
+                      Add Subtask
+                    </Button>
+                  </div>
                 </Col>
                 <Col xs="auto">
                   <Button
                     variant="danger"
-                    onClick={() => removeTask(index, setDoneThisWeek)}
+                    onClick={() => removeTask(taskIndex, setDoneThisWeek)}
                   >
                     Remove
                   </Button>
@@ -223,11 +359,10 @@ const WeeklyStatus: React.FC = () => {
             Add Task
           </Button>
         </Form.Group>
+
         {/* Plan for Next Week */}
         <Form.Group controlId="planForNextWeek" className="form__group">
-          <Form.Label className="form__label">
-            Plan for Next Week
-          </Form.Label>
+          <Form.Label className="form__label">Plan for Next Week</Form.Label>
           {planForNextWeek.map((plan, index) => (
             <div key={index} className="mb-2">
               <Row>
@@ -242,7 +377,7 @@ const WeeklyStatus: React.FC = () => {
                 <Col xs="auto">
                   <Button
                     variant="danger"
-                    onClick={() => removeTask(index, setPlanForNextWeek)}
+                    onClick={() => removeTask1(index, setPlanForNextWeek)}
                   >
                     Remove
                   </Button>
@@ -252,7 +387,7 @@ const WeeklyStatus: React.FC = () => {
           ))}
           <Button
             variant="secondary"
-            onClick={() => addTask(setPlanForNextWeek)}
+            onClick={() => addTask1(setPlanForNextWeek)}
           >
             Add Plan
           </Button>
@@ -287,15 +422,8 @@ const WeeklyStatus: React.FC = () => {
             onChange={(e) => setBlockers(e.target.value)}
           />
         </Form.Group>
-        <Form.Group
-          controlId="buttons"
-          className="form__btngroup"
-        >
-          <Button
-            variant="primary"
-            type="submit"
-            className="form__btn"
-          >
+        <Form.Group controlId="buttons" className="form__btngroup">
+          <Button variant="primary" type="submit" className="form__btn">
             Save Weekly Status
           </Button>
 
@@ -314,6 +442,18 @@ const WeeklyStatus: React.FC = () => {
               Assign Reporter
             </Button>
           )}
+
+          <Button onClick={handleShowModal} variant="primary">
+            Preview Report
+          </Button>
+
+          <StaticModal
+            show={showModal}
+            onHide={handleCloseModal}
+            onClose={handleCloseModal}
+          >
+            <ReportPreview />
+          </StaticModal>
         </Form.Group>
       </Form>
     </div>

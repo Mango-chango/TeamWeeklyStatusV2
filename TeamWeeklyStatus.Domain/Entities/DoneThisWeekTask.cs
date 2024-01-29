@@ -7,6 +7,8 @@
 
         public int WeeklyStatusId { get; set; }
         public WeeklyStatus WeeklyStatus { get; set; }
+
+        public List<Subtask> Subtasks { get; set; } = new List<Subtask>();
     }
 
 }

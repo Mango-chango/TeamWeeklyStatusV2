@@ -2,32 +2,26 @@ import React, { useEffect, useState } from "react";
 import { userStore } from "../../store";
 import { makeApiRequest } from "../../services/apiHelper";
 import {
-  TeamMemberWeeklyStatusData,
-  TeamWeeklyStatusData,
+  WeeklyStatusData,
 } from "../../types/WeeklyStatus.types";
 import moment from "moment";
 import "./styles.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 
-const StatusReporting: React.FC = () => {
+
+const ReportPreview: React.FC = () => {
   const { role, teamName, memberName, memberId } = userStore();
+  const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamName, setLocalTeamName] = useState(teamName);
-  const [teamWeeklyStatusData, setTeamWeeklyStatusData] =
-    useState<TeamWeeklyStatusData | null>(null);
-  const [unreportedMembers, setUnreportedMembers] = useState<
-    TeamMemberWeeklyStatusData[]
-  >([]);
+  const [existingWeeklyStatus, setExistingWeeklyStatus] =
+    useState<WeeklyStatusData | null>(null);
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
 
   const endDate = moment().endOf("week").toDate();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     setLocalTeamName(teamName);
@@ -42,46 +36,40 @@ const StatusReporting: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const fetchTeamWeeklyStatus = async () => {
+    const fetchExistingStatus = async () => {
       const requestData = {
-        memberId: null,
+        memberId: memberId,
         weekStartDate: startDate.toISOString(),
       };
-      const response: TeamWeeklyStatusData = await makeApiRequest(
-        "/WeeklyStatus/GetAllWeeklyStatusesByStartDate",
+      const response: WeeklyStatusData = await makeApiRequest(
+        "/WeeklyStatus/GetByMemberIdAndStartDate",
         "POST",
         requestData
       );
 
       if (response) {
-        setTeamWeeklyStatusData(response);
-        const membersWhoDidNotReport = response.filter(
-          (member) => !member.weeklyStatus
-        );
-        setUnreportedMembers(membersWhoDidNotReport);
+        setExistingWeeklyStatus(response);
       }
     };
 
-    fetchTeamWeeklyStatus();
-  }, [localTeamName, startDate]);
+    fetchExistingStatus();
+  }, [localMemberId, startDate]);
+
 
   const generateHTML = () => {
-    if (!teamWeeklyStatusData) return "";
+    if (!existingWeeklyStatus) return "";
 
-    let htmlContent = `<h2>${localTeamName} Weekly Status Report</h2>`;
-    htmlContent += `<h3>${startDate.toDateString()} - ${endDate.toDateString()}</h3>`;
-
-    teamWeeklyStatusData
-      .filter(({ weeklyStatus }) => weeklyStatus !== null)
-      .forEach(({ memberName, weeklyStatus }) => {
-        htmlContent += `<h3>${memberName}</h3>`;
+    let htmlContent = ``;
         htmlContent += `<h4>What was done this week:</h4>`;
         htmlContent += `<ul>`;
-        weeklyStatus?.doneThisWeek?.forEach(taskWithSubtasks => {
+        existingWeeklyStatus?.doneThisWeek?.forEach((taskWithSubtasks) => {
           htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
-          if (taskWithSubtasks.subtasks && taskWithSubtasks.subtasks.length > 0) {
+          if (
+            taskWithSubtasks.subtasks &&
+            taskWithSubtasks.subtasks.length > 0
+          ) {
             htmlContent += `<ul>`;
-            taskWithSubtasks.subtasks.forEach(subtask => {
+            taskWithSubtasks.subtasks.forEach((subtask) => {
               htmlContent += `<li>${subtask.subtaskDescription}</li>`;
             });
             htmlContent += `</ul>`;
@@ -91,33 +79,27 @@ const StatusReporting: React.FC = () => {
         htmlContent += `</ul>`;
         htmlContent += `<h4>Plan for next week:</h4>`;
         htmlContent += `<ul>`;
-        weeklyStatus?.planForNextWeek?.forEach((task: string) => {
+        existingWeeklyStatus?.planForNextWeek?.forEach((task: string) => {
           htmlContent += `<li>${task}</li>`;
         });
         htmlContent += `</ul>`;
         htmlContent += `<h4>Blockers:</h4>`;
-        htmlContent += `<p>${weeklyStatus?.blockers ?? "None"}</p>`;
+        htmlContent += `<p>${existingWeeklyStatus?.blockers ?? "None"}</p>`;
         htmlContent += `<h4>Upcoming PTO:</h4>`;
-        const datesList = weeklyStatus?.upcomingPTO?.map((date) =>
+        const datesList = existingWeeklyStatus?.upcomingPTO?.map((date) =>
           moment(date).format("MMM DD")
         );
         if (datesList?.length) {
           htmlContent += datesList.join(", ");
         }
-      });
 
     return htmlContent;
   };
 
   const editorData = generateHTML();
 
-  const handleBack = async () => {
-    navigate("/weekly-status");
-  };
-
   return (
-    <>
-      <div className="card mt-5 div__container">
+    <div className="card mt-5 div__container">
         <div className="card-body card-content">
           <CKEditor
             editor={ClassicEditor}
@@ -142,21 +124,7 @@ const StatusReporting: React.FC = () => {
           />
         </div>
       </div>
-
-      <div className="d-flex flex-column mt-2 div__secondary">
-        <span className="div__secondary__content">
-          Folks who have not yet reported:
-        </span>{" "}
-        {unreportedMembers.map((member) => member.memberName).join(", ")}
-      </div>
-
-      <div className="form__buttons">
-        <Button variant="secondary" onClick={handleBack} className="mt-3 ml-2">
-          Back
-        </Button>
-      </div>
-    </>
   );
 };
 
-export default StatusReporting;
+export default ReportPreview;

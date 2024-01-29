@@ -17,7 +17,6 @@ namespace TeamWeeklyStatus.Application.Services
         public async Task<WeeklyStatusDTO> GetWeeklyStatusByMemberByStartDateAsync(int memberId, DateTime startDate)
         {
             var utcStartDate = startDate.ToUniversalTime();
-
             var weeklyStatus = await _repository.GetWeeklyStatusByMemberByStartDateAsync(memberId, utcStartDate);
 
             if (weeklyStatus == null)
@@ -25,12 +24,17 @@ namespace TeamWeeklyStatus.Application.Services
                 return null;
             }
 
+            // Mapping DoneThisWeekTasks and their subtasks
             var weeklyStatusDto = new WeeklyStatusDTO
             {
                 Id = weeklyStatus.Id,
                 WeekStartDate = weeklyStatus.WeekStartDate,
-                DoneThisWeek = weeklyStatus.DoneThisWeekTasks.Select(task => task.TaskDescription).ToList(),
-                PlanForNextWeek = weeklyStatus.PlanForNextWeekTasks.Select(task => task.TaskDescription).ToList(),
+                DoneThisWeek = weeklyStatus.DoneThisWeek.Select(task => new DoneThisWeekTaskDTO
+                {
+                    TaskDescription = task.TaskDescription,
+                    Subtasks = task.Subtasks.Select(subtask => new SubtaskDTO { SubtaskDescription = subtask.SubtaskDescription }).ToList()
+                }).ToList(),
+                PlanForNextWeek = weeklyStatus.PlanForNextWeek.Select(task => task).ToList(),
                 Blockers = weeklyStatus.Blockers,
                 UpcomingPTO = weeklyStatus.UpcomingPTO,
                 MemberId = weeklyStatus.MemberId,
@@ -48,7 +52,15 @@ namespace TeamWeeklyStatus.Application.Services
             var weeklyStatus = new WeeklyStatus
             {
                 WeekStartDate = weeklyStatusDto.WeekStartDate,
-                DoneThisWeekTasks = weeklyStatusDto.DoneThisWeek.Select(desc => new DoneThisWeekTask { TaskDescription = desc }).ToList(),
+                DoneThisWeekTasks = weeklyStatusDto.DoneThisWeek.Select(dtw => new DoneThisWeekTask
+                {
+                    TaskDescription = dtw.TaskDescription,
+                    // Assuming there is a Subtasks property which is a collection of subtask entities
+                    Subtasks = dtw.Subtasks.Select(st => new Subtask
+                    {
+                        Description = st.SubtaskDescription,
+                    }).ToList()
+                }).ToList(),
                 PlanForNextWeekTasks = weeklyStatusDto.PlanForNextWeek.Select(desc => new PlanForNextWeekTask { TaskDescription = desc }).ToList(),
                 Blockers = weeklyStatusDto.Blockers,
                 UpcomingPTO = weeklyStatusDto.UpcomingPTO,
@@ -76,7 +88,16 @@ namespace TeamWeeklyStatus.Application.Services
 
             // This can get complicated: adding, updating, and deleting individual tasks.
             // Simplified version: Replace all tasks with new ones. 
-            existingStatus.DoneThisWeekTasks = weeklyStatusDto.DoneThisWeek.Select(desc => new DoneThisWeekTask { TaskDescription = desc }).ToList();
+            existingStatus.DoneThisWeekTasks = weeklyStatusDto.DoneThisWeek.Select(dtw => new DoneThisWeekTask
+            {
+                TaskDescription = dtw.TaskDescription,
+                // Similar subtask update logic as for AddWeeklyStatusAsync
+                Subtasks = dtw.Subtasks.Select(st => new Subtask
+                {
+                    Description = st.SubtaskDescription
+                }).ToList()
+            }).ToList(); 
+            
             existingStatus.PlanForNextWeekTasks = weeklyStatusDto.PlanForNextWeek.Select(desc => new PlanForNextWeekTask { TaskDescription = desc }).ToList();
 
             var updatedStatus = await _repository.UpdateWeeklyStatusAsync(existingStatus);

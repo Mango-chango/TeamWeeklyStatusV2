@@ -9,9 +9,12 @@ const WeeklyStatus = React.lazy(() => import("../components/WeeklyStatus"));
 const StatusReporting = React.lazy(
   () => import("../components/StatusReporting/index")
 );
+const ReportPreview = React.lazy(
+  () => import("../components/ReportPreview/index")
+);
 
 const AppRoutes: React.FC = () => {
-  const { role } = userStore();
+  userStore();
 
   return (
     <Routes>
@@ -37,6 +40,14 @@ const AppRoutes: React.FC = () => {
         element={
           <PrivateRoute allowedRoles={["TeamLead"]}>
             <AssignReporter />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/report-preview"
+        element={
+          <PrivateRoute>
+            <ReportPreview />
           </PrivateRoute>
         }
       />
