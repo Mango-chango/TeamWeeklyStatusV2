@@ -10,5 +10,7 @@
         public List<DateTime> UpcomingPTO { get; set; }
         public int MemberId { get; set; }
 
+        public int TeamId { get; set; }
+
     }
 }

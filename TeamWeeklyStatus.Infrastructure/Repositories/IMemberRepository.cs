@@ -5,7 +5,9 @@ namespace TeamStatus.Infrastructure.Repositories
 {
     public interface IMemberRepository : IRepository<Member>
     {
-        // Add any member-specific methods here, for example:
+        //TODO
         //IEnumerable<Member> GetMembersByTeamId(int teamId);
+
+        public IEnumerable<Team> GetTeams(int memberId);
     }
 }

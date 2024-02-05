@@ -24,7 +24,7 @@ namespace TeamWeeklyStatus.WebApi.Tests
             // Arrange
             var request = new WeeklyStatusGetRequest { MemberId = 2, WeekStartDate = new DateTime(2023, 10, 17) };
             var mockWeeklyStatus = new Domain.DTOs.WeeklyStatusDTO();
-            _mockService.Setup(service => service.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, request.WeekStartDate))
+            _mockService.Setup(service => service.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, request.TeamId, request.WeekStartDate))
                         .ReturnsAsync(mockWeeklyStatus);
 
             // Act
@@ -99,7 +99,7 @@ namespace TeamWeeklyStatus.WebApi.Tests
         {
             // Arrange
             var request = new WeeklyStatusGetRequest { MemberId = 2, WeekStartDate = new DateTime(2023, 10, 17) };
-            _mockService.Setup(service => service.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, request.WeekStartDate))
+            _mockService.Setup(service => service.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, request.TeamId, request.WeekStartDate))
                         .ReturnsAsync((Domain.DTOs.WeeklyStatusDTO)null);
 
             // Act

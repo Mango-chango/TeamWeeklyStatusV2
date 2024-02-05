@@ -19,7 +19,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [HttpPost("GetByMemberIdAndStartDate", Name = "GetWeeklyStatusByMemberByStartDate")]
         public async Task<IActionResult> GetWeeklyStatusByMemberByStartDate([FromBody] WeeklyStatusGetRequest request)
         {
-            var weeklyStatus = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, request.WeekStartDate);
+            var weeklyStatus = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, request.TeamId, request.WeekStartDate);
             if (weeklyStatus == null)
             {
                 return NotFound();
@@ -54,6 +54,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
                 PlanForNextWeek = request.PlanForNextWeek,
                 Blockers = request.Blockers,
                 UpcomingPTO = request.UpcomingPTO,
+                TeamId = request.TeamId
             };
             var newWeeklyStatus = await _weeklyStatusService.AddWeeklyStatusAsync(weeklyStatusDto);
             return Ok(newWeeklyStatus);
@@ -75,6 +76,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
                 PlanForNextWeek = request.PlanForNextWeek,
                 Blockers = request.Blockers,
                 UpcomingPTO = request.UpcomingPTO,
+                TeamId = request.TeamId
             };
             var updatedWeeklyStatus = await _weeklyStatusService.UpdateWeeklyStatusAsync(weeklyStatusDto);
             return Ok(updatedWeeklyStatus);

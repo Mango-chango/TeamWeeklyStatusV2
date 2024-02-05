@@ -36,6 +36,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
 
         public async Task<WeeklyStatusDTO> GetWeeklyStatusByMemberByStartDateAsync(
             int memberId,
+            int teamId,
             DateTime startDate
         )
         {
@@ -58,6 +59,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .FirstOrDefaultAsync(
                     ws =>
                         ws.Member.Id == memberId
+                        && ws.Team.Id == teamId
                         && ws.WeekStartDate.Year == dateOnly.Year
                         && ws.WeekStartDate.Month == dateOnly.Month
                         && ws.WeekStartDate.Day == dateOnly.Day

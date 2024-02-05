@@ -18,10 +18,10 @@ namespace TeamWeeklyStatus.Application.Tests
         {
             // Arrange
             var expectedMember = new MemberDTO { Id = 1, Name = "John Doe" };
-            _memberServiceMock.Setup(service => service.GetMember(1)).Returns(expectedMember);
+            _memberServiceMock.Setup(service => service.GetMemberById(1)).Returns(expectedMember);
 
             // Act
-            var result = _memberServiceMock.Object.GetMember(1);
+            var result = _memberServiceMock.Object.GetMemberById(1);
 
             // Assert
             Assert.Equal(expectedMember, result);

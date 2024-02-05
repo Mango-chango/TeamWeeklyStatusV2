@@ -14,10 +14,10 @@ namespace TeamWeeklyStatus.Application.Services
             _repository = repository;
         }
 
-        public async Task<WeeklyStatusDTO> GetWeeklyStatusByMemberByStartDateAsync(int memberId, DateTime startDate)
+        public async Task<WeeklyStatusDTO> GetWeeklyStatusByMemberByStartDateAsync(int memberId, int teamId, DateTime startDate)
         {
             var utcStartDate = startDate.ToUniversalTime();
-            var weeklyStatus = await _repository.GetWeeklyStatusByMemberByStartDateAsync(memberId, utcStartDate);
+            var weeklyStatus = await _repository.GetWeeklyStatusByMemberByStartDateAsync(memberId, teamId, utcStartDate);
 
             if (weeklyStatus == null)
             {

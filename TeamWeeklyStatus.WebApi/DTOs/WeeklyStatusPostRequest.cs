@@ -32,5 +32,7 @@
         public List<string> PlanForNextWeek { get; set; }
         public string Blockers { get; set; }
         public List<DateTime> UpcomingPTO { get; set; }
+
+        public int TeamId { get; set; }
     }
 }
