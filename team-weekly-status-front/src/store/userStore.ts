@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 type UserState = {
   role: 'TeamLead' | 'CurrentWeekReporter' | 'Normal' | null;
+  teamId: number;
   teamName: string | null;
   memberId: number;
   memberName: string | null;
@@ -16,14 +17,16 @@ type UserState = {
 const userStore = create<UserState>((set) => ({
   role: null,
   setRole: (role) => set({ role }),
+  teamId: 0,
+  setTeamId: (teamId: number) => set({ teamId }),
   teamName: null,
-  setTeamName: (teamName) => set({ teamName }),
+  setTeamName: (teamName: string) => set({ teamName }),
   memberId: 0,
-  setMemberId: (memberId) => set({ memberId }),
+  setMemberId: (memberId: number) => set({ memberId }),
   memberName: null,
-  setMemberName: (memberName) => set({ memberName }),
+  setMemberName: (memberName: string) => set({ memberName }),
   isAuthenticated: false,
-  setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
+  setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
 }));
 
 export default userStore;
