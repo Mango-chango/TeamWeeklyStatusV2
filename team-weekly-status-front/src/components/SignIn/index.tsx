@@ -3,7 +3,7 @@ import { Alert } from "react-bootstrap";
 import { userStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../services/apiHelper";
-import { GoogleLoginResponse } from "../../types/WeeklyStatus.types";
+import { GoogleLoginResponse, MemberTeams, Team } from '../../types/WeeklyStatus.types';
 import { GoogleLogin } from "@react-oauth/google";
 import "./styles.css";
 
@@ -12,6 +12,7 @@ const SignIn: React.FC = () => {
   const [emailPrefix, setEmailPrefix] = useState<string>("");
   const [emailDomain] = useState<string>("@mangochango.com");
   const [error, setError] = useState<string | null>(null);
+  //const [userTeams, setUserTeams] = useState<MemberTeams>([]);
 
   const loadGoogleScript = () => {
     const script = document.createElement("script");
@@ -61,7 +62,23 @@ const SignIn: React.FC = () => {
           .getState()
           .setMemberName(userResponse.memberName as string | "");
         userStore.getState().setIsAuthenticated(true);
-        navigate("/weekly-status");
+
+        const teamsResponse: MemberTeams = await makeApiRequest(
+          `/TeamMember/GetMemberActiveTeams`,
+          "POST",
+          { memberId: userResponse.memberId }
+        )
+        userStore.getState().setMemberActiveTeams(teamsResponse as MemberTeams);
+
+        if (teamsResponse.length > 1) {
+          // Navigate to the team selection component if multiple teams are associated
+          navigate("/team-selection");
+        } else {
+          // If only one team, set the teamName and navigate to the weekly status page
+          userStore.getState().setTeamName(teamsResponse[0].name as string | "");
+          navigate("/weekly-status");
+        }
+
       } else {
         setError("Could not authenticate with Google. Please try again.");
       }

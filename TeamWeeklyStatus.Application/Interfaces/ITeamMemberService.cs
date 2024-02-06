@@ -15,5 +15,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
 
         Task AssignReporter(int memberId);
 
+        Task<List<TeamMember>> GetActiveTeamsByMember(int memberId);
+
     }
 }

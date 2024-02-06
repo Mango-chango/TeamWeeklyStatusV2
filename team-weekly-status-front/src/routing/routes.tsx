@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { userStore } from "../store";
 import PrivateRoute from "./PrivateRoute";
 import AssignReporter from "../components/AssignReporter";
+import TeamSelection from "../components/TeamSelection/index";
 
 const SignIn = React.lazy(() => import("../components/SignIn"));
 const WeeklyStatus = React.lazy(() => import("../components/WeeklyStatus"));
@@ -11,6 +12,9 @@ const StatusReporting = React.lazy(
 );
 const ReportPreview = React.lazy(
   () => import("../components/ReportPreview/index")
+);
+const TeamSelection = React.lazy(
+  () => import("../components/TeamSelection/index")
 );
 
 const AppRoutes: React.FC = () => {
@@ -48,6 +52,14 @@ const AppRoutes: React.FC = () => {
         element={
           <PrivateRoute>
             <ReportPreview />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/team-selection"
+        element={
+          <PrivateRoute>
+            <TeamSelection />
           </PrivateRoute>
         }
       />

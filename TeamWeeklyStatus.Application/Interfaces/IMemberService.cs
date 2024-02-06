@@ -9,7 +9,5 @@ namespace TeamWeeklyStatus.Application.Interfaces
         public IEnumerable<Member> GetAllMembers();
 
         public MemberDTO GetMemberById(int memberId);
-
-        public IEnumerable<Team> GetTeams(int memberId);
     }
 }

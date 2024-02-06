@@ -45,3 +45,10 @@ export interface GoogleLoginResponse {
   memberId: number | 0;
   memberName: string | "";
 }
+
+export type Team = {
+  id: number;
+  name: string;
+}
+
+export type MemberTeams = Team[];

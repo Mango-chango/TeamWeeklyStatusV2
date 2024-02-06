@@ -68,5 +68,10 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<TeamMember>> GetAllTeamsByMember(int memberId)
+        {
+            return (List<TeamMember>)_context.TeamMembers.Where(tm => tm.MemberId == memberId);
+        }
+
     }
 }

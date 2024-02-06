@@ -14,10 +14,5 @@ namespace TeamStatus.Infrastructure.Repositories
         //    return _context.Members.Where(m => m.TeamId == teamId).ToList();
         //}
 
-        public IEnumerable<Team> GetTeams(int memberId)
-        {
-            return _context.Teams.Where(t => t.TeamMembers.Any(m => m.MemberId == memberId)).ToList();
-        }
-
     }
 }

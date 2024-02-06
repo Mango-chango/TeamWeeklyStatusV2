@@ -8,5 +8,8 @@
         public Member Member { get; set; }
         public bool? IsTeamLead { get; set; }
         public bool? IsCurrentWeekReporter { get; set; }
+        public bool? IsAdminMember { get; set;}
+        public DateTime? StartActiveDate { get; set; }
+        public DateTime? EndActiveDate { get; set; }
     }
 }

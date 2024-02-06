@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
@@ -25,12 +24,6 @@ namespace TeamWeeklyStatus.WebApi.Controllers
                 return NotFound();
             }
             return Ok(member);
-        }
-
-        [HttpGet]
-        public ActionResult<IEnumerable<Team>> GetTeams(int memberId)
-        {
-            return Ok(_memberService.GetTeams(memberId));
         }
     }
 }

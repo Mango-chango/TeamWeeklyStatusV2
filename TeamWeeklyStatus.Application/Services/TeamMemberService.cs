@@ -49,5 +49,13 @@ namespace TeamWeeklyStatus.Application.Services
             await _teamMemberRepository.AssignReporter(memberId);
         }
 
+        public async Task<List<TeamMember>> GetActiveTeamsByMember(int memberId)
+        {
+            DateTime today = DateTime.Now;
+            var allTeams = await _teamMemberRepository.GetAllTeamsByMember(memberId);
+            var activeTeams = allTeams.Where(tm => tm.StartActiveDate <= today && tm.EndActiveDate <= today).ToList();
+            return activeTeams;
+        }
+
     }
 }

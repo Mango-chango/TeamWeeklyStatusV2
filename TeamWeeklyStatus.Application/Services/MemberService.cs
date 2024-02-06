@@ -32,10 +32,5 @@ namespace TeamWeeklyStatus.Application.Services
                 Email = member.Email,
             };
         }
-
-        public IEnumerable<Team> GetTeams(int memberId)
-        {
-            return _customMemberRepository.GetTeams(memberId);
-        }
     }
 }
