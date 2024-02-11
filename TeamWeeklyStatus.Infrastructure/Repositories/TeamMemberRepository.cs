@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections;
 using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
@@ -68,9 +69,9 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<TeamMember>> GetAllTeamsByMember(int memberId)
+        public async Task<IEnumerable<TeamMember>> GetAllTeamsByMember(int memberId)
         {
-            return (List<TeamMember>)_context.TeamMembers.Where(tm => tm.MemberId == memberId);
+            return _context.TeamMembers.Where(tm => tm.MemberId == memberId);
         }
 
     }

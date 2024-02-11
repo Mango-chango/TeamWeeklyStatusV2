@@ -16,6 +16,6 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
 
         Task AssignReporter(int memberId);
 
-        Task<List<TeamMember>> GetAllTeamsByMember(int memberId);
+        Task<IEnumerable<TeamMember>> GetAllTeamsByMember(int memberId);
     }
 }

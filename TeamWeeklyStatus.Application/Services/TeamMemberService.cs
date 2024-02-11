@@ -1,5 +1,6 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Domain.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Infrastructure.Repositories;
 
@@ -8,11 +9,14 @@ namespace TeamWeeklyStatus.Application.Services
     public class TeamMemberService : ITeamMemberService
     {
         private readonly ITeamMemberRepository _teamMemberRepository;
+        private readonly IRepository<Team> _teamRepository;
 
-        public TeamMemberService(ITeamMemberRepository teamMemberRepository)
+        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IRepository<Team> teamRepository)
         {
             _teamMemberRepository = teamMemberRepository;
+            _teamRepository = teamRepository;
         }
+
         Task<TeamMember> ITeamMemberService.AddTeamMemberAsync(TeamMember teamMember)
         {
             throw new NotImplementedException();
@@ -49,12 +53,32 @@ namespace TeamWeeklyStatus.Application.Services
             await _teamMemberRepository.AssignReporter(memberId);
         }
 
-        public async Task<List<TeamMember>> GetActiveTeamsByMember(int memberId)
+        public async Task<List<TeamMemberDTO>> GetActiveTeamsByMember(int memberId)
         {
             DateTime today = DateTime.Now;
-            var allTeams = await _teamMemberRepository.GetAllTeamsByMember(memberId);
-            var activeTeams = allTeams.Where(tm => tm.StartActiveDate <= today && tm.EndActiveDate <= today).ToList();
-            return activeTeams;
+            var allTeams = _teamMemberRepository.GetAllTeamsByMember(memberId).Result.ToList();
+            var allTeamEntities = _teamRepository.GetAll().ToList();
+
+            var activeTeamsDTOs = allTeams
+                .Where(tm => tm.EndActiveDate == null || (tm.StartActiveDate <= today && tm.EndActiveDate >= today))
+                .Join(allTeamEntities, // The collection of teams to join with
+                      tm => tm.TeamId, // Key selector from TeamMember
+                      team => team.Id, // Key selector from Team
+                      (tm, team) => new TeamMemberDTO // Project into a TeamMemberDTO
+                      {
+                          TeamId = tm.TeamId,
+                          TeamName = team.Name,
+                          StartActiveDate = tm.StartActiveDate,
+                          EndActiveDate = tm.EndActiveDate,
+                          MemberId = tm.MemberId,
+                          MemberName = tm.Member?.Name ?? "",
+                          IsAdminMember = tm.IsAdminMember,
+                          IsCurrentWeekReporter = tm.IsCurrentWeekReporter,
+                          IsTeamLead = tm.IsTeamLead
+                      })
+                .ToList();
+
+            return activeTeamsDTOs;
         }
 
     }

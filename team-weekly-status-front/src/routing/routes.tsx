@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router-dom";
 import { userStore } from "../store";
 import PrivateRoute from "./PrivateRoute";
 import AssignReporter from "../components/AssignReporter";
-import TeamSelection from "../components/TeamSelection/index";
 
 const SignIn = React.lazy(() => import("../components/SignIn"));
 const WeeklyStatus = React.lazy(() => import("../components/WeeklyStatus"));

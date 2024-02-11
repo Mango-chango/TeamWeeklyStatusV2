@@ -1,4 +1,5 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Domain.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Application.Interfaces
@@ -15,7 +16,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
 
         Task AssignReporter(int memberId);
 
-        Task<List<TeamMember>> GetActiveTeamsByMember(int memberId);
+        Task<List<TeamMemberDTO>> GetActiveTeamsByMember(int memberId);
 
     }
 }
