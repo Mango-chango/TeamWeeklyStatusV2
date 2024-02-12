@@ -65,6 +65,7 @@ namespace TeamWeeklyStatus.Application.Services
                 Blockers = weeklyStatusDto.Blockers,
                 UpcomingPTO = weeklyStatusDto.UpcomingPTO,
                 MemberId = weeklyStatusDto.MemberId,
+                TeamId = weeklyStatusDto.TeamId
             };
 
             var addedStatus = await _repository.AddWeeklyStatusAsync(weeklyStatus);

@@ -75,7 +75,7 @@ const SignIn: React.FC = () => {
           navigate("/team-selection");
         } else {
           // If only one team, set the teamName and navigate to the weekly status page
-          userStore.getState().setTeamName(teamsResponse[0].name as string | "");
+          userStore.getState().setTeamName(teamsResponse[0].teamName as string | "");
           navigate("/weekly-status");
         }
 

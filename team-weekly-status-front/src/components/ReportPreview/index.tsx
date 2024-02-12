@@ -12,7 +12,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 
 const ReportPreview: React.FC = () => {
-  const { role, teamName, memberName, memberId } = userStore();
+  const { role, teamId, teamName, memberName, memberId } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [existingWeeklyStatus, setExistingWeeklyStatus] =
@@ -39,6 +39,7 @@ const ReportPreview: React.FC = () => {
     const fetchExistingStatus = async () => {
       const requestData = {
         memberId: memberId,
+        teamId: teamId,
         weekStartDate: startDate.toISOString(),
       };
       const response: WeeklyStatusData = await makeApiRequest(

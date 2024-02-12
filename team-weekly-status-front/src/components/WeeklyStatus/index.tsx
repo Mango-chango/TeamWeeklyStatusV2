@@ -21,7 +21,7 @@ interface WeeklyStatusProps {
 }
 
 const WeeklyStatus: React.FC = () => {
-  const { role, teamId, teamName, memberName, memberId } = userStore();
+  const { role, teamId, teamName, memberName, memberId, memberActiveTeams } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [localTeamId, setLocalTeamId] = useState(teamId);
@@ -272,6 +272,10 @@ const WeeklyStatus: React.FC = () => {
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
+  const backTeamSelection = () => {
+    navigate("/team-selection");  
+  }
+
   return (
     <div className="d-flex flex-column align-items-center mt-5">
       <Form onSubmit={handleSubmit} className="form__container">
@@ -465,6 +469,17 @@ const WeeklyStatus: React.FC = () => {
           <Button onClick={handleShowModal} variant="primary" className="form__btn">
             Preview Report
           </Button>
+
+          {memberActiveTeams && memberActiveTeams.length > 1 && (
+            <Button
+              variant="primary"
+              onClick={backTeamSelection}
+              className="form__btn"
+            >
+              Team Selection
+            </Button>
+          )}
+
 
           <StaticModal
             show={showModal}

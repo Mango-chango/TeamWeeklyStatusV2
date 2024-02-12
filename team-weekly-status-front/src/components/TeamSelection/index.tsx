@@ -14,6 +14,22 @@ const TeamSelection: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedTeamId && selectedTeamId !== 0)  {
+      const isCurrentWeekReporter = memberActiveTeams?.find(team => team.teamId === selectedTeamId)?.isCurrentWeekReporter ?? '';
+      const isTeamLead = memberActiveTeams?.find(team => team.teamId === selectedTeamId)?.isTeamLead ?? '';
+      const userResponse = {
+        role: isCurrentWeekReporter ? "CurrentWeekReporter" : isTeamLead ? "TeamLead" : "Normal"
+      }
+
+      userStore
+      .getState()
+      .setRole(
+        userResponse.role as
+          | "TeamLead"
+          | "CurrentWeekReporter"
+          | "Normal"
+          | null
+      );
+
       const teamName = memberActiveTeams?.find(team => team.teamId === selectedTeamId)?.teamName ?? '';
       // Set the selected team ID using zustand store
       userStore.getState().setTeamId(selectedTeamId);
