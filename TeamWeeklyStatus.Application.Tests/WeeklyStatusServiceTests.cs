@@ -31,11 +31,11 @@ namespace TeamWeeklyStatus.Application.Tests
                 UpcomingPTO = new List<DateTime> { new DateTime(2023, 10, 24) },
                 MemberId = 2
             };
-            _mockRepository.Setup(repo => repo.GetWeeklyStatusByMemberByStartDateAsync(It.IsAny<int>(), It.IsAny<DateTime>()))
+            _mockRepository.Setup(repo => repo.GetWeeklyStatusByMemberByStartDateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>()))
                            .ReturnsAsync(mockWeeklyStatus);
 
             // Act
-            var result = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync(2, new DateTime(2023, 10, 17));
+            var result = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync(2, 2, new DateTime(2023, 10, 17));
 
             // Assert
             Assert.NotNull(result);

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TeamWeeklyStatus.Domain.Entities;
-using TeamWeeklyStatus.Infrastructure.Repositories;
+using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Application.Interfaces;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
@@ -8,23 +8,17 @@ namespace TeamWeeklyStatus.WebApi.Controllers
     [ApiController]
     public class MemberController : ControllerBase
     {
-        private readonly IRepository<Member> _memberRepository;
+        private readonly IMemberService _memberService;
 
-        public MemberController(IRepository<Member> memberRepository)
+        public MemberController(IMemberService memberService)
         {
-            _memberRepository = memberRepository;
-        }
-
-        [HttpGet]
-        public ActionResult<IEnumerable<Member>> GetMembers()
-        {
-            return Ok(_memberRepository.GetAll());
+            _memberService = memberService;
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Member> GetMember(int id)
+        public ActionResult<MemberDTO> GetMember(int id)
         {
-            var member = _memberRepository.GetById(id);
+            var member = _memberService.GetMemberById(id);
             if (member == null)
             {
                 return NotFound();

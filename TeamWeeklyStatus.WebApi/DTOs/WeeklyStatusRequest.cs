@@ -6,6 +6,8 @@ namespace TeamWeeklyStatus.WebApi.DTOs
     {
         public int? MemberId { get; set; }
 
+        public int? TeamId { get; set; }
+
         public DateTime WeekStartDate { get; set; }
     }
 }

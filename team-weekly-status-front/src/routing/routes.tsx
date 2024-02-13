@@ -12,6 +12,9 @@ const StatusReporting = React.lazy(
 const ReportPreview = React.lazy(
   () => import("../components/ReportPreview/index")
 );
+const TeamSelection = React.lazy(
+  () => import("../components/TeamSelection/index")
+);
 
 const AppRoutes: React.FC = () => {
   userStore();
@@ -48,6 +51,14 @@ const AppRoutes: React.FC = () => {
         element={
           <PrivateRoute>
             <ReportPreview />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/team-selection"
+        element={
+          <PrivateRoute>
+            <TeamSelection />
           </PrivateRoute>
         }
       />

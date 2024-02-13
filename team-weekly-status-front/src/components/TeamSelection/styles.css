@@ -1,0 +1,9 @@
+.team-selection-container > form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.team-selection-container .list-group {
+  min-width: 300px; 
+}

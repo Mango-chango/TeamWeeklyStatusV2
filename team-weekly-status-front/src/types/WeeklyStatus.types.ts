@@ -15,6 +15,7 @@ export interface WeeklyStatusData {
   upcomingPTO: (Date | string)[];
   blockers: string;
   memberId: number;
+  teamId: number;
 }
 
 export interface TeamMemberWeeklyStatusData {
@@ -45,3 +46,22 @@ export interface GoogleLoginResponse {
   memberId: number | 0;
   memberName: string | "";
 }
+
+export type Team = {
+  id: number;
+  name: string;
+};
+
+export type TeamMember = {
+  teamId: number;
+  teamName: string;
+  memberId: number;
+  memberName: string;
+  isTeamLead: boolean;
+  isCurrentWeekReporter: boolean;
+  isAdminMember: boolean;
+  startActiveDate: string;
+  endActiveDate: string;
+};
+
+export type MemberTeams = TeamMember[];

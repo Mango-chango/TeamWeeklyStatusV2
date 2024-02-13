@@ -1,20 +1,35 @@
 ﻿using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Domain.Entities;
+using TeamWeeklyStatus.Infrastructure.Repositories;
 
 namespace TeamWeeklyStatus.Application.Services
 {
     public class MemberService : IMemberService
     {
-        public MemberDTO GetMember(int memberId)
+        private readonly IRepository<Member> _memberRepository;
+        private readonly IMemberRepository _customMemberRepository;
+
+        public MemberService(IRepository<Member> memberRepository, IMemberRepository customMemberRepository)
         {
-            // Logic to get a member
-            return new MemberDTO(); // Placeholder
+            _memberRepository = memberRepository;
+            _customMemberRepository = customMemberRepository;
         }
 
-        public IEnumerable<MemberDTO> GetAllMembersForTeam(int teamId)
+        public IEnumerable<Member> GetAllMembers()
         {
-            // Logic to get all members for a team
-            return Enumerable.Empty<MemberDTO>(); // Placeholder
+            return _memberRepository.GetAll();
+        }
+
+        public MemberDTO GetMemberById(int memberId)
+        {
+            Member member = _memberRepository.GetById(memberId);
+            return new MemberDTO
+            {
+                Id = member.Id,
+                Name = member.Name,
+                Email = member.Email,
+            };
         }
     }
 }

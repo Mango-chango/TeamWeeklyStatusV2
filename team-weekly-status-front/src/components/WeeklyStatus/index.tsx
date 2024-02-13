@@ -21,8 +21,10 @@ interface WeeklyStatusProps {
 }
 
 const WeeklyStatus: React.FC = () => {
-  const { role, teamName, memberName, memberId } = userStore();
+  const { role, teamId, teamName, memberName, memberId, memberActiveTeams } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
+  const [localTeamName, setLocalTeamName] = useState(teamName);
+  const [localTeamId, setLocalTeamId] = useState(teamId);
   const [existingWeeklyStatus, setExistingWeeklyStatus] =
     useState<WeeklyStatusData | null>(null);
   const [doneThisWeek, setDoneThisWeek] = useState<TaskWithSubtasks[]>([
@@ -60,9 +62,23 @@ const WeeklyStatus: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Subscribe to teamId changes
+    const unsubscribe = userStore.subscribe((state) => {
+      if (state.teamId !== localTeamId) {
+        setLocalTeamId(state.teamId);
+      }
+    });
+
+    // Cleanup subscription on component unmount
+    return () => unsubscribe();
+  }, []);
+
+
+  useEffect(() => {
     const fetchExistingStatus = async () => {
       const requestData = {
         memberId: memberId,
+        teamId: userStore.getState().teamId,
         weekStartDate: startDate.toISOString(),
       };
       const response: WeeklyStatusData = await makeApiRequest(
@@ -86,6 +102,8 @@ const WeeklyStatus: React.FC = () => {
 
     fetchExistingStatus();
   }, [localMemberId, startDate]);
+
+  
 
   const handleSubtaskChange = (
     taskIndex: number,
@@ -204,6 +222,7 @@ const WeeklyStatus: React.FC = () => {
       upcomingPTO,
       blockers,
       memberId,
+      teamId
     };
 
     console.log(dataToSubmit);
@@ -252,6 +271,10 @@ const WeeklyStatus: React.FC = () => {
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+
+  const backTeamSelection = () => {
+    navigate("/team-selection");  
+  }
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
@@ -438,14 +461,25 @@ const WeeklyStatus: React.FC = () => {
           )}
 
           {role === "TeamLead" && (
-            <Button variant="primary" onClick={assignReporter}>
+            <Button variant="primary" onClick={assignReporter} className="form__btn">
               Assign Reporter
             </Button>
           )}
 
-          <Button onClick={handleShowModal} variant="primary">
+          <Button onClick={handleShowModal} variant="primary" className="form__btn">
             Preview Report
           </Button>
+
+          {memberActiveTeams && memberActiveTeams.length > 1 && (
+            <Button
+              variant="primary"
+              onClick={backTeamSelection}
+              className="form__btn"
+            >
+              Team Selection
+            </Button>
+          )}
+
 
           <StaticModal
             show={showModal}

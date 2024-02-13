@@ -14,7 +14,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 const StatusReporting: React.FC = () => {
-  const { role, teamName, memberName, memberId } = userStore();
+  const { role, teamId, teamName, memberName, memberId } = userStore();
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [teamWeeklyStatusData, setTeamWeeklyStatusData] =
     useState<TeamWeeklyStatusData | null>(null);
@@ -45,6 +45,7 @@ const StatusReporting: React.FC = () => {
     const fetchTeamWeeklyStatus = async () => {
       const requestData = {
         memberId: null,
+        teamId: teamId,
         weekStartDate: startDate.toISOString(),
       };
       const response: TeamWeeklyStatusData = await makeApiRequest(
