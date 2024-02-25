@@ -146,7 +146,7 @@ const StatusReporting: React.FC = () => {
 
       <div className="d-flex flex-column mt-2 div__secondary">
         <span className="div__secondary__content">
-          Folks who have not yet reported:
+          Changos who haven't reported yet:
         </span>{" "}
         {unreportedMembers.map((member) => member.memberName).join(", ")}
       </div>

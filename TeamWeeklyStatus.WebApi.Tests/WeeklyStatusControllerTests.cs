@@ -40,10 +40,10 @@ namespace TeamWeeklyStatus.WebApi.Tests
         public async Task GetAllWeeklyStatusesByStartDate_WithData_ReturnsOk()
         {
             // Arrange
-            var request = new WeeklyStatusGetRequest { WeekStartDate = new DateTime(2023, 10, 17) };
+            var request = new WeeklyStatusGetRequest { TeamId = 1, WeekStartDate = new DateTime(2023, 10, 17) };
             var mockWeeklyStatusList = new List<WeeklyStatusWithMemberNameDTO> { new WeeklyStatusWithMemberNameDTO() };
 
-            _mockService.Setup(service => service.GetAllWeeklyStatusesByStartDateAsync(It.IsAny<DateTime>()))
+            _mockService.Setup(service => service.GetAllWeeklyStatusesByStartDateAsync((int)request.TeamId, It.IsAny<DateTime>()))
                         .ReturnsAsync(mockWeeklyStatusList); // Use ReturnsAsync with the correct list
 
             // Act

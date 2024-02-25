@@ -9,7 +9,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
         Task<WeeklyStatus> UpdateWeeklyStatusAsync(WeeklyStatus weeklyStatus);
         Task<WeeklyStatus> DeleteWeeklyStatusAsync(int id);
         Task<WeeklyStatus> GetWeeklyStatusByIdAsync(int id);
-        Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate);
+        Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(int teamId, DateTime weekStartDate);
         Task<WeeklyStatusDTO> GetWeeklyStatusByMemberByStartDateAsync(int memberId, int teamId, DateTime startDate);
 
         Task AddSubtasksAsync(IEnumerable<Subtask> subtasks);

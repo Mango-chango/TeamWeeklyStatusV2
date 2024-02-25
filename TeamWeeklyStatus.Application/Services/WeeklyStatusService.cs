@@ -43,8 +43,8 @@ namespace TeamWeeklyStatus.Application.Services
             return weeklyStatusDto;
         }
 
-        public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(DateTime weekStartDate) =>
-            await _repository.GetAllWeeklyStatusesByDateAsync(weekStartDate);
+        public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(int teamId, DateTime weekStartDate) =>
+            await _repository.GetAllWeeklyStatusesByDateAsync(teamId, weekStartDate);
 
 
         public async Task<WeeklyStatusDTO> AddWeeklyStatusAsync(WeeklyStatusDTO weeklyStatusDto)

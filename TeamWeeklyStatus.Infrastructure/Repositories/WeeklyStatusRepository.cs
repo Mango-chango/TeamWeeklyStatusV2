@@ -101,61 +101,70 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
 
         public async Task<
             IEnumerable<WeeklyStatusWithMemberNameDTO>
-        > GetAllWeeklyStatusesByDateAsync(DateTime weekStartDate)
+        > GetAllWeeklyStatusesByDateAsync(int teamId, DateTime weekStartDate)
         {
             var dateOnly = weekStartDate.Date;
 
+            // Get all team members
+            var allTeamMembers = await _context.TeamMembers
+                .Include(tm => tm.Member)
+                .Where(tm => tm.TeamId == teamId)
+                .ToListAsync();
+
+            // Get existing weekly statuses for the date
             var weeklyStatusesForDate = await _context.WeeklyStatuses
                 .Include(ws => ws.Member)
                 .Include(ws => ws.DoneThisWeekTasks)
-                .ThenInclude(dtw => dtw.Subtasks) // Assuming there's a Subtasks navigation property
+                .ThenInclude(dtw => dtw.Subtasks)
                 .Include(ws => ws.PlanForNextWeekTasks)
-                .Where(ws => ws.WeekStartDate.Date == dateOnly)
+                .Where(ws => ws.TeamId == teamId && ws.WeekStartDate.Date == dateOnly)
                 .ToListAsync();
 
-
-            if (weeklyStatusesForDate == null)
-            {
-                return null;
-            }
-
-            var result = weeklyStatusesForDate
-                .Select(
-                    ws =>
-                        new WeeklyStatusWithMemberNameDTO
-                        {
-                            MemberName = ws.Member.Name,
-                            WeeklyStatus = new WeeklyStatusDTO
-                            {
-                                Id = ws.Id,
-                                WeekStartDate = ws.WeekStartDate,
-                                DoneThisWeek = ws.DoneThisWeekTasks
-                                    .Select(
-                                        dtw =>
-                                            new DoneThisWeekTaskDTO
-                                            {
-                                                TaskDescription = dtw.TaskDescription,
-                                                Subtasks = dtw.Subtasks
-                                                    .Select(
-                                                        st =>
-                                                            new SubtaskDTO
-                                                            {
-                                                                SubtaskDescription = st.Description
-                                                            }
-                                                    )
-                                                    .ToList() // Map subtasks descriptions
-                                            }
-                                    )
-                                    .ToList(),
-                                PlanForNextWeek = ws.PlanForNextWeekTasks
-                                    .Select(task => task.TaskDescription)
-                                    .ToList(),
-                                Blockers = ws.Blockers,
-                                UpcomingPTO = ws.UpcomingPTO,
-                                MemberId = ws.MemberId,
-                            }
-                        }
-                )
+            // Combine existing statuses with missing members
+            var result = allTeamMembers
+                .Select(member =>
+                {
+                    var existingStatus = weeklyStatusesForDate.FirstOrDefault(
+                        ws => ws.MemberId == member.MemberId
+                    );
+                    return new WeeklyStatusWithMemberNameDTO
+                    {
+                        MemberName = member.Member.Name,
+                        WeeklyStatus =
+                            existingStatus != null
+                                ? new WeeklyStatusDTO
+                                {
+                                    Id = existingStatus.Id,
+                                    WeekStartDate = existingStatus.WeekStartDate,
+                                    DoneThisWeek = existingStatus.DoneThisWeekTasks
+                                        .Select(
+                                            dtw =>
+                                                new DoneThisWeekTaskDTO
+                                                {
+                                                    TaskDescription = dtw.TaskDescription,
+                                                    Subtasks = dtw.Subtasks
+                                                        .Select(
+                                                            st =>
+                                                                new SubtaskDTO
+                                                                {
+                                                                    SubtaskDescription =
+                                                                        st.Description
+                                                                }
+                                                        )
+                                                        .ToList()
+                                                }
+                                        )
+                                        .ToList(),
+                                    PlanForNextWeek = existingStatus.PlanForNextWeekTasks
+                                        .Select(task => task.TaskDescription)
+                                        .ToList(),
+                                    Blockers = existingStatus.Blockers,
+                                    UpcomingPTO = existingStatus.UpcomingPTO,
+                                    MemberId = existingStatus?.MemberId ?? 0, // Set 0 for missing reports
+                                }
+                                : null, // Set null for missing reports
+                    };
+                })
                 .OrderBy(dto => dto.MemberName)
                 .ToList();
 

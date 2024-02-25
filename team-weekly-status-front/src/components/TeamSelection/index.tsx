@@ -8,7 +8,7 @@ const TeamSelection: React.FC = () => {
   const memberActiveTeams = userStore((state) => state.memberActiveTeams);
   const [selectedTeamId, setSelectedTeamId] = useState<number>(0);
   const [showAlert, setShowAlert] = useState<boolean>(false);
-  console.table(memberActiveTeams);
+  //console.table(memberActiveTeams);
   const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

@@ -29,7 +29,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [HttpPost("GetAllWeeklyStatusesByStartDate", Name = "GetAllWeeklyStatusesByStartDate")]
         public async Task<IActionResult> GetAllWeeklyStatusesByStartDate([FromBody] WeeklyStatusGetRequest request)
         {
-            var weeklyStatuses = await _weeklyStatusService.GetAllWeeklyStatusesByStartDateAsync(request.WeekStartDate);
+            var weeklyStatuses = await _weeklyStatusService.GetAllWeeklyStatusesByStartDateAsync((int)request.TeamId, request.WeekStartDate);
             if (weeklyStatuses == null)
             {
                 return NotFound();
