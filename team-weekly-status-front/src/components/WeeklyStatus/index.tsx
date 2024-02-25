@@ -233,11 +233,12 @@ const WeeklyStatus: React.FC = () => {
         : "/WeeklyStatus/Add";
       const method = existingWeeklyStatus ? "PUT" : "POST";
 
-      const response = await makeApiRequest<{ success: boolean }>(
+      const response = await makeApiRequest<WeeklyStatusData | { success: boolean }>(
         endpoint,
         method,
         dataToSubmit
       );
+      setExistingWeeklyStatus(response as WeeklyStatusData);
       displaySuccessMessage();
     } catch (err) {
       setSuccess(false);
