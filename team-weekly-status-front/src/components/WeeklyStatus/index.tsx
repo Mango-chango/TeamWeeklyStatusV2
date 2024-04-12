@@ -419,7 +419,7 @@ const WeeklyStatus: React.FC = () => {
 
         {/* Upcoming PTO */}
         <Form.Group controlId="upcomingPTO" className="form__group">
-          <Form.Label className="form__label">Upcoming PTO</Form.Label>
+          <Form.Label className="form__label">Upcoming Time Off</Form.Label>
           <Form.Control
             type="date"
             value={selectedDate || ""}
