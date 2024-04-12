@@ -86,7 +86,7 @@ const ReportPreview: React.FC = () => {
         htmlContent += `</ul>`;
         htmlContent += `<h4>Blockers:</h4>`;
         htmlContent += `<p>${existingWeeklyStatus?.blockers ?? "None"}</p>`;
-        htmlContent += `<h4>Upcoming PTO:</h4>`;
+        htmlContent += `<h4>Upcoming Time Off:</h4>`;
         const datesList = existingWeeklyStatus?.upcomingPTO?.map((date) =>
           moment(date).format("MMM DD")
         );
