@@ -451,7 +451,6 @@ const WeeklyStatus: React.FC = () => {
             Save Weekly Status
           </Button>
 
-          {role === "CurrentWeekReporter" && (
             <Button
               variant="primary"
               onClick={statusReporting}
@@ -459,13 +458,12 @@ const WeeklyStatus: React.FC = () => {
             >
               Report
             </Button>
-          )}
 
-          {role === "TeamLead" && (
+          {/* {role === "TeamLead" && (
             <Button variant="primary" onClick={assignReporter} className="form__btn">
               Assign Reporter
             </Button>
-          )}
+          )} */}
 
           <Button onClick={handleShowModal} variant="primary" className="form__btn">
             Preview Report

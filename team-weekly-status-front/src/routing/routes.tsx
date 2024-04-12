@@ -33,7 +33,7 @@ const AppRoutes: React.FC = () => {
       <Route
         path="/status-reporting"
         element={
-          <PrivateRoute allowedRoles={["CurrentWeekReporter"]}>
+          <PrivateRoute>
             <StatusReporting />
           </PrivateRoute>
         }
