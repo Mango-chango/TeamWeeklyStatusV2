@@ -21,7 +21,9 @@ interface WeeklyStatusProps {
 }
 
 const WeeklyStatus: React.FC = () => {
-  const { role, teamId, teamName, memberName, memberId, memberActiveTeams } = userStore();
+  const { role, teamId, teamName, memberName, memberId, memberActiveTeams } =
+    userStore();
+  console.log(role, teamId, teamName, memberName, memberId, memberActiveTeams);
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [localTeamId, setLocalTeamId] = useState(teamId);
@@ -73,7 +75,6 @@ const WeeklyStatus: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-
   useEffect(() => {
     const fetchExistingStatus = async () => {
       const requestData = {
@@ -102,8 +103,6 @@ const WeeklyStatus: React.FC = () => {
 
     fetchExistingStatus();
   }, [localMemberId, startDate]);
-
-  
 
   const handleSubtaskChange = (
     taskIndex: number,
@@ -222,7 +221,7 @@ const WeeklyStatus: React.FC = () => {
       upcomingPTO,
       blockers,
       memberId,
-      teamId
+      teamId,
     };
 
     console.log(dataToSubmit);
@@ -233,11 +232,9 @@ const WeeklyStatus: React.FC = () => {
         : "/WeeklyStatus/Add";
       const method = existingWeeklyStatus ? "PUT" : "POST";
 
-      const response = await makeApiRequest<WeeklyStatusData | { success: boolean }>(
-        endpoint,
-        method,
-        dataToSubmit
-      );
+      const response = await makeApiRequest<
+        WeeklyStatusData | { success: boolean }
+      >(endpoint, method, dataToSubmit);
       setExistingWeeklyStatus(response as WeeklyStatusData);
       displaySuccessMessage();
     } catch (err) {
@@ -274,8 +271,8 @@ const WeeklyStatus: React.FC = () => {
   const handleCloseModal = () => setShowModal(false);
 
   const backTeamSelection = () => {
-    navigate("/team-selection");  
-  }
+    navigate("/team-selection");
+  };
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
@@ -450,7 +447,7 @@ const WeeklyStatus: React.FC = () => {
           <Button variant="primary" type="submit" className="form__btn">
             Save Weekly Status
           </Button>
-
+          {(role === "CurrentWeekReporter" || role === "TeamLead") && (
             <Button
               variant="primary"
               onClick={statusReporting}
@@ -458,14 +455,23 @@ const WeeklyStatus: React.FC = () => {
             >
               Report
             </Button>
+          )}
 
-          {/* {role === "TeamLead" && (
-            <Button variant="primary" onClick={assignReporter} className="form__btn">
+          {role === "TeamLead" && (
+            <Button
+              variant="primary"
+              onClick={assignReporter}
+              className="form__btn"
+            >
               Assign Reporter
             </Button>
-          )} */}
+          )}
 
-          <Button onClick={handleShowModal} variant="primary" className="form__btn">
+          <Button
+            onClick={handleShowModal}
+            variant="primary"
+            className="form__btn"
+          >
             Preview Report
           </Button>
 
@@ -478,7 +484,6 @@ const WeeklyStatus: React.FC = () => {
               Team Selection
             </Button>
           )}
-
 
           <StaticModal
             show={showModal}

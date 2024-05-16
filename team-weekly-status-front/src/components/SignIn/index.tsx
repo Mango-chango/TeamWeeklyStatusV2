@@ -68,6 +68,7 @@ const SignIn: React.FC = () => {
           "POST",
           { memberId: userResponse.memberId }
         )
+        console.log("teamsResponse=", teamsResponse);
         userStore.getState().setMemberActiveTeams(teamsResponse as MemberTeams);
 
         if (teamsResponse.length > 1) {
