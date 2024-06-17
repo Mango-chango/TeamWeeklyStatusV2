@@ -37,3 +37,7 @@
     padding-left: 10px;
     padding-top: 2px;  
 }
+
+.spacer {
+  margin-left: 1rem; /* Adjust for desired spacing */
+}
