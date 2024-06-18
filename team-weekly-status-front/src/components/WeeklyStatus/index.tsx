@@ -43,6 +43,12 @@ const WeeklyStatus: React.FC = () => {
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
+  const isWeekday = (date) => {
+    const day = date.getDay();
+    return day !== 0 && day !== 6;
+  };
+
+  const [selectedDates, setSelectedDates] = useState([new Date()]);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -180,6 +186,10 @@ const WeeklyStatus: React.FC = () => {
     setSelectedDate(null);
   };
 
+  // const handleMultipleDatesChange = (dates) => {
+  //   setSelectedDates(dates);
+  // };
+
   const addTask = (
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
@@ -270,9 +280,7 @@ const WeeklyStatus: React.FC = () => {
     navigate("/assign-reporter");
   };
 
-  const handleShowModal = () => setShowModal
-
-(true);
+  const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
   const backTeamSelection = () => {
@@ -425,12 +433,21 @@ const WeeklyStatus: React.FC = () => {
           <DatePicker
             selected={selectedDate}
             onChange={handleDateChange}
+            // selectedDates={selectedDates}
+            // selectsMultiple
+            // onChange={handleMultipleDatesChange}
+            // shouldCloseOnSelect={false}
+            // disabledKeyboardNavigation
             minDate={nextWeekStart.toDate()}
             maxDate={inTwoMonths.toDate()}
             dateFormat="yyyy-MM-dd"
             className="form-control"
             showIcon
             toggleCalendarOnIconClick
+            monthsShown={2}
+            withPortal
+            filterDate={isWeekday}
+            placeholderText="Click to select a date"
           />
         </Form.Group>
 
