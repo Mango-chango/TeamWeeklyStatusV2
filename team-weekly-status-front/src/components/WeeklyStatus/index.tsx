@@ -9,6 +9,8 @@ import {
 } from "../../types/WeeklyStatus.types";
 import { makeApiRequest } from "../../services/apiHelper";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import "./styles.css";
 import ReportPreview from "../ReportPreview/index";
 import StaticModal from "../UI/StaticModal";
@@ -35,12 +37,18 @@ const WeeklyStatus: React.FC = () => {
   const [planForNextWeek, setPlanForNextWeek] = useState<string[]>([""]);
   const [blockers, setBlockers] = useState<string>("");
   const [upcomingPTO, setUpcomingPTO] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
+  const isWeekday = (date) => {
+    const day = date.getDay();
+    return day !== 0 && day !== 6;
+  };
+
+  const [selectedDates, setSelectedDates] = useState([new Date()]);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -161,21 +169,26 @@ const WeeklyStatus: React.FC = () => {
     setPlanForNextWeek(newPlans);
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateStr = e.target.value;
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      const dateStr = moment(date).format("YYYY-MM-DD");
+      const index = upcomingPTO.indexOf(dateStr);
 
-    const index = upcomingPTO.indexOf(dateStr);
-
-    if (index !== -1) {
-      // Date already exists, remove it
-      setUpcomingPTO((prev) => prev.filter((d) => d !== dateStr));
-    } else {
-      setUpcomingPTO((prev) => [...prev, dateStr]);
+      if (index !== -1) {
+        // Date already exists, remove it
+        setUpcomingPTO((prev) => prev.filter((d) => d !== dateStr));
+      } else {
+        setUpcomingPTO((prev) => [...prev, dateStr]);
+      }
     }
 
     // Clear the selected date to allow reselection
     setSelectedDate(null);
   };
+
+  // const handleMultipleDatesChange = (dates) => {
+  //   setSelectedDates(dates);
+  // };
 
   const addTask = (
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
@@ -351,7 +364,7 @@ const WeeklyStatus: React.FC = () => {
                           viewBox="0 0 16 16"
                         >
                           <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
                         </svg>
                       </Button>
                     </div>
@@ -417,12 +430,24 @@ const WeeklyStatus: React.FC = () => {
         {/* Upcoming PTO */}
         <Form.Group controlId="upcomingPTO" className="form__group">
           <Form.Label className="form__label">Upcoming Time Off</Form.Label>
-          <Form.Control
-            type="date"
-            value={selectedDate || ""}
-            min={nextWeekStart.format("YYYY-MM-DD")}
-            max={inTwoMonths.format("YYYY-MM-DD")}
+          <DatePicker
+            selected={selectedDate}
             onChange={handleDateChange}
+            // selectedDates={selectedDates}
+            // selectsMultiple
+            // onChange={handleMultipleDatesChange}
+            // shouldCloseOnSelect={false}
+            // disabledKeyboardNavigation
+            minDate={nextWeekStart.toDate()}
+            maxDate={inTwoMonths.toDate()}
+            dateFormat="yyyy-MM-dd"
+            className="form-control"
+            showIcon
+            toggleCalendarOnIconClick
+            monthsShown={2}
+            withPortal
+            filterDate={isWeekday}
+            placeholderText="Click to select a date"
           />
         </Form.Group>
 
