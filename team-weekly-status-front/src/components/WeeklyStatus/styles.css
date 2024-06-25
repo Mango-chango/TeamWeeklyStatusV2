@@ -41,3 +41,9 @@
 .spacer {
   margin-left: 1rem; /* Adjust for desired spacing */
 }
+
+.custom-highlight {
+  background-color: #00bfff; /* Change this to your preferred color */
+  color: white; /* Change this to your preferred text color */
+  border-radius: 50%; /* Optional: to make the date look like a circle */
+}

@@ -172,23 +172,23 @@ const WeeklyStatus: React.FC = () => {
   const handleDateChange = (date: Date | null) => {
     if (date) {
       const dateStr = moment(date).format("YYYY-MM-DD");
-      const index = upcomingPTO.indexOf(dateStr);
-
-      if (index !== -1) {
-        // Date already exists, remove it
-        setUpcomingPTO((prev) => prev.filter((d) => d !== dateStr));
-      } else {
-        setUpcomingPTO((prev) => [...prev, dateStr]);
-      }
+      setUpcomingPTO((prev) =>
+        prev.includes(dateStr)
+          ? prev.filter((d) => d !== dateStr)
+          : [...prev, dateStr]
+      );
     }
 
-    // Clear the selected date to allow reselection
     setSelectedDate(null);
   };
 
-  // const handleMultipleDatesChange = (dates) => {
-  //   setSelectedDates(dates);
-  // };
+  const highlightWithRanges = [
+    {
+      "custom-highlight": upcomingPTO.map((dateStr) =>
+        moment(dateStr).toDate()
+      ),
+    },
+  ];
 
   const addTask = (
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
@@ -433,15 +433,11 @@ const WeeklyStatus: React.FC = () => {
           <DatePicker
             selected={selectedDate}
             onChange={handleDateChange}
-            // selectedDates={selectedDates}
-            // selectsMultiple
-            // onChange={handleMultipleDatesChange}
-            // shouldCloseOnSelect={false}
-            // disabledKeyboardNavigation
             minDate={nextWeekStart.toDate()}
             maxDate={inTwoMonths.toDate()}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+            highlightDates={highlightWithRanges}
             showIcon
             toggleCalendarOnIconClick
             monthsShown={2}
