@@ -25,7 +25,6 @@ interface WeeklyStatusProps {
 const WeeklyStatus: React.FC = () => {
   const { role, teamId, teamName, memberName, memberId, memberActiveTeams } =
     userStore();
-  console.log(role, teamId, teamName, memberName, memberId, memberActiveTeams);
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [localTeamId, setLocalTeamId] = useState(teamId);
@@ -48,7 +47,7 @@ const WeeklyStatus: React.FC = () => {
     return day !== 0 && day !== 6;
   };
 
-  const [selectedDates, setSelectedDates] = useState([new Date()]);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -102,8 +101,11 @@ const WeeklyStatus: React.FC = () => {
         setPlanForNextWeek(response.planForNextWeek);
         setUpcomingPTO(
           response.upcomingPTO.map((date) =>
-            typeof date === "string" ? date : date.toISOString().split("T")[0]
+            moment(date).format("YYYY-MM-DD")
           )
+        );
+        setSelectedDates(
+          response.upcomingPTO.map((date) => moment(date).toDate())
         );
         setBlockers(response.blockers);
       }
@@ -132,7 +134,6 @@ const WeeklyStatus: React.FC = () => {
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
   ) => {
     setFunction((currentTasks) => {
-      console.log("Adding subtask");
       const newTasks = [...currentTasks];
       newTasks[taskIndex].subtasks.push({ subtaskDescription: "" });
       return newTasks;
@@ -172,21 +173,27 @@ const WeeklyStatus: React.FC = () => {
   const handleDateChange = (date: Date | null) => {
     if (date) {
       const dateStr = moment(date).format("YYYY-MM-DD");
-      setUpcomingPTO((prev) =>
-        prev.includes(dateStr)
-          ? prev.filter((d) => d !== dateStr)
-          : [...prev, dateStr]
-      );
-    }
+      setUpcomingPTO((prev) => {
+        if (prev.includes(dateStr)) {
+          return prev.filter((d) => d !== dateStr);
+        } else {
+          return [...prev, dateStr];
+        }
+      });
 
-    setSelectedDate(null);
+      setSelectedDates((prev) => {
+        if (prev.some((d) => moment(d).isSame(date, 'day'))) {
+          return prev.filter((d) => !moment(d).isSame(date, 'day'));
+        } else {
+          return [...prev, date];
+        }
+      });
+    }
   };
 
   const highlightWithRanges = [
     {
-      "custom-highlight": upcomingPTO.map((dateStr) =>
-        moment(dateStr).toDate()
-      ),
+      "custom-highlight": selectedDates,
     },
   ];
 
