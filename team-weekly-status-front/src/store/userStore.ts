@@ -9,6 +9,7 @@ type UserState = {
   memberName: string | null;
   isAuthenticated: boolean;
   memberActiveTeams: MemberTeams | null;
+  isAdmin: boolean;
   setRole: (role: 'TeamLead' | 'CurrentWeekReporter' | 'Normal' | null) => void;
   setTeamId: (teamId: number) => void;
   setTeamName: (teamName: string) => void;
@@ -16,6 +17,7 @@ type UserState = {
   setMemberName: (memberName: string) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setMemberActiveTeams: (memberTeams: MemberTeams) => void;
+  setIsAdmin: (isAdmin: boolean) => void;
 }
 
 const userStore = create<UserState>((set) => ({
@@ -32,7 +34,9 @@ const userStore = create<UserState>((set) => ({
   isAuthenticated: false,
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   memberActiveTeams: null,
-  setMemberActiveTeams: (memberActiveTeams: MemberTeams) => set({ memberActiveTeams })
+  setMemberActiveTeams: (memberActiveTeams: MemberTeams) => set({ memberActiveTeams }),
+  isAdmin: false,
+  setIsAdmin: (isAdmin: boolean) => set({ isAdmin })
 }));
 
 export default userStore;

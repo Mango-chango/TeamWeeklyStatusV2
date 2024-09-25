@@ -23,8 +23,15 @@ interface WeeklyStatusProps {
 }
 
 const WeeklyStatus: React.FC = () => {
-  const { role, teamId, teamName, memberName, memberId, memberActiveTeams } =
-    userStore();
+  const {
+    role,
+    teamId,
+    teamName,
+    memberName,
+    memberId,
+    memberActiveTeams,
+    isAdmin,
+  } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [localTeamId, setLocalTeamId] = useState(teamId);
@@ -57,6 +64,8 @@ const WeeklyStatus: React.FC = () => {
   const inTwoMonths = moment().add(2, "months").endOf("isoWeek");
 
   const navigate = useNavigate();
+
+  const [localIsAdmin, setLocalIsAdmin] = useState<boolean>(isAdmin);
 
   useEffect(() => {
     // Subscribe to memberId changes
@@ -100,9 +109,7 @@ const WeeklyStatus: React.FC = () => {
         setDoneThisWeek(response.doneThisWeek);
         setPlanForNextWeek(response.planForNextWeek);
         setUpcomingPTO(
-          response.upcomingPTO.map((date) =>
-            moment(date).format("YYYY-MM-DD")
-          )
+          response.upcomingPTO.map((date) => moment(date).format("YYYY-MM-DD"))
         );
         setSelectedDates(
           response.upcomingPTO.map((date) => moment(date).toDate())
@@ -182,8 +189,8 @@ const WeeklyStatus: React.FC = () => {
       });
 
       setSelectedDates((prev) => {
-        if (prev.some((d) => moment(d).isSame(date, 'day'))) {
-          return prev.filter((d) => !moment(d).isSame(date, 'day'));
+        if (prev.some((d) => moment(d).isSame(date, "day"))) {
+          return prev.filter((d) => !moment(d).isSame(date, "day"));
         } else {
           return [...prev, date];
         }
@@ -292,6 +299,10 @@ const WeeklyStatus: React.FC = () => {
 
   const backTeamSelection = () => {
     navigate("/team-selection");
+  };
+
+  const handleAdminPanel = () => {
+    navigate("/admin");
   };
 
   return (
@@ -510,6 +521,16 @@ const WeeklyStatus: React.FC = () => {
               className="form__btn"
             >
               Team Selection
+            </Button>
+          )}
+
+          {localIsAdmin && (
+            <Button
+              variant="primary"
+              onClick={handleAdminPanel}
+              className="form__btn"
+            >
+              Admin Panel
             </Button>
           )}
 

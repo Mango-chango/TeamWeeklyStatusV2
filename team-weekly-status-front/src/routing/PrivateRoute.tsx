@@ -17,9 +17,13 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ allowedRoles, children }) =
   useEffect(() => {
     // Not authenticated, redirect to root
     if (!isAuthenticated) {
+      console.log('NOT AUTHENTICATED');
       navigate("/");
       return;
+    } else {
+      console.log('AUTHENTICATED');
     }
+
 
     // Authenticated but either role is missing or not in allowedRoles, redirect to /weekly-status
     if (!role || (allowedRoles && !allowedRoles.includes(role))) {

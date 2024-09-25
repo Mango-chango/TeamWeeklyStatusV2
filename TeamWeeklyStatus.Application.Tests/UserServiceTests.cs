@@ -9,19 +9,20 @@ namespace TeamWeeklyStatus.Application.Tests
     public class UserServiceTests
     {
         private readonly IUserService _userService;
-        private readonly Mock<ITeamMemberRepository> _mockRepository;
+        private readonly Mock<ITeamMemberRepository> _mockTeamMemberRepository;
+        private readonly Mock<IMemberRepository> _mockMemberRepository;
 
         public UserServiceTests()
         {
-            _mockRepository = new Mock<ITeamMemberRepository>();
-            _userService = new UserService(_mockRepository.Object);
+            _mockTeamMemberRepository = new Mock<ITeamMemberRepository>();
+            _userService = new UserService(_mockTeamMemberRepository.Object, _mockMemberRepository.Object);
         }
 
         [Fact]
         public async Task ValidateUser_WithInvalidEmail_ReturnsInvalidValidationResult()
         {
             // Arrange
-            _mockRepository.Setup(repo => repo.GetByEmailWithTeamData(It.IsAny<string>()))
+            _mockTeamMemberRepository.Setup(repo => repo.GetByEmailWithTeamData(It.IsAny<string>()))
                            .ReturnsAsync((TeamMember)null);
 
             // Act
@@ -47,7 +48,7 @@ namespace TeamWeeklyStatus.Application.Tests
                 Team = new Team { Name = "Team Coolest Changos" }
             };
 
-            _mockRepository.Setup(repo => repo.GetByEmailWithTeamData(It.IsAny<string>()))
+            _mockTeamMemberRepository.Setup(repo => repo.GetByEmailWithTeamData(It.IsAny<string>()))
                            .ReturnsAsync(mockMember);
 
             // Act

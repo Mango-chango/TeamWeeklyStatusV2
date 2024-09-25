@@ -7,29 +7,51 @@ namespace TeamWeeklyStatus.Application.Services
 {
     public class MemberService : IMemberService
     {
-        private readonly IRepository<Member> _memberRepository;
-        private readonly IMemberRepository _customMemberRepository;
+        private readonly IMemberRepository _memberRepository;
 
-        public MemberService(IRepository<Member> memberRepository, IMemberRepository customMemberRepository)
+        public MemberService(IMemberRepository memberRepository)
         {
             _memberRepository = memberRepository;
-            _customMemberRepository = customMemberRepository;
         }
 
-        public IEnumerable<Member> GetAllMembers()
+        public async Task<Member> GetMemberByIdAsync(int memberId)
         {
-            return _memberRepository.GetAll();
+            Member member = await _memberRepository.GetMemberByIdAsync(memberId);
+            return member;
         }
 
-        public MemberDTO GetMemberById(int memberId)
+        public async Task<IEnumerable<Member>> GetAllMembersAsync()
         {
-            Member member = _memberRepository.GetById(memberId);
-            return new MemberDTO
+            return await _memberRepository.GetAllMembersAsync();
+        }
+
+        public async Task<Member> AddMemberAsync(MemberDTO newMemberDto)
+        {
+            var member = new Member
             {
-                Id = member.Id,
-                Name = member.Name,
-                Email = member.Email,
-            };
+                Name = newMemberDto.Name,
+                Email = newMemberDto.Email,
+                IsAdmin = newMemberDto.IsAdmin
+            }; 
+
+            var newMember = await _memberRepository.AddMemberAsync(member);
+
+            return newMember;
         }
+
+        public async Task<Member> UpdateMemberAsync(Member member)
+        {
+            var updatedMember = await _memberRepository.UpdateMemberAsync(member);
+
+            return updatedMember;
+        }
+
+        public async Task<Member> DeleteMemberAsync(Member member)
+        {
+            var deletedMember = await _memberRepository.DeleteMemberAsync(member.Id);
+
+            return deletedMember;
+        }
+
     }
 }

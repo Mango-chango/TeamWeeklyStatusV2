@@ -25,6 +25,11 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             _entities.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
         }
+        public void UpdateAsync(T entity)
+        {
+            _entities.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+        }
 
         public void Delete(T entity) => _entities.Remove(entity);
 

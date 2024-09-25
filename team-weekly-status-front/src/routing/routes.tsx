@@ -15,6 +15,14 @@ const ReportPreview = React.lazy(
 const TeamSelection = React.lazy(
   () => import("../components/TeamSelection/index")
 );
+const AdminPanel = React.lazy(
+  () => import("../components/Admin/AdminPanel/index")
+);
+
+const MembersManagement = React.lazy(
+  () => import("../components/Admin/MembersManagement/index")
+);
+
 
 const AppRoutes: React.FC = () => {
   userStore();
@@ -59,6 +67,22 @@ const AppRoutes: React.FC = () => {
         element={
           <PrivateRoute>
             <TeamSelection />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute>
+            <AdminPanel />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/members-mgmt"
+        element={
+          <PrivateRoute>
+            <MembersManagement />
           </PrivateRoute>
         }
       />

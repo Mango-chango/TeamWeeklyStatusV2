@@ -47,6 +47,7 @@ const SignIn: React.FC = () => {
       );
 
       if (userResponse && userResponse.success) {
+        console.log("userResponse=", userResponse);
         userStore
           .getState()
           .setRole(
@@ -70,6 +71,14 @@ const SignIn: React.FC = () => {
         )
         console.log("teamsResponse=", teamsResponse);
         userStore.getState().setMemberActiveTeams(teamsResponse as MemberTeams);
+
+        // Check if the user is an admin
+        console.log("userResponse.isAdmin=", userResponse.isAdmin);
+        if (userResponse.isAdmin) {
+          userStore.getState().setIsAdmin(userResponse.isAdmin as boolean)
+        } else {
+          userStore.getState().setIsAdmin(false)
+        }
 
         if (teamsResponse.length > 1) {
           // Navigate to the team selection component if multiple teams are associated

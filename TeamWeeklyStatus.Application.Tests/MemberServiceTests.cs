@@ -1,7 +1,7 @@
 using Moq;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Application.DTOs;
-
+using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Application.Tests
 {
@@ -14,14 +14,14 @@ namespace TeamWeeklyStatus.Application.Tests
         }
 
         [Fact]
-        public void GetMemberById_ReturnsCorrectMember()
+        public async Task GetMemberById_ReturnsCorrectMember() // Change method to async Task
         {
             // Arrange
-            var expectedMember = new MemberDTO { Id = 1, Name = "John Doe" };
-            _memberServiceMock.Setup(service => service.GetMemberById(1)).Returns(expectedMember);
+            var expectedMember = new Member { Id = 1, Name = "John Doe" };
+            _memberServiceMock.Setup(service => service.GetMemberByIdAsync(1)).ReturnsAsync(expectedMember); // Use ReturnsAsync
 
             // Act
-            var result = _memberServiceMock.Object.GetMemberById(1);
+            var result = await _memberServiceMock.Object.GetMemberByIdAsync(1); // Await the async method
 
             // Assert
             Assert.Equal(expectedMember, result);

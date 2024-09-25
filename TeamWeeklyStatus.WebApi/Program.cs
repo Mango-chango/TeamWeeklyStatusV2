@@ -45,11 +45,13 @@ builder.Services.AddScoped<IRepository<TeamMember>, Repository<TeamMember>>();
 builder.Services.AddScoped<IRepository<WeeklyStatus>, Repository<WeeklyStatus>>();
 builder.Services.AddScoped<IRepository<DoneThisWeekTask>, Repository<DoneThisWeekTask>>();
 builder.Services.AddScoped<IRepository<PlanForNextWeekTask>, Repository<PlanForNextWeekTask>>();
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
 builder.Services.AddScoped<IWeeklyStatusRepository, WeeklyStatusRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IWeeklyStatusService, WeeklyStatusService>();
 builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
+builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
 var googleClientId = builder.Configuration["GoogleClientId"];

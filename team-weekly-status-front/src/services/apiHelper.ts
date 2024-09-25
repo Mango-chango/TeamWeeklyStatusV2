@@ -1,6 +1,6 @@
 import axios from "axios";
 
-type RequestMethod = "GET" | "POST" | "PUT";
+type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 const API_BASE_URL = "/api";
 
@@ -23,7 +23,12 @@ export async function makeApiRequest<T>(
     response = await axios.post(url, data);
   } else if (method === "PUT") {
     response = await axios.put(url, data);
+  } else if (method === "DELETE") {
+    response = await axios.delete(url);
+  } else {
+    throw new Error("Invalid request method");
   }
+
 
   if (response) {
     return response.data;

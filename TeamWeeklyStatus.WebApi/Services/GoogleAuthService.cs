@@ -47,6 +47,7 @@ namespace TeamWeeklyStatus.WebApi.Services
                 TeamName = applicationValidationResult.TeamName,
                 MemberId = applicationValidationResult.MemberId,
                 MemberName = applicationValidationResult.MemberName,
+                IsAdmin = applicationValidationResult.IsAdmin,
                 ErrorMessage = string.Empty,
             };
         }

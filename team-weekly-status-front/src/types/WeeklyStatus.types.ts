@@ -45,6 +45,7 @@ export interface GoogleLoginResponse {
   teamName: string | "";
   memberId: number | 0;
   memberName: string | "";
+  isAdmin: boolean;
 }
 
 export type Team = {
@@ -65,3 +66,10 @@ export type TeamMember = {
 };
 
 export type MemberTeams = TeamMember[];
+
+export type UserMember = {
+  id: number;
+  name: string;
+  email: string;
+  isAdmin?: boolean;
+};

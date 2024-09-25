@@ -7,16 +7,18 @@ namespace TeamWeeklyStatus.Application.Services
     public class UserService: IUserService
     {
         private readonly ITeamMemberRepository _repository;
+        private readonly IMemberRepository _memberRepository;
 
-        public UserService(ITeamMemberRepository repository)
+        public UserService(ITeamMemberRepository repository, IMemberRepository memberRepository)
         {
             _repository = repository;
+            _memberRepository = memberRepository;
         }
 
         public async Task<UserValidationResultDTO> ValidateUser(string email)
         {
-            var member = await _repository.GetByEmailWithTeamData(email);
-            if (member == null)
+            var teamMember = await _repository.GetByEmailWithTeamData(email);
+            if (teamMember == null)
             {
                 return new UserValidationResultDTO
                 {
@@ -25,17 +27,20 @@ namespace TeamWeeklyStatus.Application.Services
                 };
             }
 
-            var role = member.IsTeamLead == true ? "TeamLead" :
-                       member.IsCurrentWeekReporter == true ? "CurrentWeekReporter" :
+            var role = teamMember.IsTeamLead == true ? "TeamLead" :
+                       teamMember.IsCurrentWeekReporter == true ? "CurrentWeekReporter" :
                        "Normal";
+
+            var member = await _memberRepository.GetMemberByIdAsync(teamMember.MemberId);
 
             return new UserValidationResultDTO
             {
                 IsValid = true,
                 Role = role,
-                TeamName = member.Team.Name,
-                MemberId = member.MemberId,
-                MemberName = member.Member.Name
+                TeamName = teamMember.Team.Name,
+                MemberId = teamMember.MemberId,
+                MemberName = teamMember.Member.Name,
+                IsAdmin = (bool)member.IsAdmin
             };
         }
     }
