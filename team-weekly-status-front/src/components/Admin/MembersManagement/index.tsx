@@ -83,6 +83,54 @@ const MembersManagement: React.FC = () => {
     });
   }, [nameSearch, emailSearch, usersMembersData]);
 
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: "ascending" | "descending";
+  } | null>(null);
+
+  const requestSort = (key: string) => {
+    let direction: "ascending" | "descending" = "ascending";
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === "ascending"
+    ) {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const renderSortIcon = (columnKey: string) => {
+    if (!sortConfig || sortConfig.key !== columnKey) {
+      return null;
+    }
+    return sortConfig.direction === "ascending" ? " ▲" : " ▼";
+  };
+
+  const sortedFilteredUsersMembersData = useMemo(() => {
+    let sortableData = [...filteredUsersMembersData];
+
+    if (sortConfig !== null) {
+      sortableData.sort((a, b) => {
+        const aValue = a[sortConfig.key as keyof UserMember];
+        const bValue = b[sortConfig.key as keyof UserMember];
+
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          return sortConfig.direction === "ascending"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        } else {
+          return sortConfig.direction === "ascending"
+            ? (aValue as number) - (bValue as number)
+            : ((bValue as number | undefined) ?? 0) -
+                ((aValue as number | undefined) ?? 0);
+        }
+      });
+    }
+
+    return sortableData;
+  }, [filteredUsersMembersData, sortConfig]);
+
   return (
     <div>
       <h2>Changos Management</h2>
@@ -104,14 +152,32 @@ const MembersManagement: React.FC = () => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Chango ID</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Administrator</th>
+            <th onClick={() => requestSort("id")} style={{ cursor: "pointer" }}>
+              Chango ID {renderSortIcon("id")}
+            </th>
+            <th
+              onClick={() => requestSort("name")}
+              style={{ cursor: "pointer" }}
+            >
+              Full Name {renderSortIcon("name")}
+            </th>
+            <th
+              onClick={() => requestSort("email")}
+              style={{ cursor: "pointer" }}
+            >
+              Email {renderSortIcon("email")}
+            </th>
+            <th
+              onClick={() => requestSort("isAdmin")}
+              style={{ cursor: "pointer", textAlign: "center" }}
+            >
+              Administrator {renderSortIcon("isAdmin")}
+            </th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {filteredUsersMembersData.map((userMember: UserMember) => (
+          {sortedFilteredUsersMembersData.map((userMember: UserMember) => (
             <tr key={userMember.id}>
               <td>{userMember.id}</td>
               <td>{userMember.name}</td>
