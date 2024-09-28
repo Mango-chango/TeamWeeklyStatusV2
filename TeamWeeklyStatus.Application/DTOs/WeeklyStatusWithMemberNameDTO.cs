@@ -1,4 +1,4 @@
-﻿namespace TeamWeeklyStatus.Domain.DTOs
+﻿namespace TeamWeeklyStatus.Application.DTOs
 {
     public class WeeklyStatusWithMemberNameDTO
     {

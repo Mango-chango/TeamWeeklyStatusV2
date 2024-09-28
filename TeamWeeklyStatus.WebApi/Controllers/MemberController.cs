@@ -2,7 +2,6 @@
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Application.Services;
-using TeamWeeklyStatus.Domain.DTOs;
 using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.WebApi.Controllers

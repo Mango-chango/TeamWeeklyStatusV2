@@ -1,6 +1,5 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.Infrastructure.Repositories;
 
 namespace TeamWeeklyStatus.Application.Services
 {

@@ -1,7 +1,7 @@
-﻿using TeamWeeklyStatus.Domain.DTOs;
+﻿using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
 
-namespace TeamWeeklyStatus.Infrastructure.Repositories
+namespace TeamWeeklyStatus.Application.Interfaces
 {
     public interface IWeeklyStatusRepository
     {

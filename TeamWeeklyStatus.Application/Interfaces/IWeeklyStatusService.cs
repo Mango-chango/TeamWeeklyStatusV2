@@ -1,4 +1,4 @@
-﻿using TeamWeeklyStatus.Domain.DTOs;
+﻿using TeamWeeklyStatus.Application.DTOs;
 
 namespace TeamWeeklyStatus.Application.Interfaces
 {

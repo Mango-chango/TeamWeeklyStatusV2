@@ -1,6 +1,5 @@
 ﻿using Moq;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.Infrastructure.Repositories;
 using TeamWeeklyStatus.Application.Services;
 using TeamWeeklyStatus.Domain.Entities;
 
