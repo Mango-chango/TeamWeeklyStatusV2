@@ -23,6 +23,9 @@ const MembersManagement = React.lazy(
   () => import("../components/Admin/MembersManagement/index")
 );
 
+const TeamsManagement = React.lazy(
+  () => import("../components/Admin/TeamsManagement/index")
+);
 
 const AppRoutes: React.FC = () => {
   userStore();
@@ -86,6 +89,15 @@ const AppRoutes: React.FC = () => {
           </PrivateRoute>
         }
       />
+      <Route
+        path="/teams-mgmt"
+        element={
+          <PrivateRoute>
+            <TeamsManagement />
+          </PrivateRoute>
+        }
+      />
+
       <Route
         path="*"
         element={
