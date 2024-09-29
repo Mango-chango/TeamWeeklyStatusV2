@@ -3,8 +3,9 @@ import { userStore } from "../../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../../services/apiHelper";
 import { UserMember } from "../../../types/WeeklyStatus.types";
-import { Alert, Button, Form, Table } from "react-bootstrap";
+import { Alert, Button, Form, Table, Pagination } from "react-bootstrap";
 import AddEditMemberModal from "./AddEditMemberModal";
+import { PaginationControls } from "../../Common";
 
 const MembersManagement: React.FC = () => {
   const { isAdmin } = userStore();
@@ -131,6 +132,27 @@ const MembersManagement: React.FC = () => {
     return sortableData;
   }, [filteredUsersMembersData, sortConfig]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const totalPages = Math.ceil(
+    sortedFilteredUsersMembersData.length / itemsPerPage
+  );
+
+  const currentPageData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return sortedFilteredUsersMembersData.slice(startIndex, endIndex);
+  }, [sortedFilteredUsersMembersData, currentPage, itemsPerPage]);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [nameSearch, emailSearch, sortConfig]);
+
   return (
     <div>
       <h2>Changos Management</h2>
@@ -177,7 +199,7 @@ const MembersManagement: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {sortedFilteredUsersMembersData.map((userMember: UserMember) => (
+          {currentPageData.map((userMember: UserMember) => (
             <tr key={userMember.id}>
               <td>{userMember.id}</td>
               <td>{userMember.name}</td>
@@ -219,6 +241,14 @@ const MembersManagement: React.FC = () => {
           ))}
         </tbody>
       </Table>
+
+      {totalPages > 1 && (
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
 
       <Button variant="primary" onClick={handleAddNew}>
         New

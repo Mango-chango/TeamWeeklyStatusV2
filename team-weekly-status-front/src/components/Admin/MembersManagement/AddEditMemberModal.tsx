@@ -37,14 +37,18 @@ const AddEditMemberModal: React.FC<AddEditMemberModalProps> = ({
   }, [user]);
 
   const handleSave = async () => {
-    if (user) {
-      await makeApiRequest(`/Member/Update/${user.id}`, "PUT", formData);
-    } else {
-      // Add new user
+    const endpoint = user ? "/Member/Update" : "/Member/Add";
+    const method = user ? "PUT" : "POST";
+
+    if (!user) {
       formData.id = 0;
-      // formData.isAdmin = false;
-      await makeApiRequest("/Member/Add", "POST", formData);
     }
+
+    const response = await makeApiRequest<UserMember | { success: boolean }>(
+      endpoint,
+      method,
+      formData
+    );
     onSave();
     onHide();
   };
