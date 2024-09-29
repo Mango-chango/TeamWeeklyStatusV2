@@ -70,7 +70,6 @@ namespace TeamWeeklyStatus.Application.Services
                           EndActiveDate = tm.EndActiveDate,
                           MemberId = tm.MemberId,
                           MemberName = tm.Member?.Name ?? "",
-                          IsAdminMember = tm.IsAdminMember,
                           IsCurrentWeekReporter = tm.IsCurrentWeekReporter,
                           IsTeamLead = tm.IsTeamLead
                       })
