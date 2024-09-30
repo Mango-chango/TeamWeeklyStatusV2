@@ -96,17 +96,11 @@ const AddEditTeamMemberModal: React.FC<AddEditTeamMemberModalProps> = ({
     };
 
     try {
-      if (teamMember) {
-        // Edit existing team member
-        await makeApiRequest(
-          `/TeamMember/Update/${teamId}/${memberId}`,
-          "PUT",
-          payload
-        );
-      } else {
-        // Add new team member
-        await makeApiRequest("/TeamMember/Add", "POST", payload);
-      }
+      const endpoint = teamMember ? "/TeamMember/Update" : "/TeamMember/Add";
+      const method = teamMember ? "PUT" : "POST";
+  
+      await makeApiRequest(endpoint, method, payload);
+
       onSave();
       onHide();
     } catch (error) {

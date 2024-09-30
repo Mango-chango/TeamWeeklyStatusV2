@@ -23,7 +23,7 @@ const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
 
   const fetchTeamMembers = async () => {
     try {
-        const endpoint = `/TeamMember/GetTeamMembers`;
+        const endpoint = `/TeamMember/GetAll`;
         const method = "POST";
         const body = { teamId };
         const response: TeamMember[] = await makeApiRequest(endpoint, method, body);
@@ -127,8 +127,11 @@ const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
       return;
     }
 
+    const endpoint = `/TeamMember/Delete?teamId=${teamId}&memberId=${memberId}`
+    const method = 'DELETE'
+
     try {
-      await makeApiRequest(`/TeamMember/Delete/${teamId}/${memberId}`, "DELETE");
+      await makeApiRequest(endpoint, method);
       fetchTeamMembers();
     } catch (error) {
       console.error(error);

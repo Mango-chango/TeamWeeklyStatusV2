@@ -15,8 +15,8 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             _teamMemberService = teamMemberService;
         }
 
-        [HttpPost("GetTeamMembers")]
-        public async Task<IActionResult> GetTeamMembers([FromBody] TeamMemberRequest request)
+        [HttpPost("GetAll")]
+        public async Task<IActionResult> GetAllTeamMembers([FromBody] TeamMemberRequest request)
         {
             var members = await _teamMemberService.GetAllTeamMembersAsync((int)request.TeamId);
             if (members == null)
@@ -26,7 +26,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             return Ok(members);
         }
 
-        [HttpPost("AddTeamMember")]
+        [HttpPost("Add")]
         public async Task<IActionResult> AddTeamMember([FromBody] TeamMemberPostRequest request)
         {
             var teamMemberDto = new TeamMemberDTO
@@ -43,7 +43,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             return Ok(addedTeamMember);
         }
 
-        [HttpPost("UpdateTeamMember")]
+        [HttpPut("Update")]
         public async Task<IActionResult> UpdateTeamMember([FromBody] TeamMemberPostRequest request)
         {
             var teamMemberDto = new TeamMemberDTO
@@ -60,17 +60,18 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             return Ok(updatedTeamMember);
         }
 
-        [HttpPost("RemoveTeamMember")]
-        public async Task<IActionResult> RemoveTeamMember([FromBody] TeamMemberRequest request)
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> RemoveTeamMember([FromQuery] int teamId, [FromQuery] int memberId)
         {
             var teamMemberDto = new TeamMemberDTO
             {
-                TeamId = (int)request.TeamId,
-                MemberId = (int)request.MemberId,
+                TeamId = teamId,
+                MemberId = memberId,
             };
             await _teamMemberService.DeleteTeamMemberAsync(teamMemberDto);
             return Ok();
         }
+
 
         [HttpPost("GetTeamMembersWithTeamData")]
         public async Task<IActionResult> GetTeamMembersWithTeamData(TeamMemberRequest request)
