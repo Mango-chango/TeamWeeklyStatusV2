@@ -1,0 +1,13 @@
+/* CustomCheckbox */
+
+/* Style the readonly checkboxes to look active but non-interactive */
+.readonly-checkbox {
+    pointer-events: none; /* Prevents interaction */
+    cursor: default;
+    accent-color: #0d6efd; /* Bootstrap primary color */
+  }
+  
+  .readonly-checkbox[aria-readonly="true"] {
+    opacity: 1; /* Ensures the checkbox is not dimmed */
+  }
+  

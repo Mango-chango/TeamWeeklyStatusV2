@@ -36,7 +36,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         }
 
         [HttpPost("Add", Name = "AddMember")]
-        public async Task<IActionResult> CreateMember(MemberDTO member)
+        public async Task<IActionResult> CreateMember([FromBody] MemberDTO member)
         {
             if (!ModelState.IsValid)
             {

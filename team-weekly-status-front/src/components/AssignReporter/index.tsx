@@ -17,7 +17,7 @@ const AssignReporter: React.FC = () => {
     // Fetch the members but exclude the current reporter
     const fetchMembers = async () => {
       const response: Member[] = await makeApiRequest(
-        "/TeamMember/WithoutCurrentReporter",
+        "/TeamMember/ExcludingCurrentReporter",
         "GET"
       );
       setMembers(response);
@@ -29,7 +29,7 @@ const AssignReporter: React.FC = () => {
   const handleSave = async () => {
     try {
       if (selectedMemberId) {
-        await makeApiRequest("/TeamMember/AssignReporter", "POST", {
+        await makeApiRequest("/TeamMember/AssignWeekReporter", "POST", {
           memberId: selectedMemberId,
         });
       }

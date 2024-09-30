@@ -3,8 +3,9 @@ import { userStore } from "../../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../../services/apiHelper";
 import { Team } from "../../../types/WeeklyStatus.types";
-import { Alert, Button, Form, Table, Pagination } from "react-bootstrap";
+import { Alert, Button, Table } from "react-bootstrap";
 import AddEditTeamModal from "./AddEditTeamModal";
+import TeamMembersManagement from "../TeamMembersManagement";
 import { PaginationControls } from "../../Common";
 
 const TeamsManagement: React.FC = () => {
@@ -12,27 +13,13 @@ const TeamsManagement: React.FC = () => {
   const navigate = useNavigate();
 
   const [showModal, setShowModal] = useState(false);
-  const [selectedTeam, setSelectedTeam] =
-    useState<Team | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [error, setError] = useState<string>("");
 
-  useEffect(() => {
-    if (!isAdmin) {
-      navigate("/"); // Redirect non-admins to the homepage
-    }
-  }, [isAdmin, navigate]);
-
-  type TeamData = Team[];
-  const [teamsData, setTeamsData] =
-    useState<TeamData | null>(null);
+  const [teamsData, setTeamsData] = useState<Team[] | null>(null);
 
   const fetchTeams = async () => {
-    const response: TeamData = await makeApiRequest(
-      "/Team/GetAll",
-      "GET"
-    );
-
-    console.log(response);
+    const response: Team[] = await makeApiRequest("/Team/GetAll", "GET");
 
     if (response) {
       setTeamsData(response);
@@ -71,8 +58,8 @@ const TeamsManagement: React.FC = () => {
   const filteredTeamsData = useMemo(() => {
     if (!teamsData) return [];
 
-    return teamsData.filter((user) => {
-      const matchesName = user.name
+    return teamsData.filter((team) => {
+      const matchesName = team.name
         .toLowerCase()
         .includes(nameSearch.toLowerCase());
       return matchesName;
@@ -86,11 +73,7 @@ const TeamsManagement: React.FC = () => {
 
   const requestSort = (key: string) => {
     let direction: "ascending" | "descending" = "ascending";
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === "ascending"
-    ) {
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
     }
     setSortConfig({ key, direction });
@@ -118,8 +101,7 @@ const TeamsManagement: React.FC = () => {
         } else {
           return sortConfig.direction === "ascending"
             ? (aValue as number) - (bValue as number)
-            : ((bValue as number | undefined) ?? 0) -
-                ((aValue as number | undefined) ?? 0);
+            : (bValue as number) - (aValue as number);
         }
       });
     }
@@ -130,9 +112,7 @@ const TeamsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const totalPages = Math.ceil(
-    sortedFilteredTeamsData.length / itemsPerPage
-  );
+  const totalPages = Math.ceil(sortedFilteredTeamsData.length / itemsPerPage);
 
   const currentPageData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -147,6 +127,10 @@ const TeamsManagement: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [nameSearch, sortConfig]);
+
+  // State for selected team
+  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+  const [selectedTeamName, setSelectedTeamName] = useState<string>("");
 
   return (
     <div>
@@ -166,10 +150,7 @@ const TeamsManagement: React.FC = () => {
             <th onClick={() => requestSort("id")} style={{ cursor: "pointer" }}>
               Team ID {renderSortIcon("id")}
             </th>
-            <th
-              onClick={() => requestSort("name")}
-              style={{ cursor: "pointer" }}
-            >
+            <th onClick={() => requestSort("name")} style={{ cursor: "pointer" }}>
               Name {renderSortIcon("name")}
             </th>
             <th>Actions</th>
@@ -177,19 +158,36 @@ const TeamsManagement: React.FC = () => {
         </thead>
         <tbody>
           {currentPageData.map((team: Team) => (
-            <tr key={team.id}>
+            <tr
+              key={team.id}
+              onClick={() => {
+                setSelectedTeamId(team.id);
+                setSelectedTeamName(team.name);
+              }}
+              style={{
+                cursor: "pointer",
+                backgroundColor:
+                  selectedTeamId === team.id ? "#e0f7fa" : "transparent",
+              }}
+            >
               <td>{team.id}</td>
               <td>{team.name}</td>
               <td>
                 <Button
                   variant="warning"
-                  onClick={() => handleEdit(team)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(team);
+                  }}
                 >
                   Edit
                 </Button>{" "}
                 <Button
                   variant="danger"
-                  onClick={() => handleDelete(team.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(team.id);
+                  }}
                 >
                   Delete
                 </Button>
@@ -220,6 +218,10 @@ const TeamsManagement: React.FC = () => {
         team={selectedTeam}
         onSave={fetchTeams}
       />
+
+      {selectedTeamId && (
+        <TeamMembersManagement teamId={selectedTeamId} teamName={selectedTeamName} />
+      )}
     </div>
   );
 };

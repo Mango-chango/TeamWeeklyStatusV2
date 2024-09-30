@@ -16,7 +16,7 @@ namespace TeamWeeklyStatus.Application.Services
 
         public async Task<UserValidationResultDTO> ValidateUser(string email)
         {
-            var teamMember = await _repository.GetByEmailWithTeamData(email);
+            var teamMember = await _repository.GetTeamMemberByEmailWithTeamData(email);
             if (teamMember == null)
             {
                 return new UserValidationResultDTO

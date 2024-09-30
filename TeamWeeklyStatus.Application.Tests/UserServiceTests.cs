@@ -21,7 +21,7 @@ namespace TeamWeeklyStatus.Application.Tests
         public async Task ValidateUser_WithInvalidEmail_ReturnsInvalidValidationResult()
         {
             // Arrange
-            _mockTeamMemberRepository.Setup(repo => repo.GetByEmailWithTeamData(It.IsAny<string>()))
+            _mockTeamMemberRepository.Setup(repo => repo.GetTeamMemberByEmailWithTeamData(It.IsAny<string>()))
                            .ReturnsAsync((TeamMember)null);
 
             // Act
@@ -47,7 +47,7 @@ namespace TeamWeeklyStatus.Application.Tests
                 Team = new Team { Name = "Team Coolest Changos" }
             };
 
-            _mockTeamMemberRepository.Setup(repo => repo.GetByEmailWithTeamData(It.IsAny<string>()))
+            _mockTeamMemberRepository.Setup(repo => repo.GetTeamMemberByEmailWithTeamData(It.IsAny<string>()))
                            .ReturnsAsync(mockMember);
 
             // Act

@@ -60,7 +60,6 @@ export type TeamMember = {
   memberName: string;
   isTeamLead: boolean;
   isCurrentWeekReporter: boolean;
-  isAdminMember: boolean;
   startActiveDate: string;
   endActiveDate: string;
 };
