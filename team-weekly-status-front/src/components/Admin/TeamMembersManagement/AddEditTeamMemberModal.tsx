@@ -65,8 +65,7 @@ const AddEditTeamMemberModal: React.FC<AddEditTeamMemberModalProps> = ({
   useEffect(() => {
     if (teamMember) {
       setMemberId(teamMember.memberId);
-      setIsTeamLead(teamMember.isTeamLead);
-      setStartActiveDate(teamMember.startActiveDate.slice(0, 10)); // Extract date part
+      setStartActiveDate(teamMember.startActiveDate?.slice(0, 10)); // Extract date part
       setEndActiveDate(
         teamMember.endActiveDate ? teamMember.endActiveDate.slice(0, 10) : ""
       );
@@ -116,7 +115,7 @@ const AddEditTeamMemberModal: React.FC<AddEditTeamMemberModalProps> = ({
         label: teamMember.memberName,
       });
       setIsTeamLead(teamMember.isTeamLead);
-      setStartActiveDate(teamMember.startActiveDate.slice(0, 10)); // Extract date part
+      setStartActiveDate(teamMember.startActiveDate?.slice(0, 10)); // Extract date part
       setEndActiveDate(
         teamMember.endActiveDate ? teamMember.endActiveDate.slice(0, 10) : ""
       );

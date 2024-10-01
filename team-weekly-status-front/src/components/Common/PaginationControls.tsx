@@ -12,14 +12,19 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
   totalPages,
   onPageChange,
 }) => {
+  if (totalPages <= 1) {
+    // Don't render pagination controls if there's only one page
+    return null;
+  }
+
   const pageRange = 5; // Number of pages to show in pagination
   const paginationItems = [];
 
   let startPage = Math.max(1, currentPage - Math.floor(pageRange / 2));
-  let endPage = Math.min(totalPages, startPage + pageRange - 1);
+  let endPage = startPage + pageRange - 1;
 
-  // Adjust startPage if we're near the end
-  if (endPage - startPage < pageRange - 1) {
+  if (endPage > totalPages) {
+    endPage = totalPages;
     startPage = Math.max(1, endPage - pageRange + 1);
   }
 

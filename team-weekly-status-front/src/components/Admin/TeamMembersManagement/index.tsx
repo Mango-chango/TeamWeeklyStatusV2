@@ -4,6 +4,7 @@ import { TeamMember } from "../../../types/WeeklyStatus.types";
 import { Alert, Button, Table } from "react-bootstrap";
 import AddEditTeamMemberModal from "./AddEditTeamMemberModal";
 import { PaginationControls } from "../../Common";
+import { formatDate } from '../../../utils/dateUtils';
 import "./styles.css"
 
 interface TeamMembersManagementProps {
@@ -139,6 +140,11 @@ const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
     }
   };
 
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+
   return (
     <div>
       <h3>Members of {teamName}</h3>
@@ -186,8 +192,10 @@ const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
                   className="readonly-checkbox"
                 />
               </td>
-              <td>{teamMember.startActiveDate}</td>
-              <td>{teamMember.endActiveDate || "-"}</td>
+              <td>{formatDate(teamMember.startActiveDate)}</td>
+              <td>{formatDate(teamMember.endActiveDate)}</td>
+              {/* <td>{teamMember.startActiveDate?.slice(0, 10) || "-"}</td>
+              <td>{teamMember.endActiveDate?.slice(0, 10) || "-"}</td> */}
               <td>
                 <Button
                   variant="warning"
@@ -211,7 +219,7 @@ const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
         <PaginationControls
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+          onPageChange={handlePageChange}
         />
       )}
 
