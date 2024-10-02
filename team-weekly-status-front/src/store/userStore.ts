@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { MemberTeams } from '../types/WeeklyStatus.types';
 
 type UserState = {
-  role: 'TeamLead' | 'CurrentWeekReporter' | 'Normal' | null;
   teamId: number;
   teamName: string | null;
   memberId: number;
@@ -10,7 +9,9 @@ type UserState = {
   isAuthenticated: boolean;
   memberActiveTeams: MemberTeams | null;
   isAdmin: boolean;
-  setRole: (role: 'TeamLead' | 'CurrentWeekReporter' | 'Normal' | null) => void;
+  isTeamLead: boolean;
+  isCurrentWeekReporter: boolean;
+  //setRole: (role: 'TeamLead' | 'CurrentWeekReporter' | 'Normal' | null) => void;
   setTeamId: (teamId: number) => void;
   setTeamName: (teamName: string) => void;
   setMemberId: (memberId: number) => void;
@@ -18,11 +19,11 @@ type UserState = {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setMemberActiveTeams: (memberTeams: MemberTeams) => void;
   setIsAdmin: (isAdmin: boolean) => void;
+  setIsTeamLead: (isTeamLead: boolean) => void;
+  setIsCurrentWeekReporter: (isCurrentWeekReporter: boolean) => void;
 }
 
 const userStore = create<UserState>((set) => ({
-  role: null,
-  setRole: (role) => set({ role }),
   teamId: 0,
   setTeamId: (teamId: number) => set({ teamId }),
   teamName: null,
@@ -36,7 +37,11 @@ const userStore = create<UserState>((set) => ({
   memberActiveTeams: null,
   setMemberActiveTeams: (memberActiveTeams: MemberTeams) => set({ memberActiveTeams }),
   isAdmin: false,
-  setIsAdmin: (isAdmin: boolean) => set({ isAdmin })
+  setIsAdmin: (isAdmin: boolean) => set({ isAdmin }),
+  isTeamLead: false,
+  setIsTeamLead: (isTeamLead: boolean) => set({ isTeamLead }),
+  isCurrentWeekReporter: false,
+  setIsCurrentWeekReporter: (isCurrentWeekReporter: boolean) => set({ isCurrentWeekReporter }),
 }));
 
 export default userStore;

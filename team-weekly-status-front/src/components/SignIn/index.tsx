@@ -3,7 +3,11 @@ import { Alert } from "react-bootstrap";
 import { userStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../services/apiHelper";
-import { GoogleLoginResponse, MemberTeams, Team } from '../../types/WeeklyStatus.types';
+import {
+  GoogleLoginResponse,
+  MemberTeams,
+  Team,
+} from "../../types/WeeklyStatus.types";
 import { GoogleLogin } from "@react-oauth/google";
 import "./styles.css";
 
@@ -48,48 +52,41 @@ const SignIn: React.FC = () => {
 
       if (userResponse && userResponse.success) {
         console.log("userResponse=", userResponse);
-        userStore
-          .getState()
-          .setRole(
-            userResponse.role as
-              | "TeamLead"
-              | "CurrentWeekReporter"
-              | "Normal"
-              | null
-          );
-        userStore.getState().setTeamName(userResponse.teamName as string | "");
         userStore.getState().setMemberId(userResponse.memberId as number | 0);
         userStore
           .getState()
           .setMemberName(userResponse.memberName as string | "");
+        userStore.getState().setIsAdmin(userResponse.isAdmin as boolean);
         userStore.getState().setIsAuthenticated(true);
 
         const teamsResponse: MemberTeams = await makeApiRequest(
           `/TeamMember/GetMemberActiveTeams`,
           "POST",
           { memberId: userResponse.memberId }
-        )
+        );
         console.log("teamsResponse=", teamsResponse);
         userStore.getState().setMemberActiveTeams(teamsResponse as MemberTeams);
-
-        // Check if the user is an admin
-        console.log("userResponse.isAdmin=", userResponse.isAdmin);
-        if (userResponse.isAdmin) {
-          userStore.getState().setIsAdmin(userResponse.isAdmin as boolean)
-        } else {
-          userStore.getState().setIsAdmin(false)
-        }
 
         if (teamsResponse.length > 1) {
           // Navigate to the team selection component if multiple teams are associated
           navigate("/team-selection");
-        } else {
+        } else  if (teamsResponse.length === 1) {
           // If only one team, set the teamName and navigate to the weekly status page
           userStore.getState().setTeamId(teamsResponse[0].teamId as number | 0);
-          userStore.getState().setTeamName(teamsResponse[0].teamName as string | "");
-          navigate("/weekly-status");
-        }
+          userStore
+            .getState()
+            .setTeamName(teamsResponse[0].teamName as string | "");
+          teamsResponse[0].isTeamLead && userStore.getState().setIsTeamLead(true);
+          teamsResponse[0].isCurrentWeekReporter &&
+            userStore.getState().setIsCurrentWeekReporter(true);
 
+          navigate("/weekly-status");
+        } else {
+          // If no teams are associated, navigate to the home page
+          userStore.getState().setIsAuthenticated(false);
+          setError("You are not associated with any teams.");
+          navigate("/");
+        }
       } else {
         setError("Could not authenticate with Google. Please try again.");
       }

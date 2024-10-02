@@ -9,6 +9,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
         Task<Member> AddMemberAsync(Member member);
         Task<Member> UpdateMemberAsync(Member member);
         Task<Member> DeleteMemberAsync(int memberId);
+        Task<Member> GetMemberByEmailAsync(string email);
 
     }
 }

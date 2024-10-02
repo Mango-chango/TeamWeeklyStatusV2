@@ -85,25 +85,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             return teamMember;
         }
 
-        public async Task<TeamMember> GetTeamMemberByEmailWithTeamData(string email)
-        {
-            return await _context.TeamMembers
-                .Include(tm => tm.Team)
-                .Include(m => m.Member)
-                .FirstOrDefaultAsync(m => m.Member.Email == email);
-        }
-
-        public async Task<IEnumerable<Member>> GetTeamMembersExcludingCurrentReporter(int teamId)
-        {
-            return await _context.TeamMembers
-                .Include(tm => tm.Member)
-                .Where(tm => tm.TeamId == teamId && tm.IsCurrentWeekReporter != true)
-                .Select(tm => tm.Member)
-                .ToListAsync();
-        }
-
-
-        public async Task AssignWeekReporter(int teamId, int memberId)
+        public async Task AssignCurrentWeekReporter(int teamId, int memberId)
         {
             var currentReporter = _context.TeamMembers.SingleOrDefault(tm => tm.IsCurrentWeekReporter == true);
             if (currentReporter != null)

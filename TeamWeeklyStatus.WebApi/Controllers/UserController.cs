@@ -24,7 +24,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             if (!result.IsValid)
                 return NotFound(new { success = false, message = result.ErrorMessage });
 
-            return Ok(new { success = true, role = result.Role, teamName = result.TeamName, memberId = result.MemberId, memberName = result.MemberName, isAdmin = result.IsAdmin });
+            return Ok(new { success = true, memberId = result.MemberId, memberName = result.MemberName, isAdmin = result.IsAdmin });
         }
     }
 

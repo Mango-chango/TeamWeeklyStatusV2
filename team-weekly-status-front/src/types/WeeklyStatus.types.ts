@@ -41,8 +41,6 @@ export type Member = {
 
 export interface GoogleLoginResponse {
   success: boolean;
-  role: "TeamLead" | "CurrentWeekReporter" | "Normal" | null;
-  teamName: string | "";
   memberId: number | 0;
   memberName: string | "";
   isAdmin: boolean;

@@ -23,6 +23,7 @@ const AddEditTeamMemberModal: React.FC<AddEditTeamMemberModalProps> = ({
 }) => {
   const [memberId, setMemberId] = useState<number | null>(null);
   const [isTeamLead, setIsTeamLead] = useState<boolean>(false);
+  const [isCurrentWeekReporter, setIsCurrentWeekReporter] = useState<boolean>(false);
   const [startActiveDate, setStartActiveDate] = useState<string>("");
   const [endActiveDate, setEndActiveDate] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -35,12 +36,6 @@ const AddEditTeamMemberModal: React.FC<AddEditTeamMemberModalProps> = ({
     value: number;
     label: string;
   } | null>(null);
-  const memberOptions = allMembers
-    .filter((member) => !existingMemberIds.includes(member.id))
-    .map((member) => ({
-      value: member.id,
-      label: member.name,
-    }));
 
   useEffect(() => {
     // Fetch all members to populate the dropdown
@@ -62,42 +57,59 @@ const AddEditTeamMemberModal: React.FC<AddEditTeamMemberModalProps> = ({
     fetchMembers();
   }, []);
 
+  // Prepare member options, excluding existing members (when adding)
+  const memberOptions = allMembers
+    .filter((member) => !existingMemberIds.includes(member.id))
+    .map((member) => ({
+      value: member.id,
+      label: member.name,
+    }));
+
+  // Combined useEffect to handle state initialization
   useEffect(() => {
     if (teamMember) {
+      // Editing mode
       setMemberId(teamMember.memberId);
-      setStartActiveDate(teamMember.startActiveDate?.slice(0, 10)); // Extract date part
-      setEndActiveDate(
-        teamMember.endActiveDate ? teamMember.endActiveDate.slice(0, 10) : ""
-      );
+      setSelectedMemberOption({
+        value: teamMember.memberId,
+        label: teamMember.memberName,
+      });
+      setIsTeamLead(teamMember.isTeamLead);
+      setIsCurrentWeekReporter(teamMember.isCurrentWeekReporter);
+      setStartActiveDate(teamMember.startActiveDate?.slice(0, 10) || "");
+      setEndActiveDate(teamMember.endActiveDate?.slice(0, 10) || "");
     } else {
-      // Reset form
+      // Adding mode or reset
       setMemberId(null);
+      setSelectedMemberOption(null);
       setIsTeamLead(false);
+      setIsCurrentWeekReporter(false);
       setStartActiveDate("");
       setEndActiveDate("");
     }
   }, [teamMember]);
 
   const handleSubmit = async () => {
-    if (!selectedMemberOption || !startActiveDate) {
-      setError("Please fill in all required fields.");
+    const currentMemberId = teamMember ? teamMember.memberId : selectedMemberOption?.value;
+
+    if (!currentMemberId) {
+      setError("Please select a member.");
       return;
     }
 
-    const memberId = selectedMemberOption.value;
-
     const payload = {
       teamId,
-      memberId,
+      memberId: currentMemberId,
       isTeamLead,
-      startActiveDate,
+      isCurrentWeekReporter,
+      startActiveDate: startActiveDate || null,
       endActiveDate: endActiveDate || null,
     };
 
     try {
       const endpoint = teamMember ? "/TeamMember/Update" : "/TeamMember/Add";
       const method = teamMember ? "PUT" : "POST";
-  
+
       await makeApiRequest(endpoint, method, payload);
 
       onSave();
@@ -107,26 +119,6 @@ const AddEditTeamMemberModal: React.FC<AddEditTeamMemberModalProps> = ({
       setError("An error occurred while saving the team member.");
     }
   };
-
-  useEffect(() => {
-    if (teamMember) {
-      setSelectedMemberOption({
-        value: teamMember.memberId,
-        label: teamMember.memberName,
-      });
-      setIsTeamLead(teamMember.isTeamLead);
-      setStartActiveDate(teamMember.startActiveDate?.slice(0, 10)); // Extract date part
-      setEndActiveDate(
-        teamMember.endActiveDate ? teamMember.endActiveDate.slice(0, 10) : ""
-      );
-    } else {
-      // Reset form
-      setSelectedMemberOption(null);
-      setIsTeamLead(false);
-      setStartActiveDate("");
-      setEndActiveDate("");
-    }
-  }, [teamMember]);
 
   return (
     <Modal show={show} onHide={onHide}>
@@ -174,6 +166,15 @@ const AddEditTeamMemberModal: React.FC<AddEditTeamMemberModalProps> = ({
               onChange={(e) => setIsTeamLead(e.target.checked)}
             />
           </Form.Group>
+          <Form.Group controlId="isCurrentWeekReporterCheckbox">
+            <Form.Check
+              type="checkbox"
+              label="Current Week Reporter"
+              checked={isCurrentWeekReporter}
+              onChange={(e) => setIsCurrentWeekReporter(e.target.checked)}
+            />
+          </Form.Group>
+
           <Form.Group controlId="startActiveDate">
             <Form.Label>Start Active Date</Form.Label>
             <Form.Control

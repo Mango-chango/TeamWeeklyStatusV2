@@ -52,5 +52,9 @@ namespace TeamWeeklyStatus.Application.Services
             return deletedMember;
         }
 
+        public async Task<Member> GetMemberByEmailAsync(string email)
+        {
+            return await _memberRepository.GetMemberByEmailAsync(email);
+        }
     }
 }

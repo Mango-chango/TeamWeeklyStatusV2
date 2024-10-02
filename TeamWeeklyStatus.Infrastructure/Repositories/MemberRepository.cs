@@ -78,5 +78,10 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             return member;
         }
 
+        public async Task<Member> GetMemberByEmailAsync(string email)
+        {
+            return await _context.Members
+                .FirstOrDefaultAsync(m => m.Email == email);
+        }
     }
 }

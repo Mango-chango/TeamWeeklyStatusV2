@@ -16,29 +16,21 @@ namespace TeamWeeklyStatus.Application.Services
 
         public async Task<UserValidationResultDTO> ValidateUser(string email)
         {
-            var teamMember = await _repository.GetTeamMemberByEmailWithTeamData(email);
-            if (teamMember == null)
+            var member = await _memberRepository.GetMemberByEmailAsync(email);
+            if (member == null)
             {
                 return new UserValidationResultDTO
                 {
                     IsValid = false,
-                    ErrorMessage = "Invalid email address."
+                    ErrorMessage = "Email address not found in the system. Please contact the administrator for assistance."
                 };
             }
-
-            var role = teamMember.IsTeamLead == true ? "TeamLead" :
-                       teamMember.IsCurrentWeekReporter == true ? "CurrentWeekReporter" :
-                       "Normal";
-
-            var member = await _memberRepository.GetMemberByIdAsync(teamMember.MemberId);
 
             return new UserValidationResultDTO
             {
                 IsValid = true,
-                Role = role,
-                TeamName = teamMember.Team.Name,
-                MemberId = teamMember.MemberId,
-                MemberName = teamMember.Member.Name,
+                MemberId = member.Id,
+                MemberName = member.Name,
                 IsAdmin = (bool)member.IsAdmin
             };
         }

@@ -17,5 +17,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
 
         Task<Member> AddMemberAsync(MemberDTO member);
 
+        Task<Member> GetMemberByEmailAsync(string email);
+
     }
 }

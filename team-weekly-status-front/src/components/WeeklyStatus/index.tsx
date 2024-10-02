@@ -16,7 +16,6 @@ import ReportPreview from "../ReportPreview/index";
 import StaticModal from "../UI/StaticModal";
 
 interface WeeklyStatusProps {
-  role: "TeamLead" | "CurrentWeekReporter" | "Normal";
   teamName: string;
   memberName: string;
   memberId: number;
@@ -24,13 +23,14 @@ interface WeeklyStatusProps {
 
 const WeeklyStatus: React.FC = () => {
   const {
-    role,
     teamId,
     teamName,
     memberName,
     memberId,
     memberActiveTeams,
     isAdmin,
+    isTeamLead,
+    isCurrentWeekReporter,
   } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamName, setLocalTeamName] = useState(teamName);
@@ -66,6 +66,11 @@ const WeeklyStatus: React.FC = () => {
   const navigate = useNavigate();
 
   const [localIsAdmin, setLocalIsAdmin] = useState<boolean>(isAdmin);
+  const [localIsTeamLead, setLocalIsTeamLead] = useState<boolean>(isTeamLead);
+  const [localIsCurrentWeekReporter, setLocalIsCurrentWeekReporter] =
+    useState<boolean>(isCurrentWeekReporter);
+
+
 
   useEffect(() => {
     // Subscribe to memberId changes
@@ -486,7 +491,7 @@ const WeeklyStatus: React.FC = () => {
           <Button variant="primary" type="submit" className="form__btn">
             Save Weekly Status
           </Button>
-          {(role === "CurrentWeekReporter" || role === "TeamLead") && (
+          {localIsCurrentWeekReporter && (
             <Button
               variant="primary"
               onClick={statusReporting}
@@ -496,7 +501,7 @@ const WeeklyStatus: React.FC = () => {
             </Button>
           )}
 
-          {role === "TeamLead" && (
+          {localIsTeamLead && (
             <Button
               variant="primary"
               onClick={assignReporter}

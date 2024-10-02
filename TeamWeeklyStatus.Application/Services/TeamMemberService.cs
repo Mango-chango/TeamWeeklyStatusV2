@@ -57,7 +57,7 @@ namespace TeamWeeklyStatus.Application.Services
             return addedTeamMember;
         }
 
-        public async Task<TeamMember> UpdateTeamMemberAsync(TeamMemberDTO teamMemberDto)
+        public async Task<TeamMemberDTO> UpdateTeamMemberAsync(TeamMemberDTO teamMemberDto)
         {
             var teamMember = await _teamMemberRepository.GetTeamMemberAsync(teamMemberDto.TeamId, teamMemberDto.MemberId);
 
@@ -66,13 +66,21 @@ namespace TeamWeeklyStatus.Application.Services
                 throw new KeyNotFoundException("Team member not found.");
             }
 
-            teamMember.IsTeamLead = teamMemberDto.IsTeamLead;
-            teamMember.IsCurrentWeekReporter = teamMemberDto.IsCurrentWeekReporter;
-            teamMember.StartActiveDate = teamMemberDto.StartActiveDate;
-            teamMember.EndActiveDate = teamMemberDto.EndActiveDate;
-
             var updatedTeamMember = await _teamMemberRepository.UpdateTeamMemberAsync(teamMemberDto);
-            return updatedTeamMember;
+
+            var updatedTeamMemberDto = new TeamMemberDTO
+            {
+                TeamId = updatedTeamMember.TeamId,
+                TeamName = updatedTeamMember.Team?.Name,
+                MemberId = updatedTeamMember.MemberId,
+                MemberName = updatedTeamMember.Member?.Name,
+                IsTeamLead = updatedTeamMember.IsTeamLead,
+                IsCurrentWeekReporter = updatedTeamMember.IsCurrentWeekReporter,
+                StartActiveDate = updatedTeamMember.StartActiveDate,
+                EndActiveDate = updatedTeamMember.EndActiveDate
+            };
+
+            return updatedTeamMemberDto;
         }
 
         public async Task<TeamMember> DeleteTeamMemberAsync(TeamMemberDTO teamMemberDto)
@@ -88,27 +96,9 @@ namespace TeamWeeklyStatus.Application.Services
             return deletedTeamMember;
         }
 
-        public async Task<TeamMember> GetTeamMemberByEmailWithTeamData(string email)
+        public async Task AssignCurrentWeekReporter(int teamId, int memberId)
         {
-            var teamMember = await _teamMemberRepository.GetTeamMemberByEmailWithTeamData(email);
-
-            if (teamMember == null)
-            {
-                throw new KeyNotFoundException("Team member not found.");
-            }
-
-            return teamMember;
-        }
-
-        public async Task<IEnumerable<MemberDTO>> GetTeamMembersExcludingCurrentReporter(int teamId)
-        {
-            var members = await _teamMemberRepository.GetTeamMembersExcludingCurrentReporter(teamId);
-            return members.Select(m => new MemberDTO { Id = m.Id, Name = m.Name }).ToList();
-        }
-
-        public async Task AssignWeekReporter(int teamId, int memberId)
-        {
-            await _teamMemberRepository.AssignWeekReporter(teamId, memberId);
+            await _teamMemberRepository.AssignCurrentWeekReporter(teamId, memberId);
         }
 
         public async Task<IEnumerable<TeamMemberDTO>> GetActiveTeamsByMember(int memberId)

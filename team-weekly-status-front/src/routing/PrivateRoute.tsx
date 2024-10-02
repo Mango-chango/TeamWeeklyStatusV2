@@ -9,10 +9,12 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ allowedRoles, children }) => {
-  const { isAuthenticated, role } = userStore();
+  const { isAuthenticated, isTeamLead, isAdmin, isCurrentWeekReporter } = userStore();
   const navigate = useNavigate();
   console.log('isAuthenticated:', isAuthenticated);
-  console.log('role:', role);
+  console.log('isTeamLead:', isTeamLead);
+  console.log('isAdmin:', isAdmin);
+  console.log('isCurrentWeekReporter:', isCurrentWeekReporter);
   
   useEffect(() => {
     // Not authenticated, redirect to root
@@ -24,13 +26,16 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ allowedRoles, children }) =
       console.log('AUTHENTICATED');
     }
 
+    const role = isAdmin ? "Admin" : isTeamLead ? "TeamLead" : isCurrentWeekReporter ? "Reporter" : null;
+    console.log('role:', role);
+
 
     // Authenticated but either role is missing or not in allowedRoles, redirect to /weekly-status
     if (!role || (allowedRoles && !allowedRoles.includes(role))) {
       navigate("/weekly-status");
       return;
     }
-  }, [isAuthenticated, role, navigate, allowedRoles]);
+  }, [isAuthenticated, navigate, allowedRoles]);
 
   // If conditions don't meet, render children (the original content of the route)
   return <>{children}</>;

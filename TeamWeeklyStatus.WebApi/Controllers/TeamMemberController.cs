@@ -72,44 +72,10 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             return Ok();
         }
 
-
-        [HttpPost("GetTeamMembersWithTeamData")]
-        public async Task<IActionResult> GetTeamMembersWithTeamData(TeamMemberRequest request)
+        [HttpPost("AssignCurrentWeekReporter")]
+        public async Task<ActionResult> AssignCurrentWeekReporter([FromBody] AssignReporterRequest request)
         {
-            var members = await _teamMemberService.GetTeamMemberByEmailWithTeamData(request.Email);
-            if (members == null)
-            {
-                return NotFound();
-            }
-            return Ok(members);
-        }
-
-        //[HttpPost("GetTeamMembersWithTeamDataById")]
-        //public async Task<IActionResult> GetTeamMembersWithTeamDataById(TeamMemberRequest request)
-        //{
-        //    var members = await _teamMemberService.GetTeamMemberByIdWithTeamData((int)request.TeamId);
-        //    if (members == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(members);
-        //}
-
-        [HttpGet("ExcludingCurrentReporter")]
-        public async Task<IActionResult> GetTeamMembersExcludingCurrentReporter([FromBody] TeamMemberRequest request)
-        {
-            var members = await _teamMemberService.GetTeamMemberByEmailWithTeamData(request.Email);
-            if (members == null)
-            {
-                return NotFound();
-            }
-            return Ok(members);
-        }
-
-        [HttpPost("AssignWeekReporter")]
-        public async Task<ActionResult> AssignWeekReporter([FromBody] AssignReporterRequest request)
-        {
-            await _teamMemberService.AssignWeekReporter(request.TeamId, request.MemberId);
+            await _teamMemberService.AssignCurrentWeekReporter(request.TeamId, request.MemberId);
             return Ok();
         }
 

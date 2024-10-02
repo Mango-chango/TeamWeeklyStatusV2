@@ -165,6 +165,12 @@ const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
               Team Lead {renderSortIcon("isTeamLead")}
             </th>
             <th
+              onClick={() => requestSort("isCurrentWeekReporter")}
+              style={{ cursor: "pointer", textAlign: "center" }}
+            >
+              Current Week Reporter {renderSortIcon("isCurrentWeekReporter")}
+            </th>
+            <th
               onClick={() => requestSort("startActiveDate")}
               style={{ cursor: "pointer" }}
             >
@@ -192,10 +198,17 @@ const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
                   className="readonly-checkbox"
                 />
               </td>
+              <td style={{ textAlign: "center" }}>
+                <input
+                  type="checkbox"
+                  checked={teamMember.isCurrentWeekReporter}
+                  onChange={(e) => e.preventDefault()}
+                  aria-readonly="true"
+                  className="readonly-checkbox"
+                />
+              </td>
               <td>{formatDate(teamMember.startActiveDate)}</td>
               <td>{formatDate(teamMember.endActiveDate)}</td>
-              {/* <td>{teamMember.startActiveDate?.slice(0, 10) || "-"}</td>
-              <td>{teamMember.endActiveDate?.slice(0, 10) || "-"}</td> */}
               <td>
                 <Button
                   variant="warning"

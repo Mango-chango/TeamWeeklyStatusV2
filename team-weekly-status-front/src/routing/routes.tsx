@@ -76,9 +76,9 @@ const AppRoutes: React.FC = () => {
       <Route
         path="/admin"
         element={
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Admin"]}>
             <AdminPanel />
-          </PrivateRoute>
+          </PrivateRoute> 
         }
       />
       <Route
