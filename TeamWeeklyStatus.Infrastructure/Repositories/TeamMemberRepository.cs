@@ -87,13 +87,13 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
 
         public async Task AssignCurrentWeekReporter(int teamId, int memberId)
         {
-            var currentReporter = _context.TeamMembers.SingleOrDefault(tm => tm.IsCurrentWeekReporter == true);
+            var currentReporter = _context.TeamMembers.FirstOrDefault(tm => tm.TeamId == teamId && tm.IsCurrentWeekReporter == true);
             if (currentReporter != null)
             {
                 currentReporter.IsCurrentWeekReporter = false;
             }
 
-            var newReporter = _context.TeamMembers.Single(tm => tm.MemberId == memberId);
+            var newReporter = _context.TeamMembers.Single(tm => tm.TeamId == teamId && tm.MemberId == memberId);
             newReporter.IsCurrentWeekReporter = true;
 
             await _context.SaveChangesAsync();

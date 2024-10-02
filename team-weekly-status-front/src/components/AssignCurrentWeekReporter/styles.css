@@ -1,0 +1,32 @@
+/* Remove or adjust the width */
+.assign-current-week-reporter__form__container {
+  max-width: 400px;
+  width: 100%;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* Rest of your styles */
+.assign-current-week-reporter__form__group {
+  padding-top: 20px;
+}
+
+.assign-current-week-reporter__form__btngroup {
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+.assign-current-week-reporter__form__btn {
+  margin-right: 20px;
+}
+
+.assign-current-week-reporter__list__item {
+  cursor: pointer;
+}
+
+/* Optional: Ensure ListGroup doesn't exceed form width */
+.assign-current-week-reporter__list__group {
+  width: 100%;
+}

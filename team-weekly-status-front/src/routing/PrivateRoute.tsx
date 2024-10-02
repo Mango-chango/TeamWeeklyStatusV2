@@ -26,15 +26,20 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ allowedRoles, children }) =
       console.log('AUTHENTICATED');
     }
 
-    const role = isAdmin ? "Admin" : isTeamLead ? "TeamLead" : isCurrentWeekReporter ? "Reporter" : null;
-    console.log('role:', role);
+    const userRoles = [
+      isAdmin && "Admin",
+      isTeamLead && "TeamLead",
+      isCurrentWeekReporter && "CurrentWeekReporter"
+    ].filter(Boolean) as string[];
+    console.log('userRoles:', userRoles);
 
 
     // Authenticated but either role is missing or not in allowedRoles, redirect to /weekly-status
-    if (!role || (allowedRoles && !allowedRoles.includes(role))) {
+    if (!userRoles.length || (allowedRoles && !userRoles.some(role => allowedRoles.includes(role)))) {
       navigate("/weekly-status");
       return;
     }
+
   }, [isAuthenticated, navigate, allowedRoles]);
 
   // If conditions don't meet, render children (the original content of the route)

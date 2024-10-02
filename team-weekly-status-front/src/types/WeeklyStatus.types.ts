@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import WeeklyStatus from "../components/WeeklyStatus/index";
 
 export interface Subtask {
@@ -39,6 +40,7 @@ export type Member = {
   email?: string;
 };
 
+
 export interface GoogleLoginResponse {
   success: boolean;
   memberId: number | 0;
@@ -69,4 +71,10 @@ export type UserMember = {
   name: string;
   email: string;
   isAdmin?: boolean;
+};
+
+export type Reporter = {
+  memberId: number;
+  memberName: string;
+  email?: string;
 };

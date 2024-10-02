@@ -312,7 +312,7 @@ const WeeklyStatus: React.FC = () => {
 
   return (
     <div className="d-flex flex-column align-items-center mt-5">
-      <Form onSubmit={handleSubmit} className="form__container">
+      <Form onSubmit={handleSubmit} className="weekly-status__form__container">
         <h2>Team {teamName}</h2>
         <h3>Welcome {memberName}!</h3>
         <h3>
