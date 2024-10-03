@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.WebApi.DTOs;
 
@@ -14,10 +15,10 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             _teamMemberService = teamMemberService;
         }
 
-        [HttpGet("WithoutCurrentReporter")]
-        public async Task<IActionResult> GetMembersWithoutCurrentReporter()
+        [HttpPost("GetAll")]
+        public async Task<IActionResult> GetAllTeamMembers([FromBody] TeamMemberRequest request)
         {
-            var members = await _teamMemberService.GetMembersWithoutCurrentReporter();
+            var members = await _teamMemberService.GetAllTeamMembersAsync((int)request.TeamId);
             if (members == null)
             {
                 return NotFound();
@@ -25,15 +26,61 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             return Ok(members);
         }
 
-        [HttpPost("AssignReporter")]
-        public async Task<ActionResult> AssignReporter(AssignReporterRequest request)
+        [HttpPost("Add")]
+        public async Task<IActionResult> AddTeamMember([FromBody] TeamMemberPostRequest request)
         {
-            await _teamMemberService.AssignReporter(request.MemberId);
+            var teamMemberDto = new TeamMemberDTO
+            {
+                TeamId = request.TeamId,
+                MemberId = request.MemberId,
+                IsTeamLead = request.IsTeamLead,
+                IsCurrentWeekReporter = request.IsCurrentWeekReporter,
+                StartActiveDate = request.StartActiveDate,
+                EndActiveDate = request.EndActiveDate
+            };
+
+            var addedTeamMember = await _teamMemberService.AddTeamMemberAsync(teamMemberDto);
+            return Ok(addedTeamMember);
+        }
+
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateTeamMember([FromBody] TeamMemberPostRequest request)
+        {
+            var teamMemberDto = new TeamMemberDTO
+            {
+                TeamId = request.TeamId,
+                MemberId = request.MemberId,
+                IsTeamLead = request.IsTeamLead,
+                IsCurrentWeekReporter = request.IsCurrentWeekReporter,
+                StartActiveDate = request.StartActiveDate,
+                EndActiveDate = request.EndActiveDate
+            };
+
+            var updatedTeamMember = await _teamMemberService.UpdateTeamMemberAsync(teamMemberDto);
+            return Ok(updatedTeamMember);
+        }
+
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> RemoveTeamMember([FromQuery] int teamId, [FromQuery] int memberId)
+        {
+            var teamMemberDto = new TeamMemberDTO
+            {
+                TeamId = teamId,
+                MemberId = memberId,
+            };
+            await _teamMemberService.DeleteTeamMemberAsync(teamMemberDto);
+            return Ok();
+        }
+
+        [HttpPost("AssignCurrentWeekReporter")]
+        public async Task<ActionResult> AssignCurrentWeekReporter([FromBody] AssignReporterRequest request)
+        {
+            await _teamMemberService.AssignCurrentWeekReporter(request.TeamId, request.MemberId);
             return Ok();
         }
 
         [HttpPost("GetMemberActiveTeams")]
-        public async Task<IActionResult> GetActiveTeams(MemberTeamsRequest request)
+        public async Task<IActionResult> GetActiveTeams([FromBody] MemberTeamsRequest request)
         {
             var activeTeams =  await _teamMemberService.GetActiveTeamsByMember(request.MemberId);
             if (activeTeams == null)

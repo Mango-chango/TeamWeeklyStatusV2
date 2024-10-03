@@ -17,7 +17,7 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -55,6 +55,9 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsAdmin")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -136,9 +139,6 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
 
                     b.Property<DateTime?>("EndActiveDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool?>("IsAdminMember")
-                        .HasColumnType("bit");
 
                     b.Property<bool?>("IsCurrentWeekReporter")
                         .HasColumnType("bit");

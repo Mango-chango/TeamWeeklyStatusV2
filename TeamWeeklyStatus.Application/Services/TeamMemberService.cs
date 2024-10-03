@@ -1,8 +1,6 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.Domain.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
-using TeamWeeklyStatus.Infrastructure.Repositories;
 
 namespace TeamWeeklyStatus.Application.Services
 {
@@ -11,49 +9,99 @@ namespace TeamWeeklyStatus.Application.Services
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly IRepository<Team> _teamRepository;
 
+
         public TeamMemberService(ITeamMemberRepository teamMemberRepository, IRepository<Team> teamRepository)
         {
             _teamMemberRepository = teamMemberRepository;
             _teamRepository = teamRepository;
         }
 
-        Task<TeamMember> ITeamMemberService.AddTeamMemberAsync(TeamMember teamMember)
+        public async Task<TeamMember> GetTeamMemberAsync(int teamId, int memberId)
         {
-            throw new NotImplementedException();
+            return await _teamMemberRepository.GetTeamMemberAsync(teamId, memberId);
         }
 
-        Task<TeamMember> ITeamMemberService.DeleteTeamMemberAsync(int teamId, int memberId)
+        public async Task<IEnumerable<TeamMemberDTO>> GetAllTeamMembersAsync(int teamId)
         {
-            throw new NotImplementedException();
+            var teamMembers = await _teamMemberRepository.GetAllTeamMembersAsync(teamId);
+
+            var teamMemberDTOs = teamMembers.Select(tm => new TeamMemberDTO
+            {
+                TeamId = tm.TeamId,
+                TeamName = tm.Team?.Name,
+                MemberId = tm.MemberId,
+                MemberName = tm.Member?.Name,
+                IsTeamLead = tm.IsTeamLead,
+                IsCurrentWeekReporter = tm.IsCurrentWeekReporter,
+                StartActiveDate = tm.StartActiveDate,
+                EndActiveDate = tm.EndActiveDate
+            }).ToList();
+
+            return teamMemberDTOs;
         }
 
-        Task<TeamMember> ITeamMemberService.GetTeamMemberAsync(int teamId, int memberId)
+
+        public async Task<TeamMember> AddTeamMemberAsync(TeamMemberDTO teamMemberDto)
         {
-            throw new NotImplementedException();
+            var teamMember = new TeamMember
+            {
+                TeamId = teamMemberDto.TeamId,
+                MemberId = teamMemberDto.MemberId,
+                IsTeamLead = teamMemberDto.IsTeamLead,
+                IsCurrentWeekReporter = teamMemberDto.IsCurrentWeekReporter,
+                StartActiveDate = teamMemberDto.StartActiveDate,
+                EndActiveDate = teamMemberDto.EndActiveDate
+            };
+
+            var addedTeamMember = await _teamMemberRepository.AddTeamMemberAsync(teamMemberDto);
+            return addedTeamMember;
         }
 
-        Task<List<TeamMember>> ITeamMemberService.GetTeamMembersAsync()
+        public async Task<TeamMemberDTO> UpdateTeamMemberAsync(TeamMemberDTO teamMemberDto)
         {
-            throw new NotImplementedException();
+            var teamMember = await _teamMemberRepository.GetTeamMemberAsync(teamMemberDto.TeamId, teamMemberDto.MemberId);
+
+            if (teamMember == null)
+            {
+                throw new KeyNotFoundException("Team member not found.");
+            }
+
+            var updatedTeamMember = await _teamMemberRepository.UpdateTeamMemberAsync(teamMemberDto);
+
+            var updatedTeamMemberDto = new TeamMemberDTO
+            {
+                TeamId = updatedTeamMember.TeamId,
+                TeamName = updatedTeamMember.Team?.Name,
+                MemberId = updatedTeamMember.MemberId,
+                MemberName = updatedTeamMember.Member?.Name,
+                IsTeamLead = updatedTeamMember.IsTeamLead,
+                IsCurrentWeekReporter = updatedTeamMember.IsCurrentWeekReporter,
+                StartActiveDate = updatedTeamMember.StartActiveDate,
+                EndActiveDate = updatedTeamMember.EndActiveDate
+            };
+
+            return updatedTeamMemberDto;
         }
 
-        Task<TeamMember> ITeamMemberService.UpdateTeamMemberAsync(TeamMember teamMember)
+        public async Task<TeamMember> DeleteTeamMemberAsync(TeamMemberDTO teamMemberDto)
         {
-            throw new NotImplementedException();
+            var teamMember = await _teamMemberRepository.GetTeamMemberAsync(teamMemberDto.TeamId, teamMemberDto.MemberId);
+
+            if (teamMember == null)
+            {
+                throw new KeyNotFoundException("Team member not found.");
+            }
+
+            var deletedTeamMember = await _teamMemberRepository.DeleteTeamMemberAsync(teamMemberDto);
+            return deletedTeamMember;
         }
 
-        public async Task<IEnumerable<MemberDTO>> GetMembersWithoutCurrentReporter()
+        public async Task AssignCurrentWeekReporter(int teamId, int memberId)
         {
-            var members = await _teamMemberRepository.GetMembersWithoutCurrentReporter();
-            return members.Select(m => new MemberDTO { Id = m.Id, Name = m.Name }).ToList();
+            await _teamMemberRepository.AssignCurrentWeekReporter(teamId, memberId);
         }
 
-        public async Task AssignReporter(int memberId)
-        {
-            await _teamMemberRepository.AssignReporter(memberId);
-        }
-
-        public async Task<List<TeamMemberDTO>> GetActiveTeamsByMember(int memberId)
+        public async Task<IEnumerable<TeamMemberDTO>> GetActiveTeamsByMember(int memberId)
         {
             DateTime today = DateTime.Now;
             var allTeams = _teamMemberRepository.GetAllTeamsByMember(memberId).Result.ToList();
@@ -72,7 +120,6 @@ namespace TeamWeeklyStatus.Application.Services
                           EndActiveDate = tm.EndActiveDate,
                           MemberId = tm.MemberId,
                           MemberName = tm.Member?.Name ?? "",
-                          IsAdminMember = tm.IsAdminMember,
                           IsCurrentWeekReporter = tm.IsCurrentWeekReporter,
                           IsTeamLead = tm.IsTeamLead
                       })
@@ -80,6 +127,7 @@ namespace TeamWeeklyStatus.Application.Services
 
             return activeTeamsDTOs;
         }
+
 
     }
 }

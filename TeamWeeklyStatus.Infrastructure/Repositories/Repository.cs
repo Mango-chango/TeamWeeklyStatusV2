@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TeamWeeklyStatus.Application.Interfaces;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
 {
@@ -21,6 +22,11 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
         public void Add(T entity) => _entities.Add(entity);
 
         public void Update(T entity)
+        {
+            _entities.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+        public void UpdateAsync(T entity)
         {
             _entities.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;

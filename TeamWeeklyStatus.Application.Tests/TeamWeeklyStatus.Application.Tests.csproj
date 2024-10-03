@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TeamWeeklyStatus.Application\TeamWeeklyStatus.Application.csproj" />
-    <ProjectReference Include="..\TeamWeeklyStatus.Infrastructure\TeamWeeklyStatus.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

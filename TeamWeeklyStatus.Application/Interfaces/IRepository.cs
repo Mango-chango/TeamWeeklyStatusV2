@@ -1,4 +1,4 @@
-﻿namespace TeamWeeklyStatus.Infrastructure.Repositories
+﻿namespace TeamWeeklyStatus.Application.Interfaces
 {
     public interface IRepository<T>
         where T : class

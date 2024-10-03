@@ -16,15 +16,22 @@ import ReportPreview from "../ReportPreview/index";
 import StaticModal from "../UI/StaticModal";
 
 interface WeeklyStatusProps {
-  role: "TeamLead" | "CurrentWeekReporter" | "Normal";
   teamName: string;
   memberName: string;
   memberId: number;
 }
 
 const WeeklyStatus: React.FC = () => {
-  const { role, teamId, teamName, memberName, memberId, memberActiveTeams } =
-    userStore();
+  const {
+    teamId,
+    teamName,
+    memberName,
+    memberId,
+    memberActiveTeams,
+    isAdmin,
+    isTeamLead,
+    isCurrentWeekReporter,
+  } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [localTeamId, setLocalTeamId] = useState(teamId);
@@ -57,6 +64,13 @@ const WeeklyStatus: React.FC = () => {
   const inTwoMonths = moment().add(2, "months").endOf("isoWeek");
 
   const navigate = useNavigate();
+
+  const [localIsAdmin, setLocalIsAdmin] = useState<boolean>(isAdmin);
+  const [localIsTeamLead, setLocalIsTeamLead] = useState<boolean>(isTeamLead);
+  const [localIsCurrentWeekReporter, setLocalIsCurrentWeekReporter] =
+    useState<boolean>(isCurrentWeekReporter);
+
+
 
   useEffect(() => {
     // Subscribe to memberId changes
@@ -100,9 +114,7 @@ const WeeklyStatus: React.FC = () => {
         setDoneThisWeek(response.doneThisWeek);
         setPlanForNextWeek(response.planForNextWeek);
         setUpcomingPTO(
-          response.upcomingPTO.map((date) =>
-            moment(date).format("YYYY-MM-DD")
-          )
+          response.upcomingPTO.map((date) => moment(date).format("YYYY-MM-DD"))
         );
         setSelectedDates(
           response.upcomingPTO.map((date) => moment(date).toDate())
@@ -182,8 +194,8 @@ const WeeklyStatus: React.FC = () => {
       });
 
       setSelectedDates((prev) => {
-        if (prev.some((d) => moment(d).isSame(date, 'day'))) {
-          return prev.filter((d) => !moment(d).isSame(date, 'day'));
+        if (prev.some((d) => moment(d).isSame(date, "day"))) {
+          return prev.filter((d) => !moment(d).isSame(date, "day"));
         } else {
           return [...prev, date];
         }
@@ -294,9 +306,13 @@ const WeeklyStatus: React.FC = () => {
     navigate("/team-selection");
   };
 
+  const handleAdminPanel = () => {
+    navigate("/admin");
+  };
+
   return (
     <div className="d-flex flex-column align-items-center mt-5">
-      <Form onSubmit={handleSubmit} className="form__container">
+      <Form onSubmit={handleSubmit} className="weekly-status__form__container">
         <h2>Team {teamName}</h2>
         <h3>Welcome {memberName}!</h3>
         <h3>
@@ -475,7 +491,7 @@ const WeeklyStatus: React.FC = () => {
           <Button variant="primary" type="submit" className="form__btn">
             Save Weekly Status
           </Button>
-          {(role === "CurrentWeekReporter" || role === "TeamLead") && (
+          {localIsCurrentWeekReporter && (
             <Button
               variant="primary"
               onClick={statusReporting}
@@ -485,7 +501,7 @@ const WeeklyStatus: React.FC = () => {
             </Button>
           )}
 
-          {role === "TeamLead" && (
+          {localIsTeamLead && (
             <Button
               variant="primary"
               onClick={assignReporter}
@@ -510,6 +526,16 @@ const WeeklyStatus: React.FC = () => {
               className="form__btn"
             >
               Team Selection
+            </Button>
+          )}
+
+          {localIsAdmin && (
+            <Button
+              variant="primary"
+              onClick={handleAdminPanel}
+              className="form__btn"
+            >
+              Admin Panel
             </Button>
           )}
 

@@ -1,6 +1,5 @@
 ﻿using Moq;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.Infrastructure.Repositories;
 using TeamWeeklyStatus.Application.Services;
 using TeamWeeklyStatus.Domain.Entities;
 
@@ -9,20 +8,22 @@ namespace TeamWeeklyStatus.Application.Tests
     public class UserServiceTests
     {
         private readonly IUserService _userService;
-        private readonly Mock<ITeamMemberRepository> _mockRepository;
+        private readonly Mock<ITeamMemberRepository> _mockTeamMemberRepository;
+        private readonly Mock<IMemberRepository> _mockMemberRepository;
 
         public UserServiceTests()
         {
-            _mockRepository = new Mock<ITeamMemberRepository>();
-            _userService = new UserService(_mockRepository.Object);
+            _mockTeamMemberRepository = new Mock<ITeamMemberRepository>();
+            _mockMemberRepository = new Mock<IMemberRepository>();
+            _userService = new UserService(_mockTeamMemberRepository.Object, _mockMemberRepository.Object);
         }
 
         [Fact]
-        public async Task ValidateUser_WithInvalidEmail_ReturnsInvalidValidationResult()
+        public async Task ValidateUserWithInvalidEmailReturnsInvalidValidationResult()
         {
             // Arrange
-            _mockRepository.Setup(repo => repo.GetByEmailWithTeamData(It.IsAny<string>()))
-                           .ReturnsAsync((TeamMember)null);
+            _mockMemberRepository.Setup(repo => repo.GetMemberByEmailAsync(It.IsAny<string>()))
+                           .ReturnsAsync((Member)null);
 
             // Act
             var result = await _userService.ValidateUser("invalid.email@changos.com");
@@ -33,10 +34,11 @@ namespace TeamWeeklyStatus.Application.Tests
         }
 
         [Theory]
-        [InlineData(true, null, "TeamLead")]
-        [InlineData(null, true, "CurrentWeekReporter")]
-        [InlineData(null, null, "Normal")]
-        public async Task ValidateUser_WithValidEmail_ReturnsCorrectRole(bool? isTeamLead, bool? isCurrentWeekReporter, string expectedRole)
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        [InlineData(true, true)]
+        [InlineData(false, false)]
+        public async Task ValidateUserIsTeamLead(bool? isTeamLead, bool? isCurrentWeekReporter)
         {
             // Arrange
             var mockMember = new TeamMember
@@ -47,18 +49,21 @@ namespace TeamWeeklyStatus.Application.Tests
                 Team = new Team { Name = "Team Coolest Changos" }
             };
 
-            _mockRepository.Setup(repo => repo.GetByEmailWithTeamData(It.IsAny<string>()))
+            _mockMemberRepository.Setup(repo => repo.GetMemberByEmailAsync(It.IsAny<string>()))
+                           .ReturnsAsync(new Member { Name = "Guicho el Monkey" });
+
+            _mockTeamMemberRepository.Setup(repo => repo.GetTeamMemberAsync(It.IsAny<int>(), It.IsAny<int>()))
                            .ReturnsAsync(mockMember);
 
             // Act
-            var result = await _userService.ValidateUser("macaco@changos.com");
+            var result = await _userService.ValidateUser("guicho@changos.com");
 
             // Assert
-            Assert.True(result.IsValid);
-            Assert.Equal(expectedRole, result.Role);
-            Assert.Equal("Team Coolest Changos", result.TeamName);
-            Assert.Equal("Guicho el Monkey", result.MemberName);
+            Assert.NotNull(result);
+            Assert.Equal(isTeamLead, mockMember.IsTeamLead);
+            Assert.Equal(isCurrentWeekReporter, mockMember.IsCurrentWeekReporter);
+            Assert.Equal("Team Coolest Changos", mockMember.Team.Name);
+            Assert.Equal("Guicho el Monkey", mockMember.Member.Name);
         }
-
     }
 }

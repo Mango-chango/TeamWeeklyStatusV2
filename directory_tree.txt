@@ -1,0 +1,35 @@
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:.
+
++---TeamWeeklyStatus.Application
+¦   +---DTOs
+¦   +---Interfaces
+¦   +---Services
++---TeamWeeklyStatus.Application.Tests
++---TeamWeeklyStatus.Domain
+¦   +---DTOs
+¦   +---Entities
++---TeamWeeklyStatus.Infrastructure
+¦   +---Migrations
+¦   +---Repositories
+¦   +---TeamWeeklyStatusContext.cs
++---TeamWeeklyStatus.WebApi
+¦   +---Controllers
+¦   +---DTOs
+¦   +---Services
+¦   +---wwwroot
++---TeamWeeklyStatus.WebApi.Tests
++---team-weekly-status-front
+¦   +---node_modules
+¦   ¦   +---.bin
+¦   ¦   +---.vite
+¦   +---public
+¦   +---src
+¦   ¦   +---assets
+¦   ¦   +---components
+¦   ¦   +---routing
+¦   ¦   +---services
+¦   ¦   +---store
+¦   ¦   +---types
+¦   +---__mocks__

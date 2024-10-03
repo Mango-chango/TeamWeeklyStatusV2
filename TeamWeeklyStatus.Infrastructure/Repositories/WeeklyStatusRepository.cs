@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamWeeklyStatus.Domain.DTOs;
+using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories

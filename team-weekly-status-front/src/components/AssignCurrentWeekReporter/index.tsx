@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { ListGroup, Button, Alert, Form } from "react-bootstrap";
 import { makeApiRequest } from "../../services/apiHelper";
-import { Member } from "../../types/WeeklyStatus.types";
+import { Reporter } from "../../types/WeeklyStatus.types";
 import { useNavigate } from "react-router-dom";
-import './styles.css';
+import "./styles.css";
+import userStore from "../../store/userStore";
 
-const AssignReporter: React.FC = () => {
+const AssignCurrentWeekReporter: React.FC = () => {
+  const { teamId, memberId } = userStore();
+
   const [members, setMembers] = useState<Member[]>([]);
-  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(
+    memberId
+  );
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,9 +21,11 @@ const AssignReporter: React.FC = () => {
   useEffect(() => {
     // Fetch the members but exclude the current reporter
     const fetchMembers = async () => {
-      const response: Member[] = await makeApiRequest(
-        "/TeamMember/WithoutCurrentReporter",
-        "GET"
+      const body = { teamId };
+      const response: Reporter[] = await makeApiRequest(
+        "/TeamMember/GetAll",
+        "POST",
+        body
       );
       setMembers(response);
     };
@@ -29,7 +36,8 @@ const AssignReporter: React.FC = () => {
   const handleSave = async () => {
     try {
       if (selectedMemberId) {
-        await makeApiRequest("/TeamMember/AssignReporter", "POST", {
+        await makeApiRequest("/TeamMember/AssignCurrentWeekReporter", "POST", {
+          teamId,
           memberId: selectedMemberId,
         });
       }
@@ -53,7 +61,7 @@ const AssignReporter: React.FC = () => {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center mt-5">
+    <div className="d-flex flex-column align-items-center mt-1 assign-current-week-reporter__form__container">
       <h3>Assign Weekly Status Reporter</h3>
       {success && (
         <Alert variant="success" className="mt-3">
@@ -65,35 +73,43 @@ const AssignReporter: React.FC = () => {
           {error}
         </Alert>
       )}
-      <ListGroup>
+      <div>
+        <label>
+          {" "}
+          Select a team member to assign as the reporter for this week:
+        </label>
+      </div>
+      <ListGroup className="assign-current-week-reporter__list__group">
         {members.map((member) => (
           <ListGroup.Item
-            key={member.id}
-            active={selectedMemberId === member.id}
-            onClick={() => setSelectedMemberId(member.id)}
-            className="list__item"
+            key={member.memberId}
+            active={selectedMemberId === member.memberId}
+            onClick={() => setSelectedMemberId(member.memberId)}
+            className="assign-current-week-reporter__list__item"
+            action
+            as="button"
           >
-            {member.name}
+            {member.memberName}
           </ListGroup.Item>
         ))}
       </ListGroup>
-      <Form.Group
-        controlId="buttons"
-        className="form__buttons"
-      >
+
+      <div className="assign-current-week-reporter__form__btngroup">
         <Button
-          onClick={handleSave}
+          variant="primary"
           disabled={!selectedMemberId}
-          className="mt-3"
+          onClick={handleSave}
+          className="assign-current-week-reporter__form__btn"
         >
-          Save
+          Assign
         </Button>
-        <Button variant="secondary" onClick={handleBack} className="mt-3 ml-2">
+
+        <Button variant="secondary" onClick={handleBack} className="assign-current-week-reporter__form__btn">
           Back
         </Button>
-      </Form.Group>
+      </div>
     </div>
   );
 };
 
-export default AssignReporter;
+export default AssignCurrentWeekReporter;

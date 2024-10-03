@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import WeeklyStatus from "../components/WeeklyStatus/index";
 
 export interface Subtask {
@@ -39,12 +40,12 @@ export type Member = {
   email?: string;
 };
 
+
 export interface GoogleLoginResponse {
   success: boolean;
-  role: "TeamLead" | "CurrentWeekReporter" | "Normal" | null;
-  teamName: string | "";
   memberId: number | 0;
   memberName: string | "";
+  isAdmin: boolean;
 }
 
 export type Team = {
@@ -59,9 +60,21 @@ export type TeamMember = {
   memberName: string;
   isTeamLead: boolean;
   isCurrentWeekReporter: boolean;
-  isAdminMember: boolean;
   startActiveDate: string;
   endActiveDate: string;
 };
 
 export type MemberTeams = TeamMember[];
+
+export type UserMember = {
+  id: number;
+  name: string;
+  email: string;
+  isAdmin?: boolean;
+};
+
+export type Reporter = {
+  memberId: number;
+  memberName: string;
+  email?: string;
+};

@@ -7,7 +7,7 @@ namespace TeamWeeklyStatus.Infrastructure
     {
         public TeamWeeklyStatusContext CreateDbContext(string[] args)
         {
-            string azureSqlConnection = "conn string here";
+            string azureSqlConnection = "";
 
             var optionsBuilder = new DbContextOptionsBuilder<TeamWeeklyStatusContext>();
             optionsBuilder.UseSqlServer(azureSqlConnection);
