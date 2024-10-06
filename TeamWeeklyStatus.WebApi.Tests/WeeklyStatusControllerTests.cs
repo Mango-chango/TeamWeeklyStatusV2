@@ -65,7 +65,7 @@ namespace TeamWeeklyStatus.WebApi.Tests
                 MemberId = 1,
                 WeekStartDate = new DateTime(2023, 10, 17),
                 DoneThisWeek = new List<WebApi.DTOs.DoneThisWeekTaskDTO> { new WebApi.DTOs.DoneThisWeekTaskDTO { TaskDescription = "Task 1" } },
-                PlanForNextWeek = new List<string> { "Plan 1" },
+                PlanForNextWeek = new List<WebApi.DTOs.PlanForNextWeekTaskDTO> { new WebApi.DTOs.PlanForNextWeekTaskDTO { TaskDescription = "Plan 1" } },
                 Blockers = "None",
                 UpcomingPTO = new List<DateTime> { new DateTime(2023, 10, 24) }
             };
@@ -75,7 +75,7 @@ namespace TeamWeeklyStatus.WebApi.Tests
             {
                 Id = 3,
                 DoneThisWeek = request.DoneThisWeek.Select(dtw => new TeamWeeklyStatus.Application.DTOs.DoneThisWeekTaskDTO { TaskDescription = dtw.TaskDescription }).ToList(),
-                PlanForNextWeek = request.PlanForNextWeek,
+                PlanForNextWeek = request.PlanForNextWeek.Select(pfnw => new TeamWeeklyStatus.Application.DTOs.PlanForNextWeekTaskDTO { TaskDescription = pfnw.TaskDescription }).ToList(),
                 Blockers = request.Blockers,
                 UpcomingPTO = request.UpcomingPTO,
                 MemberId = request.MemberId
