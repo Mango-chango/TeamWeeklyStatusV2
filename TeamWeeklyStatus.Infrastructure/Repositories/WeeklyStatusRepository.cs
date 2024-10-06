@@ -129,6 +129,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .Include(ws => ws.DoneThisWeekTasks)
                 .ThenInclude(dtw => dtw.Subtasks)
                 .Include(ws => ws.PlanForNextWeekTasks)
+                .ThenInclude(pfnwt => pfnwt.Subtasks)
                 .Where(ws => ws.TeamId == teamId && ws.WeekStartDate.Date == dateOnly)
                 .ToListAsync();
 

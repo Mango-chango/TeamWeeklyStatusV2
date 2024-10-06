@@ -1,6 +1,3 @@
-import { ReactNode } from "react";
-import WeeklyStatus from "../components/WeeklyStatus/index";
-
 export interface Subtask {
   subtaskDescription: string;
 }
@@ -12,7 +9,7 @@ export interface WeeklyStatusData {
   id: number;
   weekStartDate: Date | string;
   doneThisWeek: TaskWithSubtasks[];
-  planForNextWeek: string[];
+  planForNextWeek: TaskWithSubtasks[];
   upcomingPTO: (Date | string)[];
   blockers: string;
   memberId: number;
