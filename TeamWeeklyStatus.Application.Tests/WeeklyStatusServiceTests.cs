@@ -25,7 +25,7 @@ namespace TeamWeeklyStatus.Application.Tests
                 Id = 1,
                 WeekStartDate = new DateTime(2023, 10, 17),
                 DoneThisWeek = new List<DoneThisWeekTaskDTO> { new DoneThisWeekTaskDTO { TaskDescription = "Task 1", Subtasks = new List<SubtaskDTO>() /* Populate if needed */ } },
-                PlanForNextWeek = new List<string> { "Plan 1"},
+                PlanForNextWeek = new List<PlanForNextWeekTaskDTO> { new PlanForNextWeekTaskDTO { TaskDescription = "Plan 1", Subtasks = new List<SubtaskNextWeekDTO>() /* Populate if needed */ } },
                 Blockers = "None",
                 UpcomingPTO = new List<DateTime> { new DateTime(2023, 10, 24) },
                 MemberId = 2
@@ -52,10 +52,12 @@ namespace TeamWeeklyStatus.Application.Tests
             {
                 WeekStartDate = new DateTime(2023, 10, 17),
                 DoneThisWeek = new List<DoneThisWeekTaskDTO>
-        {
-            new DoneThisWeekTaskDTO { TaskDescription = "Task 1" } // Assuming DoneThisWeekTaskDTO has a TaskDescription property
-        },
-                PlanForNextWeek = new List<string> { "Plan 1" }, // Assuming PlanForNextWeek is still a List<string>
+                {
+                    new DoneThisWeekTaskDTO { TaskDescription = "Task 1" } // Assuming DoneThisWeekTaskDTO has a TaskDescription property
+                },
+                PlanForNextWeek = new List<PlanForNextWeekTaskDTO> 
+                { 
+                    new PlanForNextWeekTaskDTO { TaskDescription = "Plan 1" } }, // Assuming PlanForNextWeekTaskDTO has a TaskDescription property
                 Blockers = "None",
                 UpcomingPTO = new List<DateTime> { new DateTime(2023, 10, 24) },
                 MemberId = 2

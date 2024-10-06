@@ -17,6 +17,8 @@ namespace TeamWeeklyStatus.Infrastructure
 
         public DbSet<Subtask> Subtasks { get; set; }
 
+        public DbSet<SubtaskNextWeek> SubtasksNextWeek { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TeamMember>().HasKey(tm => new { tm.TeamId, tm.MemberId });
@@ -43,6 +45,12 @@ namespace TeamWeeklyStatus.Infrastructure
                 .Entity<DoneThisWeekTask>()
                 .HasOne(p => p.WeeklyStatus)
                 .WithMany(b => b.DoneThisWeekTasks)
+                .HasForeignKey(p => p.WeeklyStatusId);
+
+            modelBuilder
+                .Entity<PlanForNextWeekTask>()
+                .HasOne(p => p.WeeklyStatus)
+                .WithMany(b => b.PlanForNextWeekTasks)
                 .HasForeignKey(p => p.WeeklyStatusId);
 
             modelBuilder

@@ -14,6 +14,8 @@ namespace TeamWeeklyStatus.Application.Interfaces
 
         Task AddSubtasksAsync(IEnumerable<Subtask> subtasks);
         Task UpdateSubtasksAsync(IEnumerable<Subtask> subtasks);
-        //Task DeleteSubtasksAsync(IEnumerable<Subtask> subtasks);
+
+        Task AddSubtasksNextWeekAsync(IEnumerable<SubtaskNextWeek> subtasks);
+        Task UpdateSubtasksNextWeekAsync(IEnumerable<SubtaskNextWeek> subtasks);
     }
 }

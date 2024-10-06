@@ -50,7 +50,11 @@ namespace TeamWeeklyStatus.WebApi.Controllers
                     TaskDescription = dtw.TaskDescription,
                     Subtasks = dtw.Subtasks.Select(sub => new Application.DTOs.SubtaskDTO { SubtaskDescription = sub.SubtaskDescription }).ToList()
                 }).ToList(),
-                PlanForNextWeek = request.PlanForNextWeek,
+                PlanForNextWeek = request.PlanForNextWeek.Select(pfnw => new Application.DTOs.PlanForNextWeekTaskDTO
+                {
+                    TaskDescription = pfnw.TaskDescription,
+                    Subtasks = pfnw.Subtasks.Select(sub => new Application.DTOs.SubtaskNextWeekDTO { SubtaskDescription = sub.SubtaskDescription }).ToList()
+                }).ToList(),
                 Blockers = request.Blockers,
                 UpcomingPTO = request.UpcomingPTO,
                 TeamId = request.TeamId
@@ -72,7 +76,11 @@ namespace TeamWeeklyStatus.WebApi.Controllers
                     TaskDescription = dtw.TaskDescription,
                     Subtasks = dtw.Subtasks.Select(sub => new Application.DTOs.SubtaskDTO { SubtaskDescription = sub.SubtaskDescription }).ToList()
                 }).ToList(),
-                PlanForNextWeek = request.PlanForNextWeek,
+                PlanForNextWeek = request.PlanForNextWeek.Select(pfnw => new Application.DTOs.PlanForNextWeekTaskDTO
+                {
+                    TaskDescription = pfnw.TaskDescription,
+                    Subtasks = pfnw.Subtasks.Select(sub => new Application.DTOs.SubtaskNextWeekDTO { SubtaskDescription = sub.SubtaskDescription }).ToList()
+                }).ToList(),
                 Blockers = request.Blockers,
                 UpcomingPTO = request.UpcomingPTO,
                 TeamId = request.TeamId

@@ -60,7 +60,15 @@ namespace TeamWeeklyStatus.Application.Services
                         Description = st.SubtaskDescription,
                     }).ToList()
                 }).ToList(),
-                PlanForNextWeekTasks = weeklyStatusDto.PlanForNextWeek.Select(desc => new PlanForNextWeekTask { TaskDescription = desc }).ToList(),
+                PlanForNextWeekTasks = weeklyStatusDto.PlanForNextWeek.Select(pfnw => new PlanForNextWeekTask 
+                { 
+                    TaskDescription = pfnw.TaskDescription,
+                    // Assuming there is a Subtasks property which is a collection of subtask entities
+                    Subtasks = pfnw.Subtasks.Select(st => new SubtaskNextWeek
+                    {
+                        Description = st.SubtaskDescription,
+                    }).ToList()
+                }).ToList(),
                 Blockers = weeklyStatusDto.Blockers,
                 UpcomingPTO = weeklyStatusDto.UpcomingPTO,
                 MemberId = weeklyStatusDto.MemberId,
@@ -96,9 +104,17 @@ namespace TeamWeeklyStatus.Application.Services
                 {
                     Description = st.SubtaskDescription
                 }).ToList()
-            }).ToList(); 
-            
-            existingStatus.PlanForNextWeekTasks = weeklyStatusDto.PlanForNextWeek.Select(desc => new PlanForNextWeekTask { TaskDescription = desc }).ToList();
+            }).ToList();
+
+            existingStatus.PlanForNextWeekTasks = weeklyStatusDto.PlanForNextWeek.Select(pfnw => new PlanForNextWeekTask
+            {
+                TaskDescription = pfnw.TaskDescription,
+                // Similar subtask update logic as for AddWeeklyStatusAsync
+                Subtasks = pfnw.Subtasks.Select(st => new SubtaskNextWeek
+                {
+                    Description = st.SubtaskDescription
+                }).ToList()
+            }).ToList();
 
             var updatedStatus = await _repository.UpdateWeeklyStatusAsync(existingStatus);
 
