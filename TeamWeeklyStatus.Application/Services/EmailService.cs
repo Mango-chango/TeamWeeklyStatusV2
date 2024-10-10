@@ -34,6 +34,8 @@ namespace TeamWeeklyStatus.Application.Services
             message.To.Add(new MailboxAddress(recipientName, recipientEmail));
             message.Subject = subject;
 
+            body = string.Format(body, recipientName);
+
             message.Body = new TextPart("plain")
             {
                 Text = body
@@ -41,7 +43,7 @@ namespace TeamWeeklyStatus.Application.Services
 
             using (var client = new SmtpClient())
             {
-                client.Connect(_configuration["Notifications.Configuration:SmtpServer"], int.Parse(_configuration["Notifications.Configuration:SmtpPort"]), MailKit.Security.SecureSocketOptions.StartTls);
+                client.Connect(smtpServer, smtpPort, MailKit.Security.SecureSocketOptions.StartTlsWhenAvailable);
                 client.Authenticate(senderEmail, senderPassword);
 
                 client.Send(message);

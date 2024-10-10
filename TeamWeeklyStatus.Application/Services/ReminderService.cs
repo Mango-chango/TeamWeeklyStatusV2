@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
+using TeamWeeklyStatus.Domain.Enums;
 
 namespace TeamWeeklyStatus.Application.Services
 {
@@ -21,18 +22,23 @@ namespace TeamWeeklyStatus.Application.Services
             _configuration = configuration;
         }
 
-        public async Task SendReminderEmails(string eventName)
+        public async Task SendReminderEmails(EventName eventName)
         {
             // Get all teams where EmailNotificationsEnabled is true
             var teams = await _teamRepository.GetTeamsWithEmailNotificationsEnabled();
 
             string subject = string.Empty;
             string emailTemplate = string.Empty;
-            // Get the email template from appsettings.json
-            if (eventName == "Post")
+            // Get the email template from appsettings.json based on the event name
+            if (eventName == EventName.Post)
             {
                 subject = _configuration["EmailTemplates:PostWeeklyStatusSubject"];
                 emailTemplate = _configuration["EmailTemplates:PostWeeklyStatus"];
+            }
+            else if (eventName == EventName.SendReport)
+            {
+                subject = _configuration["EmailTemplates:SendWeeklyReportSubject"];
+                emailTemplate = _configuration["EmailTemplates:SendWeeklyReport"];
             }
 
             foreach (var team in teams)

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamWeeklyStatus.Domain.Enums;
 
 namespace TeamWeeklyStatus.Application.Interfaces
 {
     public interface IReminderService
     {
-        Task SendReminderEmails(string eventName);
+        Task SendReminderEmails(EventName eventName);
 
     }
 }
