@@ -1,0 +1,54 @@
+﻿using MimeKit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Text;
+using System.Threading.Tasks;
+using MailKit.Net.Smtp;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using TeamWeeklyStatus.Application.Interfaces;
+using Microsoft.Extensions.Configuration;
+
+namespace TeamWeeklyStatus.Application.Services
+{
+    public class EmailService : IEmailService
+    {
+        private readonly IConfiguration _configuration;
+
+        public EmailService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public async Task SendEmailAsync(string recipientName, string recipientEmail, string subject, string body)
+        {
+            var message = new MimeMessage();
+            var senderEmail = _configuration["Notifications.Configuration:SenderEmail"];
+            var senderName = _configuration["Notifications.Configuration:SenderName"];
+            var senderPassword = _configuration["Notifications.Configuration:SenderPassword"];
+            var smtpServer = _configuration["Notifications.Configuration:SmtpServer"];
+            var smtpPort = int.Parse(_configuration["Notifications.Configuration:SmtpPort"]);
+
+            message.From.Add(new MailboxAddress(senderName, senderEmail));
+            message.To.Add(new MailboxAddress(recipientName, recipientEmail));
+            message.Subject = subject;
+
+            message.Body = new TextPart("plain")
+            {
+                Text = body
+            };
+
+            using (var client = new SmtpClient())
+            {
+                client.Connect(_configuration["Notifications.Configuration:SmtpServer"], int.Parse(_configuration["Notifications.Configuration:SmtpPort"]), MailKit.Security.SecureSocketOptions.StartTls);
+                client.Authenticate(senderEmail, senderPassword);
+
+                client.Send(message);
+                client.Disconnect(true);
+            }
+
+            Console.WriteLine("Email sent successfully!");
+        }
+    }
+}

@@ -3,6 +3,7 @@ using TeamWeeklyStatus.Infrastructure.Repositories;
 using TeamWeeklyStatus.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using TeamWeeklyStatus.Application.Interfaces;
+using System.Collections;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
 {
@@ -19,6 +20,9 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 {
                     Id = t.Id,
                     Name = t.Name,
+                    Description = t.Description,
+                    EmailNotificationsEnabled = t.EmailNotificationsEnabled,
+                    SlackNotificationsEnabled = t.SlackNotificationsEnabled,
                 })
                 .FirstOrDefaultAsync();
 
@@ -27,6 +31,9 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 {
                     Id = t.Id,
                     Name = t.Name,
+                    Description = t.Description,
+                    EmailNotificationsEnabled = t.EmailNotificationsEnabled,
+                    SlackNotificationsEnabled = t.SlackNotificationsEnabled,
                 }).OrderBy(t => t.Name)
                 .ToListAsync();
 
@@ -46,6 +53,9 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             }
 
             existingTeam.Name = team.Name;
+            existingTeam.Description = team.Description;
+            existingTeam.EmailNotificationsEnabled = team.EmailNotificationsEnabled;
+            existingTeam.SlackNotificationsEnabled = team.SlackNotificationsEnabled;
 
             _context.Teams.Update(existingTeam);
             await _context.SaveChangesAsync();
@@ -67,5 +77,24 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             return team;
         }
 
+        public async Task<IEnumerable<Team>> GetTeamsWithEmailNotificationsEnabled()
+        {
+            return await _context.Teams
+                .Where(predicate: t => t.EmailNotificationsEnabled == true)
+                .Select(t => new Team
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Description = t.Description,
+                    EmailNotificationsEnabled = t.EmailNotificationsEnabled,
+                    SlackNotificationsEnabled = t.SlackNotificationsEnabled,
+                })
+                .ToListAsync();
+        }
+
+        public Task<IEnumerable<Team>> GetTeamsWithSlackNotificationsEnabled()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
