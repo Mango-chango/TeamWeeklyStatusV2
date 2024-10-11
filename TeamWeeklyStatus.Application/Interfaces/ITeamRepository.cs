@@ -9,5 +9,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
         Task<Team> AddTeamAsync(Team member);
         Task<Team> UpdateTeamAsync(Team member);
         Task<Team> DeleteTeamAsync(int memberId);
+        Task<IEnumerable<Team>> GetTeamsWithEmailNotificationsEnabled();
+        Task<IEnumerable<Team>> GetTeamsWithSlackNotificationsEnabled();
     }
 }

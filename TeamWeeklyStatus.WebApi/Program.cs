@@ -50,6 +50,8 @@ builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
 builder.Services.AddScoped<IWeeklyStatusRepository, WeeklyStatusRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IReminderService, ReminderService>();
 builder.Services.AddScoped<IWeeklyStatusService, WeeklyStatusService>();
 builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
 builder.Services.AddScoped<IMemberService, MemberService>();

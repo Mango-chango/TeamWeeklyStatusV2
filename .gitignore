@@ -365,3 +365,5 @@ FodyWeavers.xsd
 team-weekly-status-front/package-lock.json
 /team-weekly-status-front/package-lock.json
 /TeamWeeklyStatus.WebApi/wwwroot/assets
+
+*.zip

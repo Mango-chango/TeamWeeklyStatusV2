@@ -68,6 +68,9 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             }
 
             existingTeam.Name = request.Name;
+            existingTeam.Description = request.Description;
+            existingTeam.EmailNotificationsEnabled = request.EmailNotificationsEnabled;
+            existingTeam.SlackNotificationsEnabled = request.SlackNotificationsEnabled;
 
             var updatedTeam = await _teamService.UpdateTeamAsync(existingTeam);
             return Ok(updatedTeam);

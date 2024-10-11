@@ -1,0 +1,38 @@
+service: team-weekly-status-report
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+functions:
+  team-weekly-status-report:
+    handler: handler.teamWeeklyStatusReport
+    events:
+      - schedule: cron(0 9 ? * MON-FRI *)
+
+  test-get-all-teams:
+    handler: TestGetAllTeams/handler.testGetAllTeams
+    timeout: 30
+    events:
+      - httpApi:
+          path: /test-get-all-teams
+          method: get
+
+  send-reminder-post-weekly-status-report:
+    handler: SendReminderPostWeeklyStatus/handler.sendReminderPostWeeklyStatusReport
+    timeout: 30
+    events:
+      - httpApi:
+          path: /send-reminder-post-weekly-status-report
+          method: post
+
+  send-reminder-send-weekly-status-report:
+    handler: SendReminderSendWeeklyStatusReport/handler.sendReminderSendWeeklyStatusReport
+    timeout: 30
+    events:
+      - httpApi:
+          path: /send-reminder-send-weekly-status-report
+          method: post
+
+
