@@ -8,7 +8,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
 {
     public interface IEmailService
     {
-        public Task SendEmailAsync(string recipientName, string recipientEmail, string subject, string body);
+        public Task SendEmailAsync(string recipientName, string recipientEmail, string subject, string body, string? ccName, string? ccEmail);
 
     }
 }

@@ -32,21 +32,35 @@ namespace TeamWeeklyStatus.Application.Services
             // Get the email template from appsettings.json based on the event name
             if (eventName == EventName.Post)
             {
-                subject = _configuration["EmailTemplates:PostWeeklyStatusSubject"];
-                emailTemplate = _configuration["EmailTemplates:PostWeeklyStatus"];
+                subject = _configuration["Notifications:Templates:Email:PostWeeklyStatusSubject"];
+                emailTemplate = _configuration["Notifications:Templates:Email:PostWeeklyStatus"];
             }
             else if (eventName == EventName.SendReport)
             {
-                subject = _configuration["EmailTemplates:SendWeeklyReportSubject"];
-                emailTemplate = _configuration["EmailTemplates:SendWeeklyReport"];
+                subject = _configuration["Notifications:Templates:Email:SendWeeklyStatusReportSubject"];
+                emailTemplate = _configuration["Notifications:Templates:Email:SendWeeklyStatusReport"];
             }
 
             foreach (var team in teams)
             {
+                // Get the team lead
+                var teamLead = team.TeamMembers.FirstOrDefault(tm => tm.IsTeamLead == true);
+
                 foreach (var member in team.TeamMembers)
                 {
-                    // Send email to each team member
-                    await _emailService.SendEmailAsync(member.Member.Name, member.Member.Email, subject, emailTemplate);
+                    if (eventName == EventName.Post)
+                        // Send email to each active team member for the event Post
+                        await _emailService.SendEmailAsync(member.Member.Name, member.Member.Email, subject, emailTemplate, null, null);
+
+                    // Send emails to the current week reporter and cc to the team lead if the event is SendReport
+                    else if (eventName == EventName.SendReport)
+                    {
+                        var ccEmail = teamLead != null && teamLead.IsCurrentWeekReporter == false;
+                        if (member.IsCurrentWeekReporter == true)
+                        {
+                            await _emailService.SendEmailAsync(member.Member.Name, member.Member.Email, subject, emailTemplate, ccEmail ? teamLead.Member.Name : null, ccEmail ? teamLead.Member.Email : null);
+                        }
+                    }
                 }
             }
         }

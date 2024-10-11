@@ -11,11 +11,13 @@ namespace TeamWeeklyStatus.WebApi.Tests
     {
         private readonly WeeklyStatusController _controller;
         private readonly Mock<IWeeklyStatusService> _mockService;
+        private readonly Mock<IReminderService> _mockReminderService;
 
         public WeeklyStatusControllerTests()
         {
             _mockService = new Mock<IWeeklyStatusService>();
-            _controller = new WeeklyStatusController(_mockService.Object);
+            _mockReminderService = new Mock<IReminderService>();
+            _controller = new WeeklyStatusController(_mockService.Object, _mockReminderService.Object);
         }
 
         [Fact]

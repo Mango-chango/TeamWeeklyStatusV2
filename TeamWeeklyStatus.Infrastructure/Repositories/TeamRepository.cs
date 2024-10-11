@@ -88,6 +88,24 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                     Description = t.Description,
                     EmailNotificationsEnabled = t.EmailNotificationsEnabled,
                     SlackNotificationsEnabled = t.SlackNotificationsEnabled,
+                    TeamMembers = t.TeamMembers
+                        .Where(tm =>
+                            (tm.StartActiveDate == null || tm.StartActiveDate <= DateTime.Now) &&
+                            (tm.EndActiveDate == null || tm.EndActiveDate >= DateTime.Now))
+                        .Select(tm => new TeamMember
+                        {
+                            TeamId = tm.TeamId,
+                            StartActiveDate = tm.StartActiveDate,
+                            EndActiveDate = tm.EndActiveDate,
+                            IsTeamLead = tm.IsTeamLead,
+                            IsCurrentWeekReporter = tm.IsCurrentWeekReporter,
+                            Member = new Member
+                            {
+                                Id = tm.Member.Id,
+                                Name = tm.Member.Name,
+                                Email = tm.Member.Email,
+                            }
+                        }).ToList()
                 })
                 .ToListAsync();
         }

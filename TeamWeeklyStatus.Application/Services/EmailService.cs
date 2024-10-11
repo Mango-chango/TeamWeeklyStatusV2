@@ -21,17 +21,21 @@ namespace TeamWeeklyStatus.Application.Services
             _configuration = configuration;
         }
 
-        public async Task SendEmailAsync(string recipientName, string recipientEmail, string subject, string body)
+        public async Task SendEmailAsync(string recipientName, string recipientEmail, string subject, string body, string? ccName, string? ccEmail)
         {
             var message = new MimeMessage();
-            var senderEmail = _configuration["Notifications.Configuration:SenderEmail"];
-            var senderName = _configuration["Notifications.Configuration:SenderName"];
-            var senderPassword = _configuration["Notifications.Configuration:SenderPassword"];
-            var smtpServer = _configuration["Notifications.Configuration:SmtpServer"];
-            var smtpPort = int.Parse(_configuration["Notifications.Configuration:SmtpPort"]);
+            var senderEmail = _configuration["Notifications:Configuration:SenderEmail"];
+            var senderName = _configuration["Notifications:Configuration:SenderName"];
+            var senderPassword = _configuration["Notifications:Configuration:Password"];
+            var smtpServer = _configuration["Notifications:Configuration:SmtpServer"];
+            var smtpPort = int.Parse(_configuration["Notifications:Configuration:SmtpPort"]);
 
             message.From.Add(new MailboxAddress(senderName, senderEmail));
             message.To.Add(new MailboxAddress(recipientName, recipientEmail));
+            if (!string.IsNullOrEmpty(ccEmail))
+            {
+                message.Cc.Add(new MailboxAddress(ccName, ccEmail));
+            }
             message.Subject = subject;
 
             body = string.Format(body, recipientName);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Domain.Enums;
 using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
@@ -9,10 +10,12 @@ namespace TeamWeeklyStatus.WebApi.Controllers
     public class WeeklyStatusController : ControllerBase
     {
         private readonly IWeeklyStatusService _weeklyStatusService;
+        private readonly IReminderService _reminderService;
 
-        public WeeklyStatusController(IWeeklyStatusService weeklyStatusService)
+        public WeeklyStatusController(IWeeklyStatusService weeklyStatusService, IReminderService reminderService)
         {
             _weeklyStatusService = weeklyStatusService;
+            _reminderService = reminderService;
         }
 
         [HttpPost("GetByMemberIdAndStartDate", Name = "GetWeeklyStatusByMemberByStartDate")]
@@ -87,6 +90,17 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             };
             var updatedWeeklyStatus = await _weeklyStatusService.UpdateWeeklyStatusAsync(weeklyStatusDto);
             return Ok(updatedWeeklyStatus);
+        }
+
+        [HttpPost("SendReminders", Name = "SendReminders")]
+        public async Task<IActionResult> SendReminders([FromBody] ReminderRequest request)
+        {
+            if (!Enum.TryParse<EventName>(request.EventName, out var eventName))
+            {
+                return BadRequest("Invalid event name.");
+            }
+            await _reminderService.SendReminderEmails(eventName);
+            return Ok();
         }
     }
 }
