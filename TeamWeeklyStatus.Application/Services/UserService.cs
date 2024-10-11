@@ -31,7 +31,7 @@ namespace TeamWeeklyStatus.Application.Services
                 IsValid = true,
                 MemberId = member.Id,
                 MemberName = member.Name,
-                IsAdmin = (bool)member.IsAdmin
+                IsAdmin = member.IsAdmin ?? false // Handle nullable boolean
             };
         }
     }
