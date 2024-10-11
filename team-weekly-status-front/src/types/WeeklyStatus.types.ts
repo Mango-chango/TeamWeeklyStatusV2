@@ -48,6 +48,9 @@ export interface GoogleLoginResponse {
 export type Team = {
   id: number;
   name: string;
+  description?: string;
+  emailNotificationsEnabled?: boolean;
+  slackNotificationsEnabled? : boolean;
 };
 
 export type TeamMember = {

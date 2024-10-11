@@ -153,6 +153,11 @@ const TeamsManagement: React.FC = () => {
             <th onClick={() => requestSort("name")} style={{ cursor: "pointer" }}>
               Name {renderSortIcon("name")}
             </th>
+            <th onClick={() => requestSort("description")} style={{ cursor: "pointer" }}>
+              Description {renderSortIcon("description")}
+            </th>
+            <th>Email Notifications</th>
+            <th>Slack Notifications</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -172,6 +177,25 @@ const TeamsManagement: React.FC = () => {
             >
               <td>{team.id}</td>
               <td>{team.name}</td>
+              <td>{team.description? team.description : ""}</td>
+              <td style={{ textAlign: "center" }}>
+                <input
+                  type="checkbox"
+                  checked={team.emailNotificationsEnabled}
+                  onChange={(e) => e.preventDefault()}
+                  aria-readonly="true"
+                  className="readonly-checkbox"
+                />
+              </td>
+              <td style={{ textAlign: "center" }}>
+                <input
+                  type="checkbox"
+                  checked={team.slackNotificationsEnabled}
+                  onChange={(e) => e.preventDefault()}
+                  aria-readonly="true"
+                  className="readonly-checkbox"
+                />
+              </td>
               <td>
                 <Button
                   variant="warning"

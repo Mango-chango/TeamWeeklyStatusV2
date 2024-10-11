@@ -19,6 +19,9 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
   const [formData, setFormData] = useState<Team>({
     id: 0,
     name: "",
+    description: "",
+    emailNotificationsEnabled: false,
+    slackNotificationsEnabled: false,
   });
 
   useEffect(() => {
@@ -28,6 +31,9 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
       setFormData({
         id: 0,
         name: "",
+        description: "",
+        emailNotificationsEnabled: false,
+        slackNotificationsEnabled: false,
       });
     }
   }, [team]);
@@ -57,13 +63,44 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
       <Modal.Body>
         <Form>
           <Form.Group controlId="formName">
-            <Form.Label>First Name</Form.Label>
+            <Form.Label>Team Name</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter the team's name"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
+              }
+            />
+          </Form.Group>
+          <Form.Group controlId="description">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter a description for the team (optional)"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+            />
+          </Form.Group>
+          <Form.Group controlId="emailNotificationsEnabled">
+            <Form.Check
+              type="checkbox"
+              label="e-mail Notifications Enabled"
+              checked={formData.emailNotificationsEnabled}
+              onChange={(e) =>
+                setFormData({ ...formData, emailNotificationsEnabled: e.target.checked })
+              }
+            />
+          </Form.Group>
+          <Form.Group controlId="slackNotificationsEnabled">
+            <Form.Check
+              type="checkbox"
+              label="Slack Notifications Enabled"
+              checked={formData.slackNotificationsEnabled}
+              onChange={(e) =>
+                setFormData({ ...formData, slackNotificationsEnabled: e.target.checked })
               }
             />
           </Form.Group>
