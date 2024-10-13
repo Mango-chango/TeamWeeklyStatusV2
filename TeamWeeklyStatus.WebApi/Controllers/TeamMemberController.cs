@@ -90,5 +90,16 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             return Ok(activeTeams);
         }
 
+        [HttpPost("GetTeamActiveMembers")]
+        public async Task<IActionResult> GetActiveMembers([FromBody] TeamMemberRequest request)
+        {
+            var activeMembers = await _teamMemberService.GetTeamActiveMembers((int)request.TeamId);
+            if (activeMembers == null)
+            {
+                return NotFound();
+            }
+            return Ok(activeMembers);
+        }
+
     }
 }

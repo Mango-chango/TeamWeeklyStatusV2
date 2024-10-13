@@ -42,7 +42,7 @@ const SignIn: React.FC = () => {
 
   const handleGoogleLogin = async (response: any) => {
     const idToken = response.credential;
-    console.log("idToken=", idToken);
+    // console.log("idToken=", idToken);
     try {
       const userResponse: GoogleLoginResponse = await makeApiRequest(
         "/GoogleAuth",
@@ -51,7 +51,7 @@ const SignIn: React.FC = () => {
       );
 
       if (userResponse && userResponse.success) {
-        console.log("userResponse=", userResponse);
+        // console.log("userResponse=", userResponse);
         userStore.getState().setMemberId(userResponse.memberId as number | 0);
         userStore
           .getState()
@@ -64,7 +64,7 @@ const SignIn: React.FC = () => {
           "POST",
           { memberId: userResponse.memberId }
         );
-        console.log("teamsResponse=", teamsResponse);
+        // console.log("teamsResponse=", teamsResponse);
         userStore.getState().setMemberActiveTeams(teamsResponse as MemberTeams);
 
         if (teamsResponse.length > 1) {

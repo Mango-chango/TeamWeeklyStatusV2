@@ -33,7 +33,6 @@ const WeeklyStatus: React.FC = () => {
     isCurrentWeekReporter,
   } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
-  const [localTeamName, setLocalTeamName] = useState(teamName);
   const [localTeamId, setLocalTeamId] = useState(teamId);
   const [existingWeeklyStatus, setExistingWeeklyStatus] =
     useState<WeeklyStatusData | null>(null);
@@ -62,7 +61,6 @@ const WeeklyStatus: React.FC = () => {
 
   const endDate = moment().endOf("week").toDate();
   const nextWeekStart = moment().add(1, "weeks").startOf("isoWeek");
-  const nextWeekEnd = moment().add(1, "weeks").endOf("isoWeek");
   const inTwoMonths = moment().add(2, "months").endOf("isoWeek");
 
   const navigate = useNavigate();
@@ -176,12 +174,6 @@ const WeeklyStatus: React.FC = () => {
     });
   };
 
-  const handlePlanChange = (index: number, value: string) => {
-    const newPlans = [...planForNextWeek];
-    newPlans[index] = value;
-    setPlanForNextWeek(newPlans);
-  };
-
   const handleDateChange = (date: Date | null) => {
     if (date) {
       const dateStr = moment(date).format("YYYY-MM-DD");
@@ -215,22 +207,9 @@ const WeeklyStatus: React.FC = () => {
     setFunction((prev) => [...prev, { taskDescription: "", subtasks: [] }]);
   };
 
-  const addTask1 = (
-    setFunction: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
-    setFunction((prev) => [...prev, ""]);
-  };
-
   const removeTask = (
     index: number,
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
-  ) => {
-    setFunction((prev) => prev.filter((_, idx) => idx !== index));
-  };
-
-  const removeTask1 = (
-    index: number,
-    setFunction: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
     setFunction((prev) => prev.filter((_, idx) => idx !== index));
   };
@@ -263,7 +242,7 @@ const WeeklyStatus: React.FC = () => {
       teamId,
     };
 
-    console.log(dataToSubmit);
+    // console.log(dataToSubmit);
 
     try {
       const endpoint = existingWeeklyStatus

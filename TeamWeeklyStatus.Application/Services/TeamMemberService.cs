@@ -128,6 +128,27 @@ namespace TeamWeeklyStatus.Application.Services
             return activeTeamsDTOs;
         }
 
+        public async Task<IEnumerable<TeamMemberDTO>> GetTeamActiveMembers(int teamId)
+        {
+            DateTime today = DateTime.Now;
+            var teamMembers = await _teamMemberRepository.GetAllTeamMembersAsync(teamId);
+            var teamMembersDTOs = teamMembers
+                .Where(tm => tm.EndActiveDate == null || (tm.StartActiveDate <= today && tm.EndActiveDate >= today))
+                .Select(tm => new TeamMemberDTO
+                {
+                    TeamId = tm.TeamId,
+                    TeamName = tm.Team?.Name,
+                    MemberId = tm.MemberId,
+                    MemberName = tm.Member?.Name,
+                    IsTeamLead = tm.IsTeamLead,
+                    IsCurrentWeekReporter = tm.IsCurrentWeekReporter,
+                    StartActiveDate = tm.StartActiveDate,
+                    EndActiveDate = tm.EndActiveDate
+                })
+                .ToList();
+
+            return teamMembersDTOs;
+        }
 
     }
 }

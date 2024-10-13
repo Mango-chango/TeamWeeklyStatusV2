@@ -44,7 +44,7 @@ const TeamsManagement: React.FC = () => {
       await makeApiRequest(`/Team/Delete/${id}`, "DELETE");
       fetchTeams();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

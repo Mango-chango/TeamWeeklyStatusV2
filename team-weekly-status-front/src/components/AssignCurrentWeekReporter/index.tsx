@@ -23,7 +23,7 @@ const AssignCurrentWeekReporter: React.FC = () => {
     const fetchMembers = async () => {
       const body = { teamId };
       const response: Reporter[] = await makeApiRequest(
-        "/TeamMember/GetAll",
+        "/TeamMember/GetTeamActiveMembers",
         "POST",
         body
       );

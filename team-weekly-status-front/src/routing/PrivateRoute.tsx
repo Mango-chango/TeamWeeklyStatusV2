@@ -11,27 +11,28 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ allowedRoles, children }) => {
   const { isAuthenticated, isTeamLead, isAdmin, isCurrentWeekReporter } = userStore();
   const navigate = useNavigate();
-  console.log('isAuthenticated:', isAuthenticated);
-  console.log('isTeamLead:', isTeamLead);
-  console.log('isAdmin:', isAdmin);
-  console.log('isCurrentWeekReporter:', isCurrentWeekReporter);
+  // console.log('isAuthenticated:', isAuthenticated);
+  // console.log('isTeamLead:', isTeamLead);
+  // console.log('isAdmin:', isAdmin);
+  // console.log('isCurrentWeekReporter:', isCurrentWeekReporter);
   
   useEffect(() => {
     // Not authenticated, redirect to root
     if (!isAuthenticated) {
-      console.log('NOT AUTHENTICATED');
+      // console.log('NOT AUTHENTICATED');
       navigate("/");
       return;
-    } else {
-      console.log('AUTHENTICATED');
-    }
+    } 
+    // else {
+    //   console.log('AUTHENTICATED');
+    // }
 
     const userRoles = [
       isAdmin && "Admin",
       isTeamLead && "TeamLead",
       isCurrentWeekReporter && "CurrentWeekReporter"
     ].filter(Boolean) as string[];
-    console.log('userRoles:', userRoles);
+    // console.log('userRoles:', userRoles);
 
 
     // Authenticated but either role is missing or not in allowedRoles, redirect to /weekly-status
