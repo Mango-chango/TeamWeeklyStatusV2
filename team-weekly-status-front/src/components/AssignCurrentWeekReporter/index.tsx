@@ -61,7 +61,7 @@ const AssignCurrentWeekReporter: React.FC = () => {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center mt-1 assign-current-week-reporter__form__container">
+    <div className="container-main">
       <h3>Assign Weekly Status Reporter</h3>
       {success && (
         <Alert variant="success" className="mt-3">
@@ -79,13 +79,12 @@ const AssignCurrentWeekReporter: React.FC = () => {
           Select a team member to assign as the reporter for this week:
         </label>
       </div>
-      <ListGroup className="assign-current-week-reporter__list__group">
+      <ListGroup>
         {members.map((member) => (
           <ListGroup.Item
             key={member.memberId}
             active={selectedMemberId === member.memberId}
             onClick={() => setSelectedMemberId(member.memberId)}
-            className="assign-current-week-reporter__list__item"
             action
             as="button"
           >

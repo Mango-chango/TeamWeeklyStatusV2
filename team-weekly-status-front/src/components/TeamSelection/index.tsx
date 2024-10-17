@@ -33,7 +33,7 @@ const TeamSelection: React.FC = () => {
   };
 
   return (
-    <div className="team-selection-container">
+    <div className="container-main team-selection-container">
       <Form onSubmit={handleSubmit}>
         <h2>Select Your Team</h2>
         {showAlert && (
@@ -54,7 +54,7 @@ const TeamSelection: React.FC = () => {
                 active={selectedTeamId === memberTeam.teamId}
                 onClick={(event) => {
                   setSelectedTeamId(memberTeam.teamId);
-                }}
+                }}                
               >
                 {memberTeam.teamName}
               </ListGroup.Item>
