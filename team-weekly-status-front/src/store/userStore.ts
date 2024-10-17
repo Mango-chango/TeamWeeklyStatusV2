@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { MemberTeams } from '../types/WeeklyStatus.types';
 
+
+
+interface FeatureFlags {
+  showContentModal: boolean;
+}
+
 type UserState = {
   teamId: number;
   teamName: string | null;
@@ -21,6 +27,8 @@ type UserState = {
   setIsAdmin: (isAdmin: boolean) => void;
   setIsTeamLead: (isTeamLead: boolean) => void;
   setIsCurrentWeekReporter: (isCurrentWeekReporter: boolean) => void;
+  featureFlags: FeatureFlags;
+  setFeatureFlags: (featureFlags: FeatureFlags) => void;
 }
 
 const userStore = create<UserState>((set) => ({
@@ -42,6 +50,10 @@ const userStore = create<UserState>((set) => ({
   setIsTeamLead: (isTeamLead: boolean) => set({ isTeamLead }),
   isCurrentWeekReporter: false,
   setIsCurrentWeekReporter: (isCurrentWeekReporter: boolean) => set({ isCurrentWeekReporter }),
+  featureFlags: {
+    showContentModal: import.meta.env.VITE_SHOW_CONTENT_MODAL === 'true',
+  },
+  setFeatureFlags: (featureFlags: FeatureFlags) => set({ featureFlags }),
 }));
 
 export default userStore;
