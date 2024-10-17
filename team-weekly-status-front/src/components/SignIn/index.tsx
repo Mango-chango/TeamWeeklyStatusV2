@@ -97,7 +97,7 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center mt-5">
+    <div className="container-main">
       <h2>Welcome to the Team Weekly Status App!</h2>
       <h3>Sign in using your MangoChango account</h3>
       <GoogleLogin

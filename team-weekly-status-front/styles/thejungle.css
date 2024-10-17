@@ -1,0 +1,433 @@
+/* Define CSS variables for the color palette */
+:root {
+  --color-title: #2e3045;
+  --color-subtitle: #484a5f;
+  --color-text: #6a6b79;
+  --color-border: #c7cce8;
+  --color-action-button: #ff833e;
+  --color-secondary-button: #675888;
+  --color-background: #ffc47c;
+  --color-clear-background: #f5f7ff;
+  --color-footer-background: #242231;
+  --color-footer-icons: #6c6783;
+  --color-footer-text: #a8a5bc;
+  --color-container-background: #ffffff;
+  --color-page-background: #f2f4f7;
+}
+
+/* General Styles */
+body {
+  background-color: var(--color-clear-background);
+  color: var(--color-text);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container-main {
+  background-color: var(--color-container-background);
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 1200px; /* Adjust width as needed */
+  /* Add a thick solid border at the top */
+  border-top: 3px solid #dcdcdc;
+
+  /* Center the container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container-main h1,
+.container-main h2,
+.container-main p {
+  color: var(--color-title);
+}
+
+.container-main .list-group {
+  min-width: 300px;
+}
+
+.container-main .list-group-item {
+  cursor: pointer;
+}
+
+.container-main-left-aligned {
+  background-color: var(--color-container-background);
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 1300px; /* Adjust width as needed */
+  /* Add a thick solid border at the top */
+  border-top: 3px solid #dcdcdc;
+
+  /* Center the container */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Flexbox layout for the specific form with limited input/button width */
+.limited-width-form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+/* Control the width of inputs and buttons within the specific form */
+.limited-width-form input[type="text"],
+.limited-width-form button,
+.limited-width-form .btn {
+  flex: 0 1 auto; /* Ensure elements take only the necessary width */
+  max-width: 300px; /* Optional: Set a max width */
+  padding: 10px;
+}
+
+/* Specific button size fix */
+.limited-width-form button,
+.limited-width-form .btn-primary {
+  width: auto; /* Take only necessary width */
+  max-width: 150px; /* Adjust the max-width as needed */
+}
+
+/* Override react-bootstrap button size if necessary */
+.limited-width-form .btn-primary {
+  flex: 0 1 auto;
+  white-space: nowrap; /* Ensure buttons don't stretch over multiple lines */
+}
+
+/* Other forms where input should be wider, unaffected */
+.wide-input-form input[type="text"] {
+  width: 100%; /* Example: Take full width */
+  max-width: none; /* Remove any max width restrictions */
+}
+
+/* Flex container for the button */
+.new-button-container {
+  display: flex;
+  justify-content: flex-start; /* Align button to the left */
+  width: 100%; /* Optional: restrict width of the container */
+}
+
+.new-button-container .btn-primary {
+  width: auto; /* Ensure button takes only the space it needs */
+  max-width: 150px; /* Optional: limit the button width */
+}
+
+h1,
+.title {
+  color: var(--color-title);
+  font-family: 'Exo', sans-serif;
+  font-weight: 900; /* Black weight for Exo */
+}
+
+h2,
+.subtitle {
+  color: var(--color-subtitle);
+  font-family: 'Exo', sans-serif;
+  font-weight: 900; /* Black weight for Exo */
+}
+
+h3,
+.subsubtitle {
+  color: var(--color-subtitle);
+  font-family: 'Noto Sans', sans-serif;
+  font-weight: 700; /* Bold weight for Noto Sans */
+}
+
+.content-title {
+  font-family: 'Noto Sans', sans-serif;
+  font-weight: 700; /* Bold weight for Noto Sans */
+}
+
+p,
+span,
+li,
+label,
+input,
+textarea,
+select {
+  color: var(--color-text);
+  font-family: 'Noto Sans', sans-serif;
+  font-weight: 400; /* Regular weight for Noto Sans */
+}
+
+a {
+  color: var(--color-secondary-button);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-action-button);
+}
+
+/* Buttons */
+.button,
+.btn {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.button-action,
+.btn-primary {
+  background-color: var(--color-action-button);
+  color: #ffffff;
+}
+
+.button-action:hover,
+.btn-primary:hover {
+  background-color: #e67635; /* Slightly darker shade */
+}
+
+.button-secondary,
+.btn-secondary {
+  background-color: var(--color-secondary-button);
+  color: #ffffff;
+}
+
+.button-secondary:hover,
+.btn-secondary:hover {
+  background-color: #57467a; /* Slightly darker shade */
+}
+
+/* Forms */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-clear-background);
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-action-button);
+}
+
+/* Borders */
+.border {
+  border: 1px solid var(--color-border);
+}
+
+hr {
+  border-color: var(--color-border);
+}
+
+/* Backgrounds */
+.background-clear {
+  background-color: var(--color-clear-background);
+}
+
+/* Footer */
+.footer {
+  background-color: var(--color-footer-background);
+  color: var(--color-footer-text);
+  padding: 20px;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--color-footer-icons);
+  margin: 0 10px;
+}
+
+.footer a:hover {
+  color: var(--color-action-button);
+}
+
+/* Footer Icons */
+.footer .icon {
+  color: var(--color-footer-icons);
+  font-size: 20px;
+  margin: 0 5px;
+}
+
+.footer .icon:hover {
+  color: var(--color-action-button);
+}
+
+/* Navigation Bar */
+.navbar {
+  background-color: var(--color-clear-background);
+  padding: 10px 20px;
+}
+
+.navbar a {
+  color: var(--color-text);
+  margin: 0 15px;
+}
+
+.navbar a:hover {
+  color: var(--color-action-button);
+}
+
+/* Cards */
+.card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.card-title {
+  color: var(--color-title);
+  margin-bottom: 10px;
+}
+
+.card-text {
+  color: var(--color-text);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid var(--color-border);
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: var(--color-clear-background);
+  color: var(--color-title);
+}
+
+td {
+  color: var(--color-text);
+}
+
+/* Alerts */
+.alert {
+  padding: 15px;
+  border: 1px solid var(--color-border);
+  border-left-width: 5px;
+  margin-bottom: 20px;
+}
+
+.alert-info {
+  background-color: var(--color-clear-background);
+  border-left-color: var(--color-secondary-button);
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border-left-color: #28a745;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  border-left-color: #ffc107;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-left-color: #dc3545;
+}
+
+/* Modal */
+.modal-header,
+.modal-footer {
+  background-color: var(--color-clear-background);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-title {
+  color: var(--color-title);
+}
+
+.modal-body {
+  color: var(--color-text);
+}
+
+/* List Group */
+.list-group-item {
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.list-group-item.active {
+  background-color: var(--color-secondary-button);
+  border-color: var(--color-secondary-button);
+  color: #ffffff;
+}
+
+/* Pagination */
+.pagination .page-link {
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--color-action-button);
+  border-color: var(--color-action-button);
+  color: #ffffff;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  background-color: var(--color-clear-background);
+}
+
+.breadcrumb a {
+  color: var(--color-secondary-button);
+}
+
+.breadcrumb .active {
+  color: var(--color-text);
+}
+
+/* Tooltip */
+.tooltip-inner {
+  background-color: var(--color-secondary-button);
+  color: #ffffff;
+}
+
+/* Custom Classes */
+.custom-title {
+  color: var(--color-title);
+}
+
+.custom-subtitle {
+  color: var(--color-subtitle);
+}
+
+.custom-text {
+  color: var(--color-text);
+}
+
+.custom-border {
+  border-color: var(--color-border);
+}
+
+.custom-background {
+  background-color: var(--color-background);
+}
+
+.custom-clear-background {
+  background-color: var(--color-clear-background);
+}
+
+.custom-footer-background {
+  background-color: var(--color-footer-background);
+}
+
+.custom-footer-text {
+  color: var(--color-footer-text);
+}
+
+.custom-footer-icons {
+  color: var(--color-footer-icons);
+}

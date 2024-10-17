@@ -25,7 +25,7 @@ const AdminPanel: React.FC = () => {
 
 
   return isAdmin ? (
-    <div className="admin-panel">
+    <div className="container-main">
       <h2>Admin Panel</h2>
       <p>Welcome, admin!</p>
       <Button
@@ -35,6 +35,7 @@ const AdminPanel: React.FC = () => {
       >
         Members Management
       </Button>
+      <br />
       <Button
         variant="primary"
         onClick={handleTeamsMgmt}
