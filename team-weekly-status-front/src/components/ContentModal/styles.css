@@ -1,0 +1,21 @@
+.content-modal .modal-dialog {
+    max-width: none;
+    width: auto;
+    margin: 0;
+  }
+  
+  .content-modal .modal-content {
+    border: none;
+    background-color: transparent;
+  }
+  
+  .content-modal .modal-body {
+    padding: 0;
+  }
+  
+  .content-modal img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  
