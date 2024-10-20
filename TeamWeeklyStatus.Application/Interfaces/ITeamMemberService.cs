@@ -13,6 +13,6 @@ namespace TeamWeeklyStatus.Application.Interfaces
         Task AssignCurrentWeekReporter(int teamId, int memberId);
         Task<IEnumerable<TeamMemberDTO>> GetActiveTeamsByMember(int memberId);
         Task<IEnumerable<TeamMemberDTO>> GetTeamActiveMembers(int teamId);
-
+        Task CurrentWeekReporterAutomaticAssignment();
     }
 }

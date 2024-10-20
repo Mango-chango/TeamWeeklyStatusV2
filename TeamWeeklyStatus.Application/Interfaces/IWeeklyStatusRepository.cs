@@ -17,5 +17,6 @@ namespace TeamWeeklyStatus.Application.Interfaces
 
         Task AddSubtasksNextWeekAsync(IEnumerable<SubtaskNextWeek> subtasks);
         Task UpdateSubtasksNextWeekAsync(IEnumerable<SubtaskNextWeek> subtasks);
+        Task<WeeklyStatus> GetLatestWeeklyStatusAsync(int memberId, int teamId);
     }
 }

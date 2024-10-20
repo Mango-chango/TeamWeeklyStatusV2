@@ -45,7 +45,6 @@ namespace TeamWeeklyStatus.Application.Services
         public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(int teamId, DateTime weekStartDate) =>
             await _repository.GetAllWeeklyStatusesByDateAsync(teamId, weekStartDate);
 
-
         public async Task<WeeklyStatusDTO> AddWeeklyStatusAsync(WeeklyStatusDTO weeklyStatusDto)
         {
             var weeklyStatus = new WeeklyStatus
@@ -72,7 +71,8 @@ namespace TeamWeeklyStatus.Application.Services
                 Blockers = weeklyStatusDto.Blockers,
                 UpcomingPTO = weeklyStatusDto.UpcomingPTO,
                 MemberId = weeklyStatusDto.MemberId,
-                TeamId = weeklyStatusDto.TeamId
+                TeamId = weeklyStatusDto.TeamId,
+                CreatedDate = DateTime.UtcNow,
             };
 
             var addedStatus = await _repository.AddWeeklyStatusAsync(weeklyStatus);
@@ -115,6 +115,8 @@ namespace TeamWeeklyStatus.Application.Services
                     Description = st.SubtaskDescription
                 }).ToList()
             }).ToList();
+
+            existingStatus.CreatedDate = DateTime.UtcNow;
 
             var updatedStatus = await _repository.UpdateWeeklyStatusAsync(existingStatus);
 

@@ -150,5 +150,9 @@ namespace TeamWeeklyStatus.Application.Services
             return teamMembersDTOs;
         }
 
+        Task ITeamMemberService.CurrentWeekReporterAutomaticAssignment()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
