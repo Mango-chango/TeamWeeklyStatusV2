@@ -46,7 +46,12 @@ namespace TeamWeeklyStatus.WebApi.Controllers
 
             var team = new Team
             {
-                Name = request.Name
+                Name = request.Name,
+                Description = request.Description,
+                EmailNotificationsEnabled = request.EmailNotificationsEnabled,
+                SlackNotificationsEnabled = request.SlackNotificationsEnabled,
+                IsActive = request.IsActive,
+                WeekReporterAutomaticAssignment = request.WeekReporterAutomaticAssignment
             };
 
             var newTeam = await _teamService.AddTeamAsync(team);
@@ -71,6 +76,8 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             existingTeam.Description = request.Description;
             existingTeam.EmailNotificationsEnabled = request.EmailNotificationsEnabled;
             existingTeam.SlackNotificationsEnabled = request.SlackNotificationsEnabled;
+            existingTeam.IsActive = request.IsActive;
+            existingTeam.WeekReporterAutomaticAssignment = request.WeekReporterAutomaticAssignment;
 
             var updatedTeam = await _teamService.UpdateTeamAsync(existingTeam);
             return Ok(updatedTeam);

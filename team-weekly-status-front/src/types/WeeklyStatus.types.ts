@@ -51,6 +51,8 @@ export type Team = {
   description?: string;
   emailNotificationsEnabled?: boolean;
   slackNotificationsEnabled? : boolean;
+  isActive: boolean;
+  weekReporterAutomaticAssignment? : boolean;
 };
 
 export type TeamMember = {

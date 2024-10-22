@@ -249,7 +249,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<WeeklyStatus> GetLatestWeeklyStatusAsync(int memberId, int teamId)
+        public async Task<WeeklyStatus> GetLatestWeeklyStatusAsync(int teamId, int memberId)
         {
             return await _context.WeeklyStatuses
                 .AsNoTracking()

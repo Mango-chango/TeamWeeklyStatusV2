@@ -22,6 +22,8 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
     description: "",
     emailNotificationsEnabled: false,
     slackNotificationsEnabled: false,
+    weekReporterAutomaticAssignment: false,
+    isActive: true,
   });
 
   useEffect(() => {
@@ -34,6 +36,8 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
         description: "",
         emailNotificationsEnabled: false,
         slackNotificationsEnabled: false,
+        weekReporterAutomaticAssignment: false,
+        isActive: true,
       });
     }
   }, [team]);
@@ -90,7 +94,10 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
               label="e-mail Notifications Enabled"
               checked={formData.emailNotificationsEnabled}
               onChange={(e) =>
-                setFormData({ ...formData, emailNotificationsEnabled: e.target.checked })
+                setFormData({
+                  ...formData,
+                  emailNotificationsEnabled: e.target.checked,
+                })
               }
             />
           </Form.Group>
@@ -100,7 +107,33 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
               label="Slack Notifications Enabled"
               checked={formData.slackNotificationsEnabled}
               onChange={(e) =>
-                setFormData({ ...formData, slackNotificationsEnabled: e.target.checked })
+                setFormData({
+                  ...formData,
+                  slackNotificationsEnabled: e.target.checked,
+                })
+              }
+            />
+          </Form.Group>
+          <Form.Group controlId="weekReporterAutomaticAssignment">
+            <Form.Check
+              type="checkbox"
+              label="Week Reporter Automatic Assignment"
+              checked={formData.weekReporterAutomaticAssignment}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  weekReporterAutomaticAssignment: e.target.checked,
+                })
+              }
+            />
+          </Form.Group>
+          <Form.Group controlId="isActive">
+            <Form.Check
+              type="checkbox"
+              label="Active"
+              checked={formData.isActive}
+              onChange={(e) =>
+                setFormData({ ...formData, isActive: e.target.checked })
               }
             />
           </Form.Group>

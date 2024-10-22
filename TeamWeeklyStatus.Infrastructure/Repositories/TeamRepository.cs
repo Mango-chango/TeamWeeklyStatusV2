@@ -34,6 +34,8 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                     Description = t.Description,
                     EmailNotificationsEnabled = t.EmailNotificationsEnabled,
                     SlackNotificationsEnabled = t.SlackNotificationsEnabled,
+                    WeekReporterAutomaticAssignment = t.WeekReporterAutomaticAssignment,
+                    IsActive = t.IsActive
                 }).OrderBy(t => t.Name)
                 .ToListAsync();
 
