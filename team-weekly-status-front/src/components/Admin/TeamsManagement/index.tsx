@@ -168,6 +168,12 @@ const TeamsManagement: React.FC = () => {
             </th>
             <th>Email Notifications</th>
             <th>Slack Notifications</th>
+            <th>
+              Week Reporter
+              <br />
+              Automatic Assignment
+            </th>
+            <th>Active</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -185,10 +191,12 @@ const TeamsManagement: React.FC = () => {
                   selectedTeamId === team.id ? "#e0f7fa" : "transparent",
               }}
             >
-              <td>{team.id}</td>
-              <td>{team.name}</td>
-              <td>{team.description ? team.description : ""}</td>
-              <td style={{ textAlign: "center" }}>
+              <td style={{ verticalAlign: "middle" }}>{team.id}</td>
+              <td style={{ verticalAlign: "middle" }}>{team.name}</td>
+              <td style={{ width: "10%", verticalAlign: "middle" }}>
+                {team.description ? team.description : ""}
+              </td>
+              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                 <input
                   type="checkbox"
                   checked={team.emailNotificationsEnabled}
@@ -197,7 +205,7 @@ const TeamsManagement: React.FC = () => {
                   className="readonly-checkbox"
                 />
               </td>
-              <td style={{ textAlign: "center" }}>
+              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                 <input
                   type="checkbox"
                   checked={team.slackNotificationsEnabled}
@@ -206,7 +214,25 @@ const TeamsManagement: React.FC = () => {
                   className="readonly-checkbox"
                 />
               </td>
-              <td>
+              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                <input
+                  type="checkbox"
+                  checked={team.weekReporterAutomaticAssignment}
+                  onChange={(e) => e.preventDefault()}
+                  aria-readonly="true"
+                  className="readonly-checkbox"
+                />
+              </td>
+              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                <input
+                  type="checkbox"
+                  checked={team.isActive}
+                  onChange={(e) => e.preventDefault()}
+                  aria-readonly="true"
+                  className="readonly-checkbox"
+                />
+              </td>
+              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                 <Button
                   variant="primary"
                   onClick={(e) => {

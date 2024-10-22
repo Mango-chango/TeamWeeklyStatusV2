@@ -104,5 +104,14 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             return _context.TeamMembers.Where(tm => tm.MemberId == memberId);
         }
 
+        public async Task<IEnumerable<TeamMember>> GetAllTeamActiveMembersAsync(int teamId)
+        {
+            return await _context.TeamMembers
+                .Include(tm => tm.Team)
+                .Include(m => m.Member)
+                .Where(tm => tm.TeamId == teamId && (tm.EndActiveDate == null || (tm.StartActiveDate <= DateTime.Now && tm.EndActiveDate >= DateTime.Now)))
+                .OrderBy(tm => tm.Member.Id)
+                .ToListAsync();
+        }
     }
 }

@@ -249,5 +249,13 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<WeeklyStatus> GetLatestWeeklyStatusAsync(int teamId, int memberId)
+        {
+            return await _context.WeeklyStatuses
+                .AsNoTracking()
+                .Where(ws => ws.TeamId == teamId && ws.MemberId == memberId)
+                .OrderByDescending(ws => ws.CreatedDate)
+                .FirstOrDefaultAsync();
+        }
     }
 }

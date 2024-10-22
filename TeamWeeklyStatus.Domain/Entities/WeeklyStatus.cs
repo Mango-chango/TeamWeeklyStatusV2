@@ -10,6 +10,7 @@
         public int MemberId { get; set; }
         public Team? Team { get; set; }
         public int? TeamId { get; set; }
+        public DateTime CreatedDate { get; set; }
 
         public List<DoneThisWeekTask> DoneThisWeekTasks { get; set; } = new List<DoneThisWeekTask>();
         public List<PlanForNextWeekTask> PlanForNextWeekTasks { get; set; } = new List<PlanForNextWeekTask>();

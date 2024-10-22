@@ -101,5 +101,12 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             return Ok(activeMembers);
         }
 
+        [HttpPost("AutomaticAssignCurrentWeekReporter")]
+        public async Task<IActionResult> CurrentWeekReporterAutomaticAssignment()
+        {
+            await _teamMemberService.CurrentWeekReporterAutomaticAssignment();
+            return Ok();
+        }
+
     }
 }

@@ -8,12 +8,14 @@ namespace TeamWeeklyStatus.Application.Services
     {
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly IRepository<Team> _teamRepository;
+        private readonly IWeeklyStatusRepository _weeklyStatusRepository;
 
 
-        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IRepository<Team> teamRepository)
+        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IRepository<Team> teamRepository, IWeeklyStatusRepository weeklyStatusRepository)
         {
             _teamMemberRepository = teamMemberRepository;
             _teamRepository = teamRepository;
+            _weeklyStatusRepository = weeklyStatusRepository;
         }
 
         public async Task<TeamMember> GetTeamMemberAsync(int teamId, int memberId)
@@ -104,7 +106,7 @@ namespace TeamWeeklyStatus.Application.Services
         public async Task<IEnumerable<TeamMemberDTO>> GetActiveTeamsByMember(int memberId)
         {
             DateTime today = DateTime.Now;
-            var allTeams = _teamMemberRepository.GetAllTeamsByMember(memberId).Result.ToList();
+            var allTeams = await _teamMemberRepository.GetAllTeamsByMember(memberId);
             var allTeamEntities = _teamRepository.GetAll().ToList();
 
             var activeTeamsDTOs = allTeams
@@ -150,5 +152,115 @@ namespace TeamWeeklyStatus.Application.Services
             return teamMembersDTOs;
         }
 
+        public async Task CurrentWeekReporterAutomaticAssignment()
+        {
+            var today = DateTime.Today;
+            var activeTeams = await GetSuitableTeams();
+
+            foreach (var team in activeTeams)
+            {
+                var teamId = team.Id;
+                var teamActiveMembers = (await _teamMemberRepository.GetAllTeamActiveMembersAsync(teamId))
+                    .OrderBy(m => m.MemberId)
+                    .ToList();
+
+                if (teamActiveMembers == null || !teamActiveMembers.Any())
+                {
+                    // No active members to assign
+                    continue;
+                }
+
+                // Handle the special case where there's only one active member
+                if (teamActiveMembers.Count == 1)
+                {
+                    var soleMember = teamActiveMembers.First();
+
+                    if (soleMember.IsCurrentWeekReporter != true)
+                    {
+                        // Assign the sole member as the current reporter
+                        await _teamMemberRepository.AssignCurrentWeekReporter(teamId, soleMember.MemberId);
+                    }
+                    // Else, the sole member is already the current reporter; no action needed
+                    continue; // Skip to the next team
+                }
+
+                var currentReporter = teamActiveMembers.FirstOrDefault(m => m.IsCurrentWeekReporter == true);
+
+                if (currentReporter == null)
+                {
+                    // No current reporter found; default to the first member
+                    currentReporter = teamActiveMembers.First();
+                    // Assign the first member as the current reporter
+                    await _teamMemberRepository.AssignCurrentWeekReporter(teamId, currentReporter.MemberId);
+                    continue; // Skip to the next team
+                }
+
+                // Get the index of the current reporter in the ordered list
+                int currentIndex = teamActiveMembers.IndexOf(currentReporter);
+
+                // Create a circular list of candidates excluding the current reporter
+                var candidateMembers = GetCandidateMembers(teamActiveMembers, currentIndex);
+
+                // Get the Friday of the current week
+                DateTime fridayOfCurrentWeek = GetFridayOfCurrentWeek(today);
+
+                int nextReporterMemberId = currentReporter.MemberId; // Default to current reporter
+                bool reporterAssigned = false;
+
+                foreach (var member in candidateMembers)
+                {
+                    // Get the latest WeeklyStatus for this member
+                    var latestWeeklyStatus = await _weeklyStatusRepository.GetLatestWeeklyStatusAsync(teamId, member.MemberId);
+
+                    // Check if the member is available (no PTO on the upcoming Friday)
+                    bool isAvailable = !(latestWeeklyStatus?.UpcomingPTO?.Contains(fridayOfCurrentWeek) ?? false);
+
+                    if (isAvailable)
+                    {
+                        // Suitable member found
+                        nextReporterMemberId = member.MemberId;
+                        reporterAssigned = true;
+                        break;
+                    }
+                }
+
+                // Assign the new reporter if a suitable candidate was found
+                if (reporterAssigned && nextReporterMemberId != currentReporter.MemberId)
+                {
+                    await _teamMemberRepository.AssignCurrentWeekReporter(teamId, nextReporterMemberId);
+                }
+                // Else, no suitable member found; keep the current reporter
+            }
+        }
+
+        private async Task<IEnumerable<Team>> GetSuitableTeams()
+        {
+            var allTeams = await Task.Run(() => _teamRepository.GetAll().ToList());
+            var suitableTeams = allTeams
+                .Where(t => t.IsActive == true && t.WeekReporterAutomaticAssignment == true)
+                .ToList();
+
+            return suitableTeams;
+        }
+
+        private List<TeamMember> GetCandidateMembers(List<TeamMember> members, int currentIndex)
+        {
+            var candidateMembers = new List<TeamMember>();
+
+            // Start from the next member after the current reporter
+            for (int i = 1; i < members.Count; i++)
+            {
+                int index = (currentIndex + i) % members.Count;
+                candidateMembers.Add(members[index]);
+            }
+
+            return candidateMembers;
+        }
+
+        private DateTime GetFridayOfCurrentWeek(DateTime currentDate)
+        {
+            int daysUntilFriday = ((int)DayOfWeek.Friday - (int)currentDate.DayOfWeek + 7) % 7;
+            return currentDate.AddDays(daysUntilFriday);
+        }
     }
 }

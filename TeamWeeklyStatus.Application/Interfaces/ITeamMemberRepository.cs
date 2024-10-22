@@ -7,6 +7,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
     {
         Task<TeamMember> GetTeamMemberAsync(int teamId, int memberId);
         Task<IEnumerable<TeamMember>> GetAllTeamMembersAsync(int teamId);
+        Task<IEnumerable<TeamMember>> GetAllTeamActiveMembersAsync(int teamId);
         Task<TeamMember> AddTeamMemberAsync(TeamMemberDTO teamMember);
         Task<TeamMember> UpdateTeamMemberAsync(TeamMemberDTO teamMember);
         Task<TeamMember> DeleteTeamMemberAsync(TeamMemberDTO teamMember);
