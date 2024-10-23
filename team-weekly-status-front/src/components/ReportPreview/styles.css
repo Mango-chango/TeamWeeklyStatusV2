@@ -1,24 +1,53 @@
+/* Heading message */
+.readonly-message {
+  text-align: center;
+  padding-top: 1.25rem;
+  font-size: 1.25rem;
+
+  @media (max-width: 767.98px) {
+    font-size: 0.9rem;
+  }
+}
+
+/* Adjustments for CKEditor content */
+.card-content .ck-editor__editable {
+  min-height: 300px;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .div__container {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Ensure CKEditor fills the parent container */
 .div__container {
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%; 
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-.div__secondary {
-    margin-left: auto;
-    margin-right: auto;
-    width: 45%; 
-    text-align: left;
+.ck-editor__editable_inline {
+  min-height: 300px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.div__secondary__content {
-    font-weight: bolder;
+/* Override any max-width or width constraints */
+.ck.ck-editor {
+  width: 100%;
 }
 
-.form__buttons .btn {
-    display: flex;
-    justify-content: center;
-    margin-left: auto;
-    margin-right: auto;
-    width: 10%;
+/* Remove padding and margin from CKEditor wrapper */
+.ck.ck-editor__main {
+  padding: 0;
+  margin: 0;
+}
+
+/* Optional: Remove any borders or shadows */
+.ck.ck-editor__main .ck.ck-content {
+  border: none;
+  box-shadow: none;
 }

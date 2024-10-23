@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Alert, Row, Col } from "react-bootstrap";
+import { Button, Form, Alert, Container } from "react-bootstrap";
+
 import moment from "moment";
 import { userStore } from "../../store";
 import {
@@ -32,7 +33,7 @@ const WeeklyStatus: React.FC = () => {
     isAdmin,
     isTeamLead,
     isCurrentWeekReporter,
-    featureFlags
+    featureFlags,
   } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
   const [localTeamId, setLocalTeamId] = useState(teamId);
@@ -47,8 +48,6 @@ const WeeklyStatus: React.FC = () => {
   const [blockers, setBlockers] = useState<string>("");
   const [upcomingPTO, setUpcomingPTO] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -267,24 +266,27 @@ const WeeklyStatus: React.FC = () => {
       setExistingWeeklyStatus(response as WeeklyStatusData);
       displaySuccessMessage();
     } catch (err) {
-      setSuccess(false);
       displayErrorMessage();
     }
   };
 
   const displaySuccessMessage = () => {
-    setSuccess(true);
+    setAlertMessage("Your weekly status has been saved!");
+    setAlertVariant("success");
+    setShowAlert(true);
 
     setTimeout(() => {
-      setSuccess(false);
+      setShowAlert(false);
     }, 5000);
   };
 
   const displayErrorMessage = () => {
-    setError(true);
+    setAlertMessage("An error occurred while saving your weekly status.");
+    setAlertVariant("danger");
+    setShowAlert(true);
 
     setTimeout(() => {
-      setError(false);
+      setShowAlert(false);
     }, 8000);
   };
 
@@ -307,102 +309,90 @@ const WeeklyStatus: React.FC = () => {
     navigate("/admin");
   };
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertVariant, setAlertVariant] = useState<"success" | "danger">(
+    "success"
+  );
+
   return (
-    <div className="container-main">
-      <Form onSubmit={handleSubmit} className="weekly-status__form__container">
+    <Container fluid className="weekly-status__container">
+      <Form onSubmit={handleSubmit}>
         <h1>Team {teamName}</h1>
         <h2>Welcome {memberName}!</h2>
         <h2>
           Weekly Status: {moment(startDate).format("MMM DD")} -{" "}
           {moment(endDate).format("MMM DD")}
         </h2>
-        {success && (
-          <Alert variant="success" className="mt-3">
-            Your weekly status has been saved!
-          </Alert>
-        )}
-        {error && (
-          <Alert variant="danger" className="mt-3">
-            {error}
+        {showAlert && (
+          <Alert
+            variant={alertVariant}
+            className={`alert-fixed alert-custom-${alertVariant}`}
+            onClose={() => setShowAlert(false)}
+            dismissible
+          >
+            {alertMessage}
           </Alert>
         )}
 
-        {/* What was done this week: */}
+        {/* What was done this week */}
         <Form.Group controlId="doneThisWeek" className="form__group">
           <Form.Label className="form__label">
             What was done this week:
           </Form.Label>
           {doneThisWeek.map((taskWithSubtasks, taskIndex) => (
             <div key={taskIndex} className="mb-2">
-              <Row>
-                <Col>
+              {/* Task Input and Remove Button */}
+              <div className="d-flex align-items-center">
+                <Form.Control
+                  type="text"
+                  placeholder={`Task ${taskIndex + 1}`}
+                  value={taskWithSubtasks.taskDescription}
+                  onChange={(e) =>
+                    handleTaskChange(taskIndex, e.target.value, setDoneThisWeek)
+                  }
+                  className="flex-grow-1"
+                />
+                <Button
+                  variant="danger"
+                  onClick={() => removeTask(taskIndex, setDoneThisWeek)}
+                  className="btn-icon ml-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-trash"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                  </svg>
+                </Button>
+              </div>
+              {/* Subtasks */}
+              {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
+                <div className="form__group__subtask" key={subtaskIndex}>
                   <Form.Control
                     type="text"
-                    placeholder={`Task ${taskIndex + 1}`}
-                    value={taskWithSubtasks.taskDescription}
+                    placeholder={`Subtask ${subtaskIndex + 1}`}
+                    value={subtask.subtaskDescription}
                     onChange={(e) =>
-                      handleTaskChange(
+                      handleSubtaskChange(
                         taskIndex,
+                        subtaskIndex,
                         e.target.value,
                         setDoneThisWeek
                       )
                     }
                   />
-                  {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
-                    <div className="form__group__subtask" key={subtaskIndex}>
-                      <Form.Control
-                        key={subtaskIndex}
-                        type="text"
-                        placeholder={`Subtask ${subtaskIndex + 1}`}
-                        value={subtask.subtaskDescription}
-                        onChange={(e) =>
-                          handleSubtaskChange(
-                            taskIndex,
-                            subtaskIndex,
-                            e.target.value,
-                            setDoneThisWeek
-                          )
-                        }
-                      />
-                      <Button
-                        variant="danger"
-                        onClick={() =>
-                          removeSubtask(
-                            taskIndex,
-                            subtaskIndex,
-                            setDoneThisWeek
-                          )
-                        }
-                        className="btn-icon"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-trash"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                        </svg>
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="form__btn__subtask">
-                    <Button
-                      variant="secondary"
-                      onClick={() => addSubtask(taskIndex, setDoneThisWeek)}
-                    >
-                      Add Subtask
-                    </Button>
-                  </div>
-                </Col>
-                <Col xs="auto">
                   <Button
                     variant="danger"
-                    onClick={() => removeTask(taskIndex, setDoneThisWeek)}
-                    className="btn-icon"
+                    onClick={() =>
+                      removeSubtask(taskIndex, subtaskIndex, setDoneThisWeek)
+                    }
+                    className="btn-icon ml-2"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -416,89 +406,93 @@ const WeeklyStatus: React.FC = () => {
                       <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
                     </svg>
                   </Button>
-                </Col>
-              </Row>
+                </div>
+              ))}
+              {/* Add Subtask Button */}
+              <div
+                className="form__btn__subtask"
+                style={{ marginLeft: "1.5rem" }}
+              >
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="btn-sm-custom"
+                  onClick={() => addSubtask(taskIndex, setDoneThisWeek)}
+                >
+                  Add Subtask
+                </Button>
+              </div>
             </div>
           ))}
-          <Button variant="secondary" onClick={() => addTask(setDoneThisWeek)}>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="btn-sm-custom"
+            onClick={() => addTask(setDoneThisWeek)}
+          >
             Add Task
           </Button>
         </Form.Group>
-
         {/* Plan for Next Week */}
         <Form.Group controlId="planForNextWeek" className="form__group">
           <Form.Label className="form__label">Plan for Next Week</Form.Label>
           {planForNextWeek.map((taskWithSubtasks, taskIndex) => (
             <div key={taskIndex} className="mb-2">
-              <Row>
-                <Col>
+              {/* Task Input and Remove Button */}
+              <div className="d-flex align-items-center">
+                <Form.Control
+                  type="text"
+                  placeholder={`Task ${taskIndex + 1}`}
+                  value={taskWithSubtasks.taskDescription}
+                  onChange={(e) =>
+                    handleTaskChange(
+                      taskIndex,
+                      e.target.value,
+                      setPlanForNextWeek
+                    )
+                  }
+                  className="flex-grow-1"
+                />
+                <Button
+                  variant="danger"
+                  onClick={() => removeTask(taskIndex, setPlanForNextWeek)}
+                  className="btn-icon ml-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-trash"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                  </svg>
+                </Button>
+              </div>
+              {/* Subtasks */}
+              {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
+                <div className="form__group__subtask" key={subtaskIndex}>
                   <Form.Control
                     type="text"
-                    placeholder={`Task ${taskIndex + 1}`}
-                    value={taskWithSubtasks.taskDescription}
+                    placeholder={`Subtask ${subtaskIndex + 1}`}
+                    value={subtask.subtaskDescription}
                     onChange={(e) =>
-                      handleTaskChange(
+                      handleSubtaskChange(
                         taskIndex,
+                        subtaskIndex,
                         e.target.value,
                         setPlanForNextWeek
                       )
                     }
                   />
-                  {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
-                    <div className="form__group__subtask" key={subtaskIndex}>
-                      <Form.Control
-                        key={subtaskIndex}
-                        type="text"
-                        placeholder={`Subtask ${subtaskIndex + 1}`}
-                        value={subtask.subtaskDescription}
-                        onChange={(e) =>
-                          handleSubtaskChange(
-                            taskIndex,
-                            subtaskIndex,
-                            e.target.value,
-                            setPlanForNextWeek
-                          )
-                        }
-                      />
-                      <Button
-                        variant="danger"
-                        onClick={() =>
-                          removeSubtask(
-                            taskIndex,
-                            subtaskIndex,
-                            setPlanForNextWeek
-                          )
-                        }
-                        className="btn-icon"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-trash"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                        </svg>
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="form__btn__subtask">
-                    <Button
-                      variant="secondary"
-                      onClick={() => addSubtask(taskIndex, setPlanForNextWeek)}
-                    >
-                      Add Subtask
-                    </Button>
-                  </div>
-                </Col>
-                <Col xs="auto">
                   <Button
                     variant="danger"
-                    onClick={() => removeTask(taskIndex, setPlanForNextWeek)}
-                    className="btn-icon"
+                    onClick={() =>
+                      removeSubtask(taskIndex, subtaskIndex, setPlanForNextWeek)
+                    }
+                    className="btn-icon ml-2"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -512,12 +506,28 @@ const WeeklyStatus: React.FC = () => {
                       <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
                     </svg>
                   </Button>
-                </Col>
-              </Row>
+                </div>
+              ))}
+              {/* Add Subtask Button */}
+              <div
+                className="form__btn__subtask"
+                style={{ marginLeft: "1.5rem" }}
+              >
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="btn-sm-custom"
+                  onClick={() => addSubtask(taskIndex, setPlanForNextWeek)}
+                >
+                  Add Subtask
+                </Button>
+              </div>
             </div>
           ))}
           <Button
             variant="secondary"
+            size="sm"
+            className="btn-sm-custom"
             onClick={() => addTask(setPlanForNextWeek)}
           >
             Add Task
@@ -561,7 +571,7 @@ const WeeklyStatus: React.FC = () => {
             onChange={(e) => setBlockers(e.target.value)}
           />
         </Form.Group>
-        <Form.Group controlId="buttons" className="form__btngroup">
+        <Form.Group controlId="buttons" className="form__btngroup flex-wrap">
           <Button variant="primary" type="submit" className="form__btn">
             Save Weekly Status
           </Button>
@@ -626,7 +636,8 @@ const WeeklyStatus: React.FC = () => {
         show={showContentModal}
         onHide={() => setShowContentModal(false)}
       />
-    </div>
+
+    </Container>
   );
 };
 

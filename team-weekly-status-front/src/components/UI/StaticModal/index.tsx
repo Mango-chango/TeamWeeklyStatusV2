@@ -18,7 +18,9 @@ const StaticModal: React.FC<StaticModalProps> = ({
   children,
 }) => {
   return (
-    <Modal show={show} onHide={onHide} backdrop="static" keyboard={false}>
+    <Modal show={show} onHide={onHide} backdrop="static" keyboard={false}   dialogClassName="modal-90w"
+    aria-labelledby="report-preview-modal"
+    centered>
       <Modal.Header closeButton>
         <Modal.Title>Report Preview</Modal.Title>
       </Modal.Header>

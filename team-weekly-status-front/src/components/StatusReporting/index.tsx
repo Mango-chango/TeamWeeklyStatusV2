@@ -142,17 +142,6 @@ const StatusReporting: React.FC = () => {
             data={editorData}
             config={{
               toolbar: [
-                "heading",
-                "|",
-                "bold",
-                "italic",
-                "link",
-                "bulletedList",
-                "numberedList",
-                "blockQuote",
-                "insertTable",
-                "undo",
-                "redo",
                 "selectAll",
                 "copy",
               ],

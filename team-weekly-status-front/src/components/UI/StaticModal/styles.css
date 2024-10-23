@@ -12,3 +12,8 @@
   min-width: 100% ;
   flex-direction: row ;
 }
+
+.modal-90w {
+  width: 90%;
+  max-width: none;
+}

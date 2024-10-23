@@ -22,21 +22,30 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  font-size: 16px; /* Base font size */
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Container Main */
+.container-main,
+.container-main-left-aligned {
+  background-color: var(--color-container-background);
+  padding: 1.25rem;
+  margin: 1.25rem auto;
+  max-width: 1200px;
+  width: 90%;
+  border-top: 3px solid #dcdcdc; /* Add a thick solid border at the top */
+  display: flex;
+  flex-direction: column;
 }
 
 .container-main {
-  background-color: var(--color-container-background);
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 1200px; /* Adjust width as needed */
-  /* Add a thick solid border at the top */
-  border-top: 3px solid #dcdcdc;
-
-  /* Center the container */
-  display: flex;
-  justify-content: center;
   align-items: center;
-  flex-direction: column;
 }
 
 .container-main h1,
@@ -53,91 +62,77 @@ body {
   cursor: pointer;
 }
 
-.container-main-left-aligned {
-  background-color: var(--color-container-background);
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 1300px; /* Adjust width as needed */
-  /* Add a thick solid border at the top */
-  border-top: 3px solid #dcdcdc;
-
-  /* Center the container */
-  display: flex;
-  flex-direction: column;
-}
-
-/* Flexbox layout for the specific form with limited input/button width */
+/* Flexbox layout for forms */
 .limited-width-form {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 10px;
+  gap: 1rem;
 }
 
-/* Control the width of inputs and buttons within the specific form */
 .limited-width-form input[type="text"],
 .limited-width-form button,
 .limited-width-form .btn {
-  flex: 0 1 auto; /* Ensure elements take only the necessary width */
-  max-width: 300px; /* Optional: Set a max width */
-  padding: 10px;
+  flex: 1 1 100%;
+  max-width: 100%;
+  padding: 0.625rem;
 }
 
-/* Specific button size fix */
-.limited-width-form button,
-.limited-width-form .btn-primary {
-  width: auto; /* Take only necessary width */
-  max-width: 150px; /* Adjust the max-width as needed */
+@media only screen and (min-width: 601px) {
+  .limited-width-form input[type="text"],
+  .limited-width-form button,
+  .limited-width-form .btn {
+    flex: 1 1 calc(50% - 1rem); /* Two columns */
+  }
 }
 
-/* Override react-bootstrap button size if necessary */
-.limited-width-form .btn-primary {
-  flex: 0 1 auto;
-  white-space: nowrap; /* Ensure buttons don't stretch over multiple lines */
+@media only screen and (min-width: 993px) {
+  .limited-width-form input[type="text"],
+  .limited-width-form button,
+  .limited-width-form .btn {
+    flex: 1 1 calc(33.333% - 1rem); /* Three columns */
+  }
 }
 
-/* Other forms where input should be wider, unaffected */
-.wide-input-form input[type="text"] {
-  width: 100%; /* Example: Take full width */
-  max-width: none; /* Remove any max width restrictions */
-}
-
-/* Flex container for the button */
+/* Button Container */
 .new-button-container {
   display: flex;
-  justify-content: flex-start; /* Align button to the left */
-  width: 100%; /* Optional: restrict width of the container */
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .new-button-container .btn-primary {
-  width: auto; /* Ensure button takes only the space it needs */
-  max-width: 150px; /* Optional: limit the button width */
+  width: auto;
+  max-width: 150px;
 }
 
+/* Typography */
 h1,
 .title {
   color: var(--color-title);
   font-family: 'Exo', sans-serif;
-  font-weight: 900; /* Black weight for Exo */
+  font-weight: 900;
+  font-size: 2rem; /* 32px */
 }
 
 h2,
 .subtitle {
   color: var(--color-subtitle);
   font-family: 'Exo', sans-serif;
-  font-weight: 900; /* Black weight for Exo */
+  font-weight: 900;
+  font-size: 1.75rem; /* 28px */
 }
 
 h3,
 .subsubtitle {
   color: var(--color-subtitle);
   font-family: 'Noto Sans', sans-serif;
-  font-weight: 700; /* Bold weight for Noto Sans */
+  font-weight: 700;
+  font-size: 1.5rem;
 }
 
 .content-title {
   font-family: 'Noto Sans', sans-serif;
-  font-weight: 700; /* Bold weight for Noto Sans */
+  font-weight: 700;
 }
 
 p,
@@ -149,7 +144,8 @@ textarea,
 select {
   color: var(--color-text);
   font-family: 'Noto Sans', sans-serif;
-  font-weight: 400; /* Regular weight for Noto Sans */
+  font-weight: 400;
+  font-size: 1rem; /* 16px */
 }
 
 a {
@@ -164,10 +160,10 @@ a:hover {
 /* Buttons */
 .button,
 .btn {
-  padding: 10px 20px;
+  padding: 0.625rem 1.25rem;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .button-action,
@@ -178,7 +174,7 @@ a:hover {
 
 .button-action:hover,
 .btn-primary:hover {
-  background-color: #e67635; /* Slightly darker shade */
+  background-color: #e67635;
 }
 
 .button-secondary,
@@ -189,7 +185,7 @@ a:hover {
 
 .button-secondary:hover,
 .btn-secondary:hover {
-  background-color: #57467a; /* Slightly darker shade */
+  background-color: #57467a;
 }
 
 /* Forms */
@@ -200,7 +196,7 @@ textarea,
 select {
   border: 1px solid var(--color-border);
   background-color: var(--color-clear-background);
-  padding: 8px;
+  padding: 0.5rem;
   width: 100%;
   box-sizing: border-box;
 }
@@ -230,13 +226,13 @@ hr {
 .footer {
   background-color: var(--color-footer-background);
   color: var(--color-footer-text);
-  padding: 20px;
+  padding: 1.25rem;
   text-align: center;
 }
 
 .footer a {
   color: var(--color-footer-icons);
-  margin: 0 10px;
+  margin: 0 0.625rem;
 }
 
 .footer a:hover {
@@ -246,8 +242,8 @@ hr {
 /* Footer Icons */
 .footer .icon {
   color: var(--color-footer-icons);
-  font-size: 20px;
-  margin: 0 5px;
+  font-size: 1.25rem;
+  margin: 0 0.3125rem;
 }
 
 .footer .icon:hover {
@@ -257,16 +253,31 @@ hr {
 /* Navigation Bar */
 .navbar {
   background-color: var(--color-clear-background);
-  padding: 10px 20px;
+  padding: 0.625rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .navbar a {
   color: var(--color-text);
-  margin: 0 15px;
+  margin: 0 0.9375rem;
+  padding: 0.5rem 0;
 }
 
 .navbar a:hover {
   color: var(--color-action-button);
+}
+
+@media only screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+  }
+
+  .navbar a {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 /* Cards */
@@ -274,13 +285,14 @@ hr {
   background-color: #ffffff;
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  padding: 20px;
-  margin: 20px 0;
+  padding: 1.25rem;
+  margin: 1.25rem 0;
 }
 
 .card-title {
   color: var(--color-title);
-  margin-bottom: 10px;
+  margin-bottom: 0.625rem;
+  font-size: 1.5rem;
 }
 
 .card-text {
@@ -288,6 +300,10 @@ hr {
 }
 
 /* Tables */
+.table-responsive {
+  overflow-x: auto;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -296,8 +312,9 @@ table {
 th,
 td {
   border: 1px solid var(--color-border);
-  padding: 10px;
+  padding: 0.625rem;
   text-align: left;
+  white-space: nowrap;
 }
 
 th {
@@ -311,10 +328,10 @@ td {
 
 /* Alerts */
 .alert {
-  padding: 15px;
+  padding: 0.9375rem;
   border: 1px solid var(--color-border);
   border-left-width: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .alert-info {
@@ -430,4 +447,117 @@ td {
 
 .custom-footer-icons {
   color: var(--color-footer-icons);
+}
+
+/* Responsive Typography */
+@media only screen and (max-width: 600px) {
+  body {
+    font-size: 14px; /* Smaller base font size */
+  }
+
+  h1,
+  .title {
+    font-size: 1.5rem;
+  }
+
+  h2,
+  .subtitle {
+    font-size: 1.25rem;
+  }
+
+  h3,
+  .subsubtitle {
+    font-size: 1.125rem;
+  }
+
+  .container-main,
+  .container-main-left-aligned {
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .button,
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Tablets and Small Desktops */
+@media only screen and (min-width: 601px) and (max-width: 992px) {
+  .container-main,
+  .container-main-left-aligned {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  h1,
+  .title {
+    font-size: 1.75rem;
+  }
+
+  h2,
+  .subtitle {
+    font-size: 1.5rem;
+  }
+
+  h3,
+  .subsubtitle {
+    font-size: 1.25rem;
+  }
+}
+
+/* Large Desktops */
+@media only screen and (min-width: 993px) {
+  .container-main,
+  .container-main-left-aligned {
+    padding: 2rem;
+    width: 85%;
+  }
+
+  h1,
+  .title {
+    font-size: 2rem;
+  }
+
+  h2,
+  .subtitle {
+    font-size: 1.75rem;
+  }
+
+  h3,
+  .subsubtitle {
+    font-size: 1.5rem;
+  }
+}
+
+/* Adjusting Forms on Small Screens */
+@media only screen and (max-width: 600px) {
+  .limited-width-form input[type="text"],
+  .limited-width-form button,
+  .limited-width-form .btn {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  .limited-width-form {
+    gap: 0.5rem;
+  }
+}
+
+/* Responsive Tables */
+.table-responsive {
+  overflow-x: auto;
+}
+
+th,
+td {
+  white-space: nowrap;
+}
+
+/* Adjusting Buttons */
+@media only screen and (max-width: 600px) {
+  .new-button-container .btn-primary {
+    max-width: 100%;
+  }
 }
