@@ -1,5 +1,5 @@
 .modal-dialog {
-  max-width: 60%; 
+  max-width: 50%; 
 }
 
 .modal-body {
@@ -9,6 +9,23 @@
 }
 
 .card {
-  min-width: 100% ;
-  flex-direction: row ;
+  min-width: 100%;
+  flex-direction: row;
+}
+
+.modal-90w {
+  width: 90%;
+  max-width: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .modal-dialog {
+    max-width: 100%;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .modal-dialog {
+    max-width: 90%;
+  }
 }
