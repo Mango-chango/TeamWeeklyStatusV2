@@ -120,7 +120,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             // Get all team members
             var allTeamMembers = await _context.TeamMembers
                 .Include(tm => tm.Member)
-                .Where(tm => tm.TeamId == teamId)
+                .Where(tm => tm.TeamId == teamId && (tm.EndActiveDate == null || (tm.StartActiveDate <= DateTime.Now && tm.EndActiveDate >= DateTime.Now)))
                 .ToListAsync();
 
             // Get existing weekly statuses for the date
