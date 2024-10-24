@@ -6,7 +6,8 @@ import { UserMember } from "../../../types/WeeklyStatus.types";
 import { Alert, Button, Form, Table, Row, Col } from "react-bootstrap";
 import AddEditMemberModal from "./AddEditMemberModal";
 import { PaginationControls } from "../../Common";
-import "./styles.css"; // Import the CSS file
+import "../styles.css";
+
 
 const MembersManagement: React.FC = () => {
   const { isAdmin } = userStore();

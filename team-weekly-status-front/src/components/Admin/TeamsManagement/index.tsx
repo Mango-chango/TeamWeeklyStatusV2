@@ -7,8 +7,7 @@ import { Alert, Button, Table, Row, Col, Form } from "react-bootstrap";
 import AddEditTeamModal from "./AddEditTeamModal";
 import TeamMembersManagement from "../TeamMembersManagement";
 import { PaginationControls } from "../../Common";
-import "./styles.css";
-
+import "../styles.css";
 
 const TeamsManagement: React.FC = () => {
   const { isAdmin } = userStore();
@@ -177,11 +176,16 @@ const TeamsManagement: React.FC = () => {
         <div className="card-container">
           {currentPageData.map((team: Team) => (
             <div key={team.id} className="member-card mb-3">
-              <div className="card-body">
+              <div
+                className="card-body"
+                onClick={() => {
+                  setSelectedTeamId(team.id);
+                  setSelectedTeamName(team.name);
+                }}
+              >
                 <h5 className="card-title">{team.name}</h5>
                 <p className="card-text">
-                  <strong>Is Active?:</strong>{" "}
-                  {team.isActive ? "Yes" : "No"}
+                  <strong>Is Active?:</strong> {team.isActive ? "Yes" : "No"}
                 </p>
                 <p className="card-text">
                   <strong>Email Notifications:</strong>{" "}
@@ -193,9 +197,7 @@ const TeamsManagement: React.FC = () => {
                 </p> */}
                 <p className="card-text">
                   <strong>Week Reporter Automatic Assignment:</strong>{" "}
-                  {team.weekReporterAutomaticAssignment
-                    ? "Yes"
-                    : "No"}
+                  {team.weekReporterAutomaticAssignment ? "Yes" : "No"}
                 </p>
                 {/* <p className="card-text">
                   <strong>Description:</strong> {team.description}
@@ -240,7 +242,7 @@ const TeamsManagement: React.FC = () => {
           ))}
         </div>
       ) : (
-        <Table striped bordered hover>
+        <Table striped bordered hover responsive>
           <thead>
             <tr>
               <th
@@ -261,8 +263,15 @@ const TeamsManagement: React.FC = () => {
               >
                 Description {renderSortIcon("description")}
               </th>
-              <th>Email Notifications</th>
-              <th>Slack Notifications</th>
+              <th>
+                Email
+                <br />
+                Notifications
+              </th>
+              <th>
+                Slack
+                <br /> Notifications
+              </th>
               <th>
                 Week Reporter
                 <br />
@@ -286,12 +295,10 @@ const TeamsManagement: React.FC = () => {
                     selectedTeamId === team.id ? "#e0f7fa" : "transparent",
                 }}
               >
-                <td style={{ verticalAlign: "middle" }}>{team.id}</td>
-                <td style={{ verticalAlign: "middle" }}>{team.name}</td>
-                <td style={{ width: "10%", verticalAlign: "middle" }}>
-                  {team.description ? team.description : ""}
-                </td>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                <td>{team.id}</td>
+                <td>{team.name}</td>
+                <td>{team.description ? team.description : ""}</td>
+                <td>
                   <input
                     type="checkbox"
                     checked={team.emailNotificationsEnabled}
@@ -300,7 +307,7 @@ const TeamsManagement: React.FC = () => {
                     className="readonly-checkbox"
                   />
                 </td>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                <td>
                   <input
                     type="checkbox"
                     checked={team.slackNotificationsEnabled}
@@ -309,7 +316,7 @@ const TeamsManagement: React.FC = () => {
                     className="readonly-checkbox"
                   />
                 </td>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                <td>
                   <input
                     type="checkbox"
                     checked={team.weekReporterAutomaticAssignment}
@@ -318,7 +325,7 @@ const TeamsManagement: React.FC = () => {
                     className="readonly-checkbox"
                   />
                 </td>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                <td>
                   <input
                     type="checkbox"
                     checked={team.isActive}
@@ -327,7 +334,7 @@ const TeamsManagement: React.FC = () => {
                     className="readonly-checkbox"
                   />
                 </td>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                <td>
                   <Button
                     variant="primary"
                     onClick={(e) => {
@@ -386,7 +393,7 @@ const TeamsManagement: React.FC = () => {
         <Button
           variant="primary"
           onClick={handleAddNew}
-          className="btn-primary"
+          className="btn-primary-left"
         >
           New
         </Button>
@@ -401,6 +408,8 @@ const TeamsManagement: React.FC = () => {
         team={selectedTeam}
         onSave={fetchTeams}
       />
+      <br />
+
 
       {selectedTeamId && (
         <TeamMembersManagement

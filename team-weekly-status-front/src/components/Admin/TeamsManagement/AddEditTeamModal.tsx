@@ -23,7 +23,7 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
     emailNotificationsEnabled: false,
     slackNotificationsEnabled: false,
     weekReporterAutomaticAssignment: false,
-    isActive: true,
+    isActive: false,
   });
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
         emailNotificationsEnabled: false,
         slackNotificationsEnabled: false,
         weekReporterAutomaticAssignment: false,
-        isActive: true,
+        isActive: false,
       });
     }
   }, [team]);

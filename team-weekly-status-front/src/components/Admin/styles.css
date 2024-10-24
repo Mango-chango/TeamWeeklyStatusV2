@@ -1,30 +1,30 @@
 /* Action buttons styling */
 .btn-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Adjust table cells on small screens */
+@media (max-width: 576px) {
+  .table td,
+  .table th {
+    padding: 0.5rem;
   }
-  
-  /* Adjust table cells on small screens */
-  @media (max-width: 576px) {
-    .table td,
-    .table th {
-      padding: 0.5rem;
-    }
-  
-    /* Adjust action buttons */
-    .btn-icon {
-      width: 100%;
-      margin-right: 0;
-    }
-  
-    /* Center text in table headers */
-    .table th {
-      text-align: center;
-    }
+
+  /* Adjust action buttons */
+  .btn-icon {
+    width: 100%;
+    margin-right: 0;
   }
-  
-  /* MembersManagement.css */
+
+  /* Center text in table headers */
+  .table th {
+    text-align: center;
+  }
+}
+
+/* MembersManagement.css */
 
 /* Card container */
 .card-container {
@@ -54,10 +54,9 @@
   margin-top: 1rem;
 }
 
-
-
-
-
+.table th, .table td {
+  vertical-align: middle;
+}
 
 /* Ensure action buttons are properly sized */
 .btn-icon {
@@ -89,4 +88,18 @@
   .btn-icon:last-child {
     margin-right: 0;
   }
+}
+
+.readonly-checkbox {
+  pointer-events: none; /* Prevents interaction */
+  cursor: default;
+  accent-color: #0d6efd; /* Bootstrap primary color */
+}
+
+.readonly-checkbox[aria-readonly="true"] {
+  opacity: 1; /* Ensures the checkbox is not dimmed */
+}
+
+.btn-primary-left {
+  float: left;
 }
