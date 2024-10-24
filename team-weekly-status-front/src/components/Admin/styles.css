@@ -1,0 +1,105 @@
+/* Action buttons styling */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Adjust table cells on small screens */
+@media (max-width: 576px) {
+  .table td,
+  .table th {
+    padding: 0.5rem;
+  }
+
+  /* Adjust action buttons */
+  .btn-icon {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  /* Center text in table headers */
+  .table th {
+    text-align: center;
+  }
+}
+
+/* MembersManagement.css */
+
+/* Card container */
+.card-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Member card */
+.member-card {
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  padding: 1rem;
+}
+
+/* Adjust card body */
+.member-card .card-body {
+  padding: 0;
+}
+
+/* Adjust card title */
+.member-card .card-title {
+  margin-bottom: 0.5rem;
+}
+
+/* Adjust action buttons */
+.member-card .d-flex {
+  margin-top: 1rem;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+}
+
+/* Ensure action buttons are properly sized */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+}
+
+/* Adjust icon size if necessary */
+.btn-icon i {
+  font-size: 1.2rem; /* Adjust as needed */
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 576px) {
+  .member-card .d-flex {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-icon {
+    flex: 1 1 45%;
+    margin-right: 5%;
+    margin-bottom: 0.5rem;
+  }
+
+  .btn-icon:last-child {
+    margin-right: 0;
+  }
+}
+
+.readonly-checkbox {
+  pointer-events: none; /* Prevents interaction */
+  cursor: default;
+  accent-color: #0d6efd; /* Bootstrap primary color */
+}
+
+.readonly-checkbox[aria-readonly="true"] {
+  opacity: 1; /* Ensures the checkbox is not dimmed */
+}
+
+.btn-primary-left {
+  float: left;
+}
