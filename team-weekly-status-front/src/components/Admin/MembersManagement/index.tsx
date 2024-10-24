@@ -169,7 +169,7 @@ const MembersManagement: React.FC = () => {
 
   return (
     <div className="container-main">
-      <h2>Members Management</h2>
+      <h2>Changos Management</h2>
       {error && <Alert variant="danger">{error}</Alert>}
 
       {/* Search Inputs */}
