@@ -69,7 +69,8 @@ const StatusReporting: React.FC = () => {
   const generateHTML = () => {
     if (!teamWeeklyStatusData) return "";
 
-    let htmlContent = `<h2>${localTeamName} Weekly Status Report</h2>`;
+    //let htmlContent = `<h2>${localTeamName} Weekly Status Report</h2>`;
+    let htmlContent = "";
     htmlContent += `<h3>${startDate.toDateString()} - ${endDate.toDateString()}</h3>`;
 
     teamWeeklyStatusData
@@ -97,7 +98,10 @@ const StatusReporting: React.FC = () => {
         htmlContent += `<ul>`;
         weeklyStatus?.planForNextWeek?.forEach((taskWithSubtasks) => {
           htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
-          if (taskWithSubtasks.subtasks && taskWithSubtasks.subtasks.length > 0) {
+          if (
+            taskWithSubtasks.subtasks &&
+            taskWithSubtasks.subtasks.length > 0
+          ) {
             htmlContent += `<ul>`;
             taskWithSubtasks.subtasks.forEach((subtask) => {
               htmlContent += `<li>${subtask.subtaskDescription}</li>`;
@@ -128,34 +132,19 @@ const StatusReporting: React.FC = () => {
   };
 
   return (
-    <>
-            <h5 style={{ textAlign: "center", paddingTop: "20px" }}>
-          This is a readonly view. The changes done here are not persisted in
-          the database.
-        </h5>
+    <div className="div__container">
+      <h5 style={{ textAlign: "center", paddingTop: "20px" }}>
+        This is a readonly view. The changes done here are not persisted in the
+        database.
+      </h5>
 
-      <div className="card mt-5 div__container">
-
+      <div className="card mt-5 ">
         <div className="card-body card-content">
           <CKEditor
             editor={ClassicEditor}
             data={editorData}
             config={{
-              toolbar: [
-                "heading",
-                "|",
-                "bold",
-                "italic",
-                "link",
-                "bulletedList",
-                "numberedList",
-                "blockQuote",
-                "insertTable",
-                "undo",
-                "redo",
-                "selectAll",
-                "copy",
-              ],
+              toolbar: ["selectAll"],
             }}
           />
         </div>
@@ -173,7 +162,7 @@ const StatusReporting: React.FC = () => {
           Back
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 

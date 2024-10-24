@@ -5,32 +5,13 @@ import { WeeklyStatusData } from "../../types/WeeklyStatus.types";
 import moment from "moment";
 import "./styles.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const ReportPreview: React.FC = () => {
-  const { teamId, teamName, memberName, memberId } = userStore();
-  const [localMemberId, setLocalMemberId] = useState(memberId);
-  const [localTeamName, setLocalTeamName] = useState(teamName);
-  const [existingWeeklyStatus, setExistingWeeklyStatus] =
-    useState<WeeklyStatusData | null>(null);
+  const { teamId, memberId } = userStore();
+  const [existingWeeklyStatus, setExistingWeeklyStatus] = useState<WeeklyStatusData | null>(null);
 
-  const initialStartDate = moment().startOf("week").toDate();
-  const [startDate, setStartDate] = useState(initialStartDate);
-
-  const endDate = moment().endOf("week").toDate();
-
-  useEffect(() => {
-    setLocalTeamName(teamName);
-
-    const unsubscribe = userStore.subscribe((state) => {
-      if (state.teamName !== localTeamName) {
-        setLocalTeamName(state.teamName);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const startDate = moment().startOf("week").toDate();
 
   useEffect(() => {
     const fetchExistingStatus = async () => {
@@ -51,17 +32,15 @@ const ReportPreview: React.FC = () => {
     };
 
     fetchExistingStatus();
-  }, [localMemberId, startDate]);
+  }, [memberId, teamId, startDate]);
 
   const generateHTML = () => {
     if (!existingWeeklyStatus) return "";
 
-    let htmlContent = ``;
-    htmlContent += `<h4>What was done this week:</h4>`;
-    htmlContent += `<ul>`;
-    existingWeeklyStatus?.doneThisWeek?.forEach((taskWithSubtasks) => {
+    let htmlContent = `<h4>What was done this week:</h4><ul>`;
+    existingWeeklyStatus.doneThisWeek?.forEach((taskWithSubtasks) => {
       htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
-      if (taskWithSubtasks.subtasks && taskWithSubtasks.subtasks.length > 0) {
+      if (taskWithSubtasks.subtasks?.length) {
         htmlContent += `<ul>`;
         taskWithSubtasks.subtasks.forEach((subtask) => {
           htmlContent += `<li>${subtask.subtaskDescription}</li>`;
@@ -71,11 +50,11 @@ const ReportPreview: React.FC = () => {
       htmlContent += `</li>`;
     });
     htmlContent += `</ul>`;
-    htmlContent += `<h4>Plan for next week:</h4>`;
-    htmlContent += `<ul>`;
-    existingWeeklyStatus?.planForNextWeek?.forEach((taskWithSubtasks) => {
+
+    htmlContent += `<h4>Plan for next week:</h4><ul>`;
+    existingWeeklyStatus.planForNextWeek?.forEach((taskWithSubtasks) => {
       htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
-      if (taskWithSubtasks.subtasks && taskWithSubtasks.subtasks.length > 0) {
+      if (taskWithSubtasks.subtasks?.length) {
         htmlContent += `<ul>`;
         taskWithSubtasks.subtasks.forEach((subtask) => {
           htmlContent += `<li>${subtask.subtaskDescription}</li>`;
@@ -85,10 +64,12 @@ const ReportPreview: React.FC = () => {
       htmlContent += `</li>`;
     });
     htmlContent += `</ul>`;
+
     htmlContent += `<h4>Blockers:</h4>`;
-    htmlContent += `<p>${existingWeeklyStatus?.blockers ?? "None"}</p>`;
+    htmlContent += `<p>${existingWeeklyStatus.blockers || "None"}</p>`;
+
     htmlContent += `<h4>Upcoming Time Off:</h4>`;
-    const datesList = existingWeeklyStatus?.upcomingPTO?.map((date) =>
+    const datesList = existingWeeklyStatus.upcomingPTO?.map((date) =>
       moment(date).format("MMM DD")
     );
     if (datesList?.length) {
@@ -102,31 +83,20 @@ const ReportPreview: React.FC = () => {
 
   return (
     <>
-      <h5 style={{ textAlign: "center", paddingTop: "20px" }}>This is a readonly view. The changes done here are not persisted in the database.</h5>
-      <div className="card mt-5 div__container">
-        <div className="card-body card-content">
-          <CKEditor
-            editor={ClassicEditor}
-            data={editorData}
-            config={{
-              toolbar: [
-                "heading",
-                "|",
-                "bold",
-                "italic",
-                "link",
-                "bulletedList",
-                "numberedList",
-                "blockQuote",
-                "insertTable",
-                "undo",
-                "redo",
-                "selectAll",
-                "copy",
-              ],
-            }}
-          />
-        </div>
+      <h5 className="readonly-message">
+        This is a readonly view. Changes made here are not saved.
+      </h5>
+      <div className="div__container">
+        <CKEditor
+          editor={ClassicEditor}
+          data={editorData}
+          config={{
+            toolbar: [
+            ],
+            // Remove 'shouldNotGroupWhenFull' as it's not supported
+          }}
+          disabled={true}
+        />
       </div>
     </>
   );

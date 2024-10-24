@@ -3,7 +3,6 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "./styles.css";
 
-// In your StaticModalProps definition
 interface StaticModalProps {
   show: boolean;
   onHide: () => void;
@@ -18,7 +17,7 @@ const StaticModal: React.FC<StaticModalProps> = ({
   children,
 }) => {
   return (
-    <Modal show={show} onHide={onHide} backdrop="static" keyboard={false}>
+    <Modal show={show} onHide={onHide} backdrop="static" keyboard={false} centered dialogClassName="90-w">
       <Modal.Header closeButton>
         <Modal.Title>Report Preview</Modal.Title>
       </Modal.Header>
