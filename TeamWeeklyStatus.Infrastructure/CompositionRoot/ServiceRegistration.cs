@@ -27,12 +27,6 @@ namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
                 TeamWeeklyStatusContextFactory>();
 
             // Register repositories
-            services.AddScoped<IRepository<Team>, Repository<Team>>();
-            services.AddScoped<IRepository<Member>, Repository<Member>>();
-            services.AddScoped<IRepository<TeamMember>, Repository<TeamMember>>();
-            services.AddScoped<IRepository<WeeklyStatus>, Repository<WeeklyStatus>>();
-            services.AddScoped<IRepository<DoneThisWeekTask>, Repository<DoneThisWeekTask>>();
-            services.AddScoped<IRepository<PlanForNextWeekTask>, Repository<PlanForNextWeekTask>>();
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<ITeamRepository, TeamRepository>();
             services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
