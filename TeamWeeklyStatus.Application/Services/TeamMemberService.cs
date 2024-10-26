@@ -7,11 +7,11 @@ namespace TeamWeeklyStatus.Application.Services
     public class TeamMemberService : ITeamMemberService
     {
         private readonly ITeamMemberRepository _teamMemberRepository;
-        private readonly IRepository<Team> _teamRepository;
+        private readonly ITeamRepository _teamRepository;
         private readonly IWeeklyStatusRepository _weeklyStatusRepository;
 
 
-        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IRepository<Team> teamRepository, IWeeklyStatusRepository weeklyStatusRepository)
+        public TeamMemberService(ITeamMemberRepository teamMemberRepository, ITeamRepository teamRepository, IWeeklyStatusRepository weeklyStatusRepository)
         {
             _teamMemberRepository = teamMemberRepository;
             _teamRepository = teamRepository;
@@ -107,7 +107,7 @@ namespace TeamWeeklyStatus.Application.Services
         {
             DateTime today = DateTime.Now;
             var allTeams = await _teamMemberRepository.GetAllTeamsByMember(memberId);
-            var allTeamEntities = _teamRepository.GetAll().ToList();
+            var allTeamEntities = await _teamRepository.GetAllTeamsAsync();
 
             var activeTeamsDTOs = allTeams
                 .Where(tm => tm.EndActiveDate == null || (tm.StartActiveDate <= today && tm.EndActiveDate >= today))
@@ -235,7 +235,7 @@ namespace TeamWeeklyStatus.Application.Services
 
         private async Task<IEnumerable<Team>> GetSuitableTeams()
         {
-            var allTeams = await Task.Run(() => _teamRepository.GetAll().ToList());
+            var allTeams = await Task.Run(() => _teamRepository.GetAllTeamsAsync());
             var suitableTeams = allTeams
                 .Where(t => t.IsActive == true && t.WeekReporterAutomaticAssignment == true)
                 .ToList();
