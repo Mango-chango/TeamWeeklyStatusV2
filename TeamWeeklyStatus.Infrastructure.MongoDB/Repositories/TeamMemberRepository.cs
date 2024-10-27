@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
+using TeamWeeklyStatus.Infrastructure.MongoDB.DataModels;
 
 namespace TeamWeeklyStatus.Infrastructure.MongoDB.Repositories
 {
     public class TeamMemberRepository : ITeamMemberRepository
     {
-        private readonly IMongoCollection<TeamMember> _teamMembers;
+        private readonly IMongoCollection<TeamMemberDataModel> _teamMembers;
         public TeamMemberRepository(IMongoDatabase database)
         {
-            _teamMembers = database.GetCollection<TeamMember>("TeamMembers");
+            _teamMembers = database.GetCollection<TeamMemberDataModel>("TeamMembers");
         }
 
         Task<TeamMember> ITeamMemberRepository.AddTeamMemberAsync(TeamMemberDTO teamMember)
@@ -45,8 +46,9 @@ namespace TeamWeeklyStatus.Infrastructure.MongoDB.Repositories
 
         public async Task<IEnumerable<TeamMember>> GetAllTeamsByMember(int memberId)
         {
-            var filter = Builders<TeamMember>.Filter.Eq(tm => tm.MemberId, memberId);
-            return await _teamMembers.Find(filter).ToListAsync();
+            var filter = Builders<TeamMemberDataModel>.Filter.Eq(tm => tm.MemberId, memberId);
+            var teamMemberDataModels = await _teamMembers.Find(filter).ToListAsync();
+            return teamMemberDataModels.Select(tm => tm.ToDomainEntity());
         }
 
         Task<TeamMember> ITeamMemberRepository.GetTeamMemberAsync(int teamId, int memberId)
