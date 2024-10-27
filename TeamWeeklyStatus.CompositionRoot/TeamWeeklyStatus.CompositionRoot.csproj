@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TeamWeeklyStatus.Application\TeamWeeklyStatus.Application.csproj" />
+    <ProjectReference Include="..\TeamWeeklyStatus.Infrastructure.MongoDB\TeamWeeklyStatus.Infrastructure.MongoDB.csproj" />
     <ProjectReference Include="..\TeamWeeklyStatus.Infrastructure\TeamWeeklyStatus.Infrastructure.csproj" />
   </ItemGroup>
 
