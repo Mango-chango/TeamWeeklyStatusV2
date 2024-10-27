@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Alert, Row, Col } from "react-bootstrap";
+import { Button, Form, Alert, Container } from "react-bootstrap";
+
 import moment from "moment";
 import { userStore } from "../../store";
 import {
@@ -14,31 +15,39 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./styles.css";
 import ReportPreview from "../ReportPreview/index";
 import StaticModal from "../UI/StaticModal";
+import ContentModal from "../ContentModal";
 
 interface WeeklyStatusProps {
-  role: "TeamLead" | "CurrentWeekReporter" | "Normal";
   teamName: string;
   memberName: string;
   memberId: number;
 }
 
 const WeeklyStatus: React.FC = () => {
-  const { role, teamId, teamName, memberName, memberId, memberActiveTeams } =
-    userStore();
+  const {
+    teamId,
+    teamName,
+    memberName,
+    memberId,
+    memberActiveTeams,
+    isAdmin,
+    isTeamLead,
+    isCurrentWeekReporter,
+    featureFlags,
+  } = userStore();
   const [localMemberId, setLocalMemberId] = useState(memberId);
-  const [localTeamName, setLocalTeamName] = useState(teamName);
   const [localTeamId, setLocalTeamId] = useState(teamId);
   const [existingWeeklyStatus, setExistingWeeklyStatus] =
     useState<WeeklyStatusData | null>(null);
   const [doneThisWeek, setDoneThisWeek] = useState<TaskWithSubtasks[]>([
     { taskDescription: "", subtasks: [{ subtaskDescription: "" }] }, // Ensuring subtasks are an array of Subtask objects
   ]);
-  const [planForNextWeek, setPlanForNextWeek] = useState<string[]>([""]);
+  const [planForNextWeek, setPlanForNextWeek] = useState<TaskWithSubtasks[]>([
+    { taskDescription: "", subtasks: [{ subtaskDescription: "" }] },
+  ]);
   const [blockers, setBlockers] = useState<string>("");
   const [upcomingPTO, setUpcomingPTO] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -53,10 +62,23 @@ const WeeklyStatus: React.FC = () => {
 
   const endDate = moment().endOf("week").toDate();
   const nextWeekStart = moment().add(1, "weeks").startOf("isoWeek");
-  const nextWeekEnd = moment().add(1, "weeks").endOf("isoWeek");
   const inTwoMonths = moment().add(2, "months").endOf("isoWeek");
 
   const navigate = useNavigate();
+
+  const [localIsAdmin, setLocalIsAdmin] = useState<boolean>(isAdmin);
+  const [localIsTeamLead, setLocalIsTeamLead] = useState<boolean>(isTeamLead);
+  const [localIsCurrentWeekReporter, setLocalIsCurrentWeekReporter] =
+    useState<boolean>(isCurrentWeekReporter);
+
+  const [showContentModal, setShowContentModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Check if the feature flag is enabled
+    if (featureFlags.showContentModal) {
+      setShowContentModal(true);
+    }
+  }, [featureFlags.showContentModal]);
 
   useEffect(() => {
     // Subscribe to memberId changes
@@ -100,9 +122,7 @@ const WeeklyStatus: React.FC = () => {
         setDoneThisWeek(response.doneThisWeek);
         setPlanForNextWeek(response.planForNextWeek);
         setUpcomingPTO(
-          response.upcomingPTO.map((date) =>
-            moment(date).format("YYYY-MM-DD")
-          )
+          response.upcomingPTO.map((date) => moment(date).format("YYYY-MM-DD"))
         );
         setSelectedDates(
           response.upcomingPTO.map((date) => moment(date).toDate())
@@ -164,12 +184,6 @@ const WeeklyStatus: React.FC = () => {
     });
   };
 
-  const handlePlanChange = (index: number, value: string) => {
-    const newPlans = [...planForNextWeek];
-    newPlans[index] = value;
-    setPlanForNextWeek(newPlans);
-  };
-
   const handleDateChange = (date: Date | null) => {
     if (date) {
       const dateStr = moment(date).format("YYYY-MM-DD");
@@ -182,8 +196,8 @@ const WeeklyStatus: React.FC = () => {
       });
 
       setSelectedDates((prev) => {
-        if (prev.some((d) => moment(d).isSame(date, 'day'))) {
-          return prev.filter((d) => !moment(d).isSame(date, 'day'));
+        if (prev.some((d) => moment(d).isSame(date, "day"))) {
+          return prev.filter((d) => !moment(d).isSame(date, "day"));
         } else {
           return [...prev, date];
         }
@@ -203,22 +217,9 @@ const WeeklyStatus: React.FC = () => {
     setFunction((prev) => [...prev, { taskDescription: "", subtasks: [] }]);
   };
 
-  const addTask1 = (
-    setFunction: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
-    setFunction((prev) => [...prev, ""]);
-  };
-
   const removeTask = (
     index: number,
     setFunction: React.Dispatch<React.SetStateAction<TaskWithSubtasks[]>>
-  ) => {
-    setFunction((prev) => prev.filter((_, idx) => idx !== index));
-  };
-
-  const removeTask1 = (
-    index: number,
-    setFunction: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
     setFunction((prev) => prev.filter((_, idx) => idx !== index));
   };
@@ -237,14 +238,21 @@ const WeeklyStatus: React.FC = () => {
             subtaskDescription: subtask.subtaskDescription,
           })),
       })),
-      planForNextWeek,
+      planForNextWeek: planForNextWeek.map((task) => ({
+        taskDescription: task.taskDescription,
+        subtasks: task.subtasks
+          .filter((subtask) => subtask.subtaskDescription.trim() !== "")
+          .map((subtask) => ({
+            subtaskDescription: subtask.subtaskDescription,
+          })),
+      })),
       upcomingPTO,
       blockers,
       memberId,
       teamId,
     };
 
-    console.log(dataToSubmit);
+    // console.log(dataToSubmit);
 
     try {
       const endpoint = existingWeeklyStatus
@@ -258,24 +266,27 @@ const WeeklyStatus: React.FC = () => {
       setExistingWeeklyStatus(response as WeeklyStatusData);
       displaySuccessMessage();
     } catch (err) {
-      setSuccess(false);
       displayErrorMessage();
     }
   };
 
   const displaySuccessMessage = () => {
-    setSuccess(true);
+    setAlertMessage("Your weekly status has been saved!");
+    setAlertVariant("success");
+    setShowAlert(true);
 
     setTimeout(() => {
-      setSuccess(false);
+      setShowAlert(false);
     }, 5000);
   };
 
   const displayErrorMessage = () => {
-    setError(true);
+    setAlertMessage("An error occurred while saving your weekly status.");
+    setAlertVariant("danger");
+    setShowAlert(true);
 
     setTimeout(() => {
-      setError(false);
+      setShowAlert(false);
     }, 8000);
   };
 
@@ -294,143 +305,232 @@ const WeeklyStatus: React.FC = () => {
     navigate("/team-selection");
   };
 
+  const handleAdminPanel = () => {
+    navigate("/admin");
+  };
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertVariant, setAlertVariant] = useState<"success" | "danger">(
+    "success"
+  );
+
   return (
-    <div className="d-flex flex-column align-items-center mt-5">
-      <Form onSubmit={handleSubmit} className="form__container">
-        <h2>Team {teamName}</h2>
-        <h3>Welcome {memberName}!</h3>
-        <h3>
+    <Container fluid className="container-main">
+      <Form onSubmit={handleSubmit}>
+        <h1>Team {teamName}</h1>
+        <h2>Welcome {memberName}!</h2>
+        <h2>
           Weekly Status: {moment(startDate).format("MMM DD")} -{" "}
           {moment(endDate).format("MMM DD")}
-        </h3>
-        {success && (
-          <Alert variant="success" className="mt-3">
-            Your weekly status has been saved!
-          </Alert>
-        )}
-        {error && (
-          <Alert variant="danger" className="mt-3">
-            {error}
+        </h2>
+        {showAlert && (
+          <Alert
+            variant={alertVariant}
+            className={`alert-fixed alert-custom-${alertVariant}`}
+            onClose={() => setShowAlert(false)}
+            dismissible
+          >
+            {alertMessage}
           </Alert>
         )}
 
-        {/* What was done this week: */}
+        {/* What was done this week */}
         <Form.Group controlId="doneThisWeek" className="form__group">
           <Form.Label className="form__label">
             What was done this week:
           </Form.Label>
           {doneThisWeek.map((taskWithSubtasks, taskIndex) => (
             <div key={taskIndex} className="mb-2">
-              <Row>
-                <Col>
+              {/* Task Input and Remove Button */}
+              <div className="d-flex align-items-center">
+                <Form.Control
+                  type="text"
+                  placeholder={`Task ${taskIndex + 1}`}
+                  value={taskWithSubtasks.taskDescription}
+                  onChange={(e) =>
+                    handleTaskChange(taskIndex, e.target.value, setDoneThisWeek)
+                  }
+                  className="flex-grow-1"
+                />
+                <Button
+                  variant="danger"
+                  onClick={() => removeTask(taskIndex, setDoneThisWeek)}
+                  className="btn-icon ml-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-trash"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                  </svg>
+                </Button>
+              </div>
+              {/* Subtasks */}
+              {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
+                <div className="form__group__subtask" key={subtaskIndex}>
                   <Form.Control
                     type="text"
-                    placeholder={`Task ${taskIndex + 1}`}
-                    value={taskWithSubtasks.taskDescription}
+                    placeholder={`Subtask ${subtaskIndex + 1}`}
+                    value={subtask.subtaskDescription}
                     onChange={(e) =>
-                      handleTaskChange(
+                      handleSubtaskChange(
                         taskIndex,
+                        subtaskIndex,
                         e.target.value,
                         setDoneThisWeek
                       )
                     }
                   />
-                  {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
-                    <div className="form__group__subtask" key={subtaskIndex}>
-                      <Form.Control
-                        key={subtaskIndex}
-                        type="text"
-                        placeholder={`Subtask ${subtaskIndex + 1}`}
-                        value={subtask.subtaskDescription}
-                        onChange={(e) =>
-                          handleSubtaskChange(
-                            taskIndex,
-                            subtaskIndex,
-                            e.target.value,
-                            setDoneThisWeek
-                          )
-                        }
-                      />
-                      <Button
-                        variant="danger"
-                        onClick={() =>
-                          removeSubtask(
-                            taskIndex,
-                            subtaskIndex,
-                            setDoneThisWeek
-                          )
-                        }
-                        className="btn-icon"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-trash"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                        </svg>
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="form__btn__subtask">
-                    <Button
-                      variant="secondary"
-                      onClick={() => addSubtask(taskIndex, setDoneThisWeek)}
+                  <Button
+                    variant="danger"
+                    onClick={() =>
+                      removeSubtask(taskIndex, subtaskIndex, setDoneThisWeek)
+                    }
+                    className="btn-icon ml-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-trash"
+                      viewBox="0 0 16 16"
                     >
-                      Add Subtask
-                    </Button>
-                  </div>
-                </Col>
-                <Col xs="auto">
-                  <Button
-                    variant="danger"
-                    onClick={() => removeTask(taskIndex, setDoneThisWeek)}
-                  >
-                    Remove
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                      <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                    </svg>
                   </Button>
-                </Col>
-              </Row>
-            </div>
-          ))}
-          <Button variant="secondary" onClick={() => addTask(setDoneThisWeek)}>
-            Add Task
-          </Button>
-        </Form.Group>
-
-        {/* Plan for Next Week */}
-        <Form.Group controlId="planForNextWeek" className="form__group">
-          <Form.Label className="form__label">Plan for Next Week</Form.Label>
-          {planForNextWeek.map((plan, index) => (
-            <div key={index} className="mb-2">
-              <Row>
-                <Col>
-                  <Form.Control
-                    type="text"
-                    placeholder={`Plan ${index + 1}`}
-                    value={plan}
-                    onChange={(e) => handlePlanChange(index, e.target.value)}
-                  />
-                </Col>
-                <Col xs="auto">
-                  <Button
-                    variant="danger"
-                    onClick={() => removeTask1(index, setPlanForNextWeek)}
-                  >
-                    Remove
-                  </Button>
-                </Col>
-              </Row>
+                </div>
+              ))}
+              {/* Add Subtask Button */}
+              <div
+                className="form__btn__subtask"
+                style={{ marginLeft: "1.5rem" }}
+              >
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="btn-sm-custom"
+                  onClick={() => addSubtask(taskIndex, setDoneThisWeek)}
+                >
+                  Add Subtask
+                </Button>
+              </div>
             </div>
           ))}
           <Button
             variant="secondary"
-            onClick={() => addTask1(setPlanForNextWeek)}
+            size="sm"
+            className="btn-sm-custom"
+            onClick={() => addTask(setDoneThisWeek)}
           >
-            Add Plan
+            Add Task
+          </Button>
+        </Form.Group>
+        {/* Plan for Next Week */}
+        <Form.Group controlId="planForNextWeek" className="form__group">
+          <Form.Label className="form__label">Plan for Next Week</Form.Label>
+          {planForNextWeek.map((taskWithSubtasks, taskIndex) => (
+            <div key={taskIndex} className="mb-2">
+              {/* Task Input and Remove Button */}
+              <div className="d-flex align-items-center">
+                <Form.Control
+                  type="text"
+                  placeholder={`Task ${taskIndex + 1}`}
+                  value={taskWithSubtasks.taskDescription}
+                  onChange={(e) =>
+                    handleTaskChange(
+                      taskIndex,
+                      e.target.value,
+                      setPlanForNextWeek
+                    )
+                  }
+                  className="flex-grow-1"
+                />
+                <Button
+                  variant="danger"
+                  onClick={() => removeTask(taskIndex, setPlanForNextWeek)}
+                  className="btn-icon ml-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-trash"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                  </svg>
+                </Button>
+              </div>
+              {/* Subtasks */}
+              {taskWithSubtasks.subtasks.map((subtask, subtaskIndex) => (
+                <div className="form__group__subtask" key={subtaskIndex}>
+                  <Form.Control
+                    type="text"
+                    placeholder={`Subtask ${subtaskIndex + 1}`}
+                    value={subtask.subtaskDescription}
+                    onChange={(e) =>
+                      handleSubtaskChange(
+                        taskIndex,
+                        subtaskIndex,
+                        e.target.value,
+                        setPlanForNextWeek
+                      )
+                    }
+                  />
+                  <Button
+                    variant="danger"
+                    onClick={() =>
+                      removeSubtask(taskIndex, subtaskIndex, setPlanForNextWeek)
+                    }
+                    className="btn-icon ml-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-trash"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                      <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                    </svg>
+                  </Button>
+                </div>
+              ))}
+              {/* Add Subtask Button */}
+              <div
+                className="form__btn__subtask"
+                style={{ marginLeft: "1.5rem" }}
+              >
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="btn-sm-custom"
+                  onClick={() => addSubtask(taskIndex, setPlanForNextWeek)}
+                >
+                  Add Subtask
+                </Button>
+              </div>
+            </div>
+          ))}
+          <Button
+            variant="secondary"
+            size="sm"
+            className="btn-sm-custom"
+            onClick={() => addTask(setPlanForNextWeek)}
+          >
+            Add Task
           </Button>
         </Form.Group>
 
@@ -471,11 +571,11 @@ const WeeklyStatus: React.FC = () => {
             onChange={(e) => setBlockers(e.target.value)}
           />
         </Form.Group>
-        <Form.Group controlId="buttons" className="form__btngroup">
+        <Form.Group controlId="buttons" className="form__btngroup flex-wrap">
           <Button variant="primary" type="submit" className="form__btn">
             Save Weekly Status
           </Button>
-          {(role === "CurrentWeekReporter" || role === "TeamLead") && (
+          {localIsCurrentWeekReporter && (
             <Button
               variant="primary"
               onClick={statusReporting}
@@ -485,7 +585,7 @@ const WeeklyStatus: React.FC = () => {
             </Button>
           )}
 
-          {role === "TeamLead" && (
+          {localIsTeamLead && (
             <Button
               variant="primary"
               onClick={assignReporter}
@@ -513,6 +613,16 @@ const WeeklyStatus: React.FC = () => {
             </Button>
           )}
 
+          {localIsAdmin && (
+            <Button
+              variant="primary"
+              onClick={handleAdminPanel}
+              className="form__btn"
+            >
+              Admin Panel
+            </Button>
+          )}
+
           <StaticModal
             show={showModal}
             onHide={handleCloseModal}
@@ -522,7 +632,12 @@ const WeeklyStatus: React.FC = () => {
           </StaticModal>
         </Form.Group>
       </Form>
-    </div>
+      <ContentModal
+        show={showContentModal}
+        onHide={() => setShowContentModal(false)}
+      />
+
+    </Container>
   );
 };
 

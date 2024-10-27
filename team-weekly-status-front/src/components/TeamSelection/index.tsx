@@ -14,21 +14,11 @@ const TeamSelection: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedTeamId && selectedTeamId !== 0)  {
-      const isCurrentWeekReporter = memberActiveTeams?.find(team => team.teamId === selectedTeamId)?.isCurrentWeekReporter ?? '';
-      const isTeamLead = memberActiveTeams?.find(team => team.teamId === selectedTeamId)?.isTeamLead ?? '';
-      const userResponse = {
-        role: isCurrentWeekReporter ? "CurrentWeekReporter" : isTeamLead ? "TeamLead" : "Normal"
-      }
+      const isCurrentWeekReporter = !!memberActiveTeams?.find(team => team.teamId === selectedTeamId)?.isCurrentWeekReporter;
+      const isTeamLead = !!memberActiveTeams?.find(team => team.teamId === selectedTeamId)?.isTeamLead;
 
-      userStore
-      .getState()
-      .setRole(
-        userResponse.role as
-          | "TeamLead"
-          | "CurrentWeekReporter"
-          | "Normal"
-          | null
-      );
+      userStore.getState().setIsCurrentWeekReporter(isCurrentWeekReporter);
+      userStore.getState().setIsTeamLead(isTeamLead);
 
       const teamName = memberActiveTeams?.find(team => team.teamId === selectedTeamId)?.teamName ?? '';
       // Set the selected team ID using zustand store
@@ -43,7 +33,7 @@ const TeamSelection: React.FC = () => {
   };
 
   return (
-    <div className="team-selection-container">
+    <div className="container-main team-selection-container">
       <Form onSubmit={handleSubmit}>
         <h2>Select Your Team</h2>
         {showAlert && (
@@ -64,7 +54,7 @@ const TeamSelection: React.FC = () => {
                 active={selectedTeamId === memberTeam.teamId}
                 onClick={(event) => {
                   setSelectedTeamId(memberTeam.teamId);
-                }}
+                }}                
               >
                 {memberTeam.teamName}
               </ListGroup.Item>

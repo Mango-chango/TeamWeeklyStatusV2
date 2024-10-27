@@ -1,5 +1,3 @@
-import WeeklyStatus from "../components/WeeklyStatus/index";
-
 export interface Subtask {
   subtaskDescription: string;
 }
@@ -11,7 +9,7 @@ export interface WeeklyStatusData {
   id: number;
   weekStartDate: Date | string;
   doneThisWeek: TaskWithSubtasks[];
-  planForNextWeek: string[];
+  planForNextWeek: TaskWithSubtasks[];
   upcomingPTO: (Date | string)[];
   blockers: string;
   memberId: number;
@@ -39,17 +37,22 @@ export type Member = {
   email?: string;
 };
 
+
 export interface GoogleLoginResponse {
   success: boolean;
-  role: "TeamLead" | "CurrentWeekReporter" | "Normal" | null;
-  teamName: string | "";
   memberId: number | 0;
   memberName: string | "";
+  isAdmin: boolean;
 }
 
 export type Team = {
   id: number;
   name: string;
+  description?: string;
+  emailNotificationsEnabled?: boolean;
+  slackNotificationsEnabled? : boolean;
+  isActive: boolean;
+  weekReporterAutomaticAssignment? : boolean;
 };
 
 export type TeamMember = {
@@ -59,9 +62,21 @@ export type TeamMember = {
   memberName: string;
   isTeamLead: boolean;
   isCurrentWeekReporter: boolean;
-  isAdminMember: boolean;
   startActiveDate: string;
   endActiveDate: string;
 };
 
 export type MemberTeams = TeamMember[];
+
+export type UserMember = {
+  id: number;
+  name: string;
+  email: string;
+  isAdmin?: boolean;
+};
+
+export type Reporter = {
+  memberId: number;
+  memberName: string;
+  email?: string;
+};

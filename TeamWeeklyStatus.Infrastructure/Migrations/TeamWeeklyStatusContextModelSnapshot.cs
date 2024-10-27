@@ -17,7 +17,7 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -55,6 +55,9 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsAdmin")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -109,6 +112,28 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.ToTable("Subtasks");
                 });
 
+            modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.SubtaskNextWeek", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("SubtasksNextWeek");
+                });
+
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.Team", b =>
                 {
                     b.Property<int>("Id")
@@ -117,9 +142,24 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("EmailNotificationsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("SlackNotificationsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("WeekReporterAutomaticAssignment")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -136,9 +176,6 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
 
                     b.Property<DateTime?>("EndActiveDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool?>("IsAdminMember")
-                        .HasColumnType("bit");
 
                     b.Property<bool?>("IsCurrentWeekReporter")
                         .HasColumnType("bit");
@@ -166,6 +203,9 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
 
                     b.Property<string>("Blockers")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
@@ -221,6 +261,17 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.Navigation("Task");
                 });
 
+            modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.SubtaskNextWeek", b =>
+                {
+                    b.HasOne("TeamWeeklyStatus.Domain.Entities.PlanForNextWeekTask", "Task")
+                        .WithMany("Subtasks")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+                });
+
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.TeamMember", b =>
                 {
                     b.HasOne("TeamWeeklyStatus.Domain.Entities.Member", "Member")
@@ -267,6 +318,11 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.Navigation("TeamMembers");
 
                     b.Navigation("WeeklyStatuses");
+                });
+
+            modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.PlanForNextWeekTask", b =>
+                {
+                    b.Navigation("Subtasks");
                 });
 
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.Team", b =>

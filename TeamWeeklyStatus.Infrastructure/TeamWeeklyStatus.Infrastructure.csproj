@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TeamWeeklyStatus.Application\TeamWeeklyStatus.Application.csproj" />
     <ProjectReference Include="..\TeamWeeklyStatus.Domain\TeamWeeklyStatus.Domain.csproj" />
   </ItemGroup>
 

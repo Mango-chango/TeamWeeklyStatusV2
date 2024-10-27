@@ -43,10 +43,9 @@ namespace TeamWeeklyStatus.WebApi.Services
             {
                 Success = true,
                 Email = payload.Email,
-                Role = applicationValidationResult.Role,
-                TeamName = applicationValidationResult.TeamName,
                 MemberId = applicationValidationResult.MemberId,
                 MemberName = applicationValidationResult.MemberName,
+                IsAdmin = applicationValidationResult.IsAdmin,
                 ErrorMessage = string.Empty,
             };
         }

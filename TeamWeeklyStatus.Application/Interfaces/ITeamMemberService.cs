@@ -1,22 +1,18 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
-using TeamWeeklyStatus.Domain.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Application.Interfaces
 {
     public interface ITeamMemberService
     {
-        Task<List<TeamMember>> GetTeamMembersAsync();
         Task<TeamMember> GetTeamMemberAsync(int teamId, int memberId);
-        Task<TeamMember> AddTeamMemberAsync(TeamMember teamMember);
-        Task<TeamMember> UpdateTeamMemberAsync(TeamMember teamMember);
-        Task<TeamMember> DeleteTeamMemberAsync(int teamId, int memberId);
-
-        Task<IEnumerable<MemberDTO>> GetMembersWithoutCurrentReporter();
-
-        Task AssignReporter(int memberId);
-
-        Task<List<TeamMemberDTO>> GetActiveTeamsByMember(int memberId);
-
+        Task<IEnumerable<TeamMemberDTO>> GetAllTeamMembersAsync(int teamId);
+        Task<TeamMember> AddTeamMemberAsync(TeamMemberDTO teamMember);
+        Task<TeamMemberDTO> UpdateTeamMemberAsync(TeamMemberDTO teamMember);
+        Task<TeamMember> DeleteTeamMemberAsync(TeamMemberDTO teamMember);
+        Task AssignCurrentWeekReporter(int teamId, int memberId);
+        Task<IEnumerable<TeamMemberDTO>> GetActiveTeamsByMember(int memberId);
+        Task<IEnumerable<TeamMemberDTO>> GetTeamActiveMembers(int teamId);
+        Task CurrentWeekReporterAutomaticAssignment();
     }
 }

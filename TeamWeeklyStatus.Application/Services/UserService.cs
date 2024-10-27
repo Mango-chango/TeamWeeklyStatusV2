@@ -1,41 +1,37 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.Infrastructure.Repositories;
 
 namespace TeamWeeklyStatus.Application.Services
 {
     public class UserService: IUserService
     {
         private readonly ITeamMemberRepository _repository;
+        private readonly IMemberRepository _memberRepository;
 
-        public UserService(ITeamMemberRepository repository)
+        public UserService(ITeamMemberRepository repository, IMemberRepository memberRepository)
         {
             _repository = repository;
+            _memberRepository = memberRepository;
         }
 
         public async Task<UserValidationResultDTO> ValidateUser(string email)
         {
-            var member = await _repository.GetByEmailWithTeamData(email);
+            var member = await _memberRepository.GetMemberByEmailAsync(email);
             if (member == null)
             {
                 return new UserValidationResultDTO
                 {
                     IsValid = false,
-                    ErrorMessage = "Invalid email address."
+                    ErrorMessage = "Email address not found in the system. Please contact the administrator for assistance."
                 };
             }
-
-            var role = member.IsTeamLead == true ? "TeamLead" :
-                       member.IsCurrentWeekReporter == true ? "CurrentWeekReporter" :
-                       "Normal";
 
             return new UserValidationResultDTO
             {
                 IsValid = true,
-                Role = role,
-                TeamName = member.Team.Name,
-                MemberId = member.MemberId,
-                MemberName = member.Member.Name
+                MemberId = member.Id,
+                MemberName = member.Name,
+                IsAdmin = member.IsAdmin ?? false // Handle nullable boolean
             };
         }
     }

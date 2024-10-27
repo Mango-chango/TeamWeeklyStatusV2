@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TeamWeeklyStatus.Domain\TeamWeeklyStatus.Domain.csproj" />
-    <ProjectReference Include="..\TeamWeeklyStatus.Infrastructure\TeamWeeklyStatus.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

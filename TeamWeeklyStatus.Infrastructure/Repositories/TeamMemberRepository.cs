@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections;
+using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
@@ -12,58 +14,86 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
         {
             _context = context;
         }
-        Task<TeamMember> ITeamMemberRepository.AddTeamMemberAsync(TeamMember teamMember)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<TeamMember> ITeamMemberRepository.DeleteTeamMemberAsync(int teamId, int memberId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<TeamMember> ITeamMemberRepository.GetTeamMemberAsync(int teamId, int memberId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<List<TeamMember>> ITeamMemberRepository.GetTeamMembersAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<TeamMember> ITeamMemberRepository.UpdateTeamMemberAsync(TeamMember teamMember)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<TeamMember> GetByEmailWithTeamData(string email)
+        public async Task<TeamMember> GetTeamMemberAsync(int teamId, int memberId)
         {
             return await _context.TeamMembers
                 .Include(tm => tm.Team)
                 .Include(m => m.Member)
-                .FirstOrDefaultAsync(m => m.Member.Email == email);
+                .FirstOrDefaultAsync(tm => tm.TeamId == teamId && tm.MemberId == memberId);
         }
-
-        public async Task<IEnumerable<Member>> GetMembersWithoutCurrentReporter()
+        public async Task<IEnumerable<TeamMember>> GetAllTeamMembersAsync(int teamId)
         {
             return await _context.TeamMembers
-                .Include(tm => tm.Member)
-                .Where(tm => tm.IsCurrentWeekReporter != true)
-                .Select(tm => tm.Member)
+                .Include(tm => tm.Team)
+                .Include(m => m.Member)
+                .Where(tm => tm.TeamId == teamId)
                 .ToListAsync();
         }
 
-
-        public async Task AssignReporter(int memberId)
+        public async Task<TeamMember> AddTeamMemberAsync(TeamMemberDTO teamMemberDto)
         {
-            var currentReporter = _context.TeamMembers.SingleOrDefault(tm => tm.IsCurrentWeekReporter == true);
+            var teamMember = new TeamMember
+            {
+                TeamId = teamMemberDto.TeamId,
+                MemberId = teamMemberDto.MemberId,
+                IsTeamLead = teamMemberDto.IsTeamLead,
+                IsCurrentWeekReporter = teamMemberDto.IsCurrentWeekReporter,
+                StartActiveDate = teamMemberDto.StartActiveDate,
+                EndActiveDate = teamMemberDto.EndActiveDate
+            };
+
+            _context.TeamMembers.Add(teamMember);
+            await _context.SaveChangesAsync();
+
+            return teamMember;
+        }
+
+        public async Task<TeamMember> UpdateTeamMemberAsync(TeamMemberDTO teamMemberDto)
+        {
+            var teamMember = await _context.TeamMembers
+                .FirstOrDefaultAsync(tm => tm.TeamId == teamMemberDto.TeamId && tm.MemberId == teamMemberDto.MemberId);
+
+            if (teamMember == null)
+            {
+                throw new KeyNotFoundException("Team member not found.");
+            }
+
+            teamMember.IsTeamLead = teamMemberDto.IsTeamLead;
+            teamMember.IsCurrentWeekReporter = teamMemberDto.IsCurrentWeekReporter;
+            teamMember.StartActiveDate = teamMemberDto.StartActiveDate;
+            teamMember.EndActiveDate = teamMemberDto.EndActiveDate;
+
+            _context.TeamMembers.Update(teamMember);
+            await _context.SaveChangesAsync();
+
+            return teamMember;
+        }
+
+        public async Task<TeamMember> DeleteTeamMemberAsync(TeamMemberDTO teamMemberDto)
+        {
+            var teamMember = await _context.TeamMembers
+                .FirstOrDefaultAsync(tm => tm.TeamId == teamMemberDto.TeamId && tm.MemberId == teamMemberDto.MemberId);
+
+            if (teamMember == null)
+            {
+                throw new KeyNotFoundException("Team member not found.");
+            }
+
+            _context.TeamMembers.Remove(teamMember);
+            await _context.SaveChangesAsync();
+
+            return teamMember;
+        }
+
+        public async Task AssignCurrentWeekReporter(int teamId, int memberId)
+        {
+            var currentReporter = _context.TeamMembers.FirstOrDefault(tm => tm.TeamId == teamId && tm.IsCurrentWeekReporter == true);
             if (currentReporter != null)
             {
                 currentReporter.IsCurrentWeekReporter = false;
             }
 
-            var newReporter = _context.TeamMembers.Single(tm => tm.MemberId == memberId);
+            var newReporter = _context.TeamMembers.Single(tm => tm.TeamId == teamId && tm.MemberId == memberId);
             newReporter.IsCurrentWeekReporter = true;
 
             await _context.SaveChangesAsync();
@@ -74,5 +104,14 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             return _context.TeamMembers.Where(tm => tm.MemberId == memberId);
         }
 
+        public async Task<IEnumerable<TeamMember>> GetAllTeamActiveMembersAsync(int teamId)
+        {
+            return await _context.TeamMembers
+                .Include(tm => tm.Team)
+                .Include(m => m.Member)
+                .Where(tm => tm.TeamId == teamId && (tm.EndActiveDate == null || (tm.StartActiveDate <= DateTime.Now && tm.EndActiveDate >= DateTime.Now)))
+                .OrderBy(tm => tm.Member.Id)
+                .ToListAsync();
+        }
     }
 }

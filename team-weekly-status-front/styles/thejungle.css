@@ -1,0 +1,141 @@
+/* Define CSS variables for the color palette */
+:root {
+  --color-title: #2e3045;
+  --color-subtitle: #484a5f;
+  --color-text: #6a6b79;
+  --color-border: #c7cce8;
+  --color-action-button: #ff833e;
+  --color-secondary-button: #675888;
+  --color-background: #ffc47c;
+  --color-clear-background: #f5f7ff;
+  --color-footer-background: #242231;
+  --color-footer-icons: #6c6783;
+  --color-footer-text: #a8a5bc;
+  --color-container-background: #ffffff;
+  --color-page-background: #f2f4f7;
+}
+
+/* General Styles */
+body {
+  background-color: var(--color-clear-background);
+  color: var(--color-text);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container-main {
+  background-color: var(--color-container-background);
+  padding: 1.25rem;
+  margin: 1.25rem auto;
+  max-width: 75rem;
+  border-top: 0.188rem solid #dcdcdc;
+  
+  /* Center the container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+.form__group {
+  padding-top: 1.25rem;
+}
+
+.form__label {
+  font-weight: bold;
+}
+
+.form__btngroup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  padding-bottom: 2.5rem;
+}
+
+.form__btn {
+  margin-right: 0;
+}
+
+/* Task Input and Remove Button */
+.d-flex.align-items-center {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+.d-flex.align-items-center .form-control {
+  flex-grow: 1;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
+  flex-shrink: 0; /* Prevent the button from shrinking */
+}
+
+/* Subtasks */
+.form__group__subtask {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-left: 1.5rem; /* Indentation for subtasks */
+}
+
+.form__group__subtask .form-control {
+  flex-grow: 1;
+  margin-right: 0.5rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+.btn-sm-custom {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem; /* Adjust font size as needed */
+}
+
+
+.modal-header-success {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.modal-header-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.modal-body p {
+  color: #212529; /* Bootstrap's default body text color */
+}
+
+/* Position the alert at the top center */
+.alert-fixed {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1051; /* Ensure it appears above other elements */
+  width: 80%;
+  max-width: 600px;
+}
+
+/* Custom alert styles for better contrast */
+.alert-custom-success {
+  background-color: #28a745;
+  color: #fff;
+  border-color: #28a745;
+}
+
+.alert-custom-danger {
+  background-color: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+}

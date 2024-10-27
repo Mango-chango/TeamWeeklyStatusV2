@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamWeeklyStatus.Domain.DTOs;
+using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
@@ -56,6 +57,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .Include(ws => ws.DoneThisWeekTasks)
                 .ThenInclude(dtw => dtw.Subtasks)
                 .Include(ws => ws.PlanForNextWeekTasks)
+                .ThenInclude(pfnwt => pfnwt.Subtasks)
                 .FirstOrDefaultAsync(
                     ws =>
                         ws.Member.Id == memberId
@@ -89,7 +91,17 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                     )
                     .ToList(),
                 PlanForNextWeek = weeklyStatus.PlanForNextWeekTasks
-                    .Select(task => task.TaskDescription)
+                    .Select(
+                        pfnw =>
+                            new PlanForNextWeekTaskDTO
+                            {
+                                TaskDescription = pfnw.TaskDescription,
+                                Subtasks = pfnw.Subtasks
+                                    .Select(
+                                        st => new SubtaskNextWeekDTO { SubtaskDescription = st.Description }
+                                    )
+                                    .ToList() // Map subtasks descriptions
+                            })
                     .ToList(),
                 Blockers = weeklyStatus.Blockers,
                 UpcomingPTO = weeklyStatus.UpcomingPTO,
@@ -108,7 +120,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             // Get all team members
             var allTeamMembers = await _context.TeamMembers
                 .Include(tm => tm.Member)
-                .Where(tm => tm.TeamId == teamId)
+                .Where(tm => tm.TeamId == teamId && (tm.EndActiveDate == null || (tm.StartActiveDate <= DateTime.Now && tm.EndActiveDate >= DateTime.Now)))
                 .ToListAsync();
 
             // Get existing weekly statuses for the date
@@ -117,6 +129,7 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .Include(ws => ws.DoneThisWeekTasks)
                 .ThenInclude(dtw => dtw.Subtasks)
                 .Include(ws => ws.PlanForNextWeekTasks)
+                .ThenInclude(pfnwt => pfnwt.Subtasks)
                 .Where(ws => ws.TeamId == teamId && ws.WeekStartDate.Date == dateOnly)
                 .ToListAsync();
 
@@ -156,7 +169,23 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                                         )
                                         .ToList(),
                                     PlanForNextWeek = existingStatus.PlanForNextWeekTasks
-                                        .Select(task => task.TaskDescription)
+                                    .Select(
+                                            pfnw =>
+                                                new PlanForNextWeekTaskDTO
+                                                {
+                                                    TaskDescription = pfnw.TaskDescription,
+                                                    Subtasks = pfnw.Subtasks
+                                                        .Select(
+                                                            st =>
+                                                                new SubtaskNextWeekDTO
+                                                                {
+                                                                    SubtaskDescription =
+                                                                        st.Description
+                                                                }
+                                                        )
+                                                        .ToList()
+                                                }
+                                        )
                                         .ToList(),
                                     Blockers = existingStatus.Blockers,
                                     UpcomingPTO = existingStatus.UpcomingPTO,
@@ -199,11 +228,34 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        //public async Task DeleteSubtasksAsync(IEnumerable<int> subtaskIds)
-        //{
-        //    var subtasksToDelete = _context.Subtasks.Where(st => subtaskIds.Contains(st.Id));
-        //    _context.Subtasks.RemoveRange(subtasksToDelete);
-        //    await _context.SaveChangesAsync();
-        //}
+        public async Task AddSubtasksNextWeekAsync(IEnumerable<SubtaskNextWeek> subtasks)
+        {
+            await _context.SubtasksNextWeek.AddRangeAsync(subtasks);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateSubtasksNextWeekAsync(IEnumerable<SubtaskNextWeek> subtasks)
+        {
+            foreach (var subtask in subtasks)
+            {
+                var existingSubtask = await _context.SubtasksNextWeek.FindAsync(subtask.Id);
+                if (existingSubtask != null)
+                {
+                    // Update properties
+                    existingSubtask.Description = subtask.Description;
+                    // ... update other properties as necessary
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<WeeklyStatus> GetLatestWeeklyStatusAsync(int teamId, int memberId)
+        {
+            return await _context.WeeklyStatuses
+                .AsNoTracking()
+                .Where(ws => ws.TeamId == teamId && ws.MemberId == memberId)
+                .OrderByDescending(ws => ws.CreatedDate)
+                .FirstOrDefaultAsync();
+        }
     }
 }

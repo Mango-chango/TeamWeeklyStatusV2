@@ -1,9 +1,9 @@
 ﻿using Moq;
 using Microsoft.AspNetCore.Mvc;
 using TeamWeeklyStatus.WebApi.Controllers;
-using TeamWeeklyStatus.Domain.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.WebApi.DTOs;
+using TeamWeeklyStatus.Application.DTOs;
 
 namespace TeamWeeklyStatus.WebApi.Tests
 {
@@ -11,11 +11,13 @@ namespace TeamWeeklyStatus.WebApi.Tests
     {
         private readonly WeeklyStatusController _controller;
         private readonly Mock<IWeeklyStatusService> _mockService;
+        private readonly Mock<IReminderService> _mockReminderService;
 
         public WeeklyStatusControllerTests()
         {
             _mockService = new Mock<IWeeklyStatusService>();
-            _controller = new WeeklyStatusController(_mockService.Object);
+            _mockReminderService = new Mock<IReminderService>();
+            _controller = new WeeklyStatusController(_mockService.Object, _mockReminderService.Object);
         }
 
         [Fact]
@@ -23,7 +25,7 @@ namespace TeamWeeklyStatus.WebApi.Tests
         {
             // Arrange
             var request = new WeeklyStatusGetRequest { MemberId = 2, WeekStartDate = new DateTime(2023, 10, 17) };
-            var mockWeeklyStatus = new Domain.DTOs.WeeklyStatusDTO();
+            var mockWeeklyStatus = new Application.DTOs.WeeklyStatusDTO();
             _mockService.Setup(service => service.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, (int)request.TeamId, request.WeekStartDate))
                         .ReturnsAsync(mockWeeklyStatus);
 
@@ -65,22 +67,22 @@ namespace TeamWeeklyStatus.WebApi.Tests
                 MemberId = 1,
                 WeekStartDate = new DateTime(2023, 10, 17),
                 DoneThisWeek = new List<WebApi.DTOs.DoneThisWeekTaskDTO> { new WebApi.DTOs.DoneThisWeekTaskDTO { TaskDescription = "Task 1" } },
-                PlanForNextWeek = new List<string> { "Plan 1" },
+                PlanForNextWeek = new List<WebApi.DTOs.PlanForNextWeekTaskDTO> { new WebApi.DTOs.PlanForNextWeekTaskDTO { TaskDescription = "Plan 1" } },
                 Blockers = "None",
                 UpcomingPTO = new List<DateTime> { new DateTime(2023, 10, 24) }
             };
 
             // Ensure that the DTO used here is the one from the Domain, as it seems to be the one expected by the service
-            var mockAddedStatus = new TeamWeeklyStatus.Domain.DTOs.WeeklyStatusDTO
+            var mockAddedStatus = new TeamWeeklyStatus.Application.DTOs.WeeklyStatusDTO
             {
                 Id = 3,
-                DoneThisWeek = request.DoneThisWeek.Select(dtw => new TeamWeeklyStatus.Domain.DTOs.DoneThisWeekTaskDTO { TaskDescription = dtw.TaskDescription }).ToList(),
-                PlanForNextWeek = request.PlanForNextWeek,
+                DoneThisWeek = request.DoneThisWeek.Select(dtw => new TeamWeeklyStatus.Application.DTOs.DoneThisWeekTaskDTO { TaskDescription = dtw.TaskDescription }).ToList(),
+                PlanForNextWeek = request.PlanForNextWeek.Select(pfnw => new TeamWeeklyStatus.Application.DTOs.PlanForNextWeekTaskDTO { TaskDescription = pfnw.TaskDescription }).ToList(),
                 Blockers = request.Blockers,
                 UpcomingPTO = request.UpcomingPTO,
                 MemberId = request.MemberId
             };
-            _mockService.Setup(service => service.AddWeeklyStatusAsync(It.IsAny<TeamWeeklyStatus.Domain.DTOs.WeeklyStatusDTO>()))
+            _mockService.Setup(service => service.AddWeeklyStatusAsync(It.IsAny<TeamWeeklyStatus.Application.DTOs.WeeklyStatusDTO>()))
                         .ReturnsAsync(mockAddedStatus);
 
             // Act
@@ -100,7 +102,7 @@ namespace TeamWeeklyStatus.WebApi.Tests
             // Arrange
             var request = new WeeklyStatusGetRequest { MemberId = 2, TeamId = 2, WeekStartDate = new DateTime(2023, 10, 17) };
             _mockService.Setup(service => service.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, (int)request.TeamId, request.WeekStartDate))
-                        .ReturnsAsync((Domain.DTOs.WeeklyStatusDTO)null);
+                        .ReturnsAsync((Application.DTOs.WeeklyStatusDTO)null);
 
             // Act
             var result = await _controller.GetWeeklyStatusByMemberByStartDate(request);

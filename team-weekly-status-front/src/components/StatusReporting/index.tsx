@@ -14,7 +14,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 const StatusReporting: React.FC = () => {
-  const { role, teamId, teamName, memberName, memberId } = userStore();
+  const { teamId, teamName, memberName, memberId } = userStore();
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [teamWeeklyStatusData, setTeamWeeklyStatusData] =
     useState<TeamWeeklyStatusData | null>(null);
@@ -69,7 +69,8 @@ const StatusReporting: React.FC = () => {
   const generateHTML = () => {
     if (!teamWeeklyStatusData) return "";
 
-    let htmlContent = `<h2>${localTeamName} Weekly Status Report</h2>`;
+    //let htmlContent = `<h2>${localTeamName} Weekly Status Report</h2>`;
+    let htmlContent = "";
     htmlContent += `<h3>${startDate.toDateString()} - ${endDate.toDateString()}</h3>`;
 
     teamWeeklyStatusData
@@ -78,11 +79,14 @@ const StatusReporting: React.FC = () => {
         htmlContent += `<h3>${memberName}</h3>`;
         htmlContent += `<h4>What was done this week:</h4>`;
         htmlContent += `<ul>`;
-        weeklyStatus?.doneThisWeek?.forEach(taskWithSubtasks => {
+        weeklyStatus?.doneThisWeek?.forEach((taskWithSubtasks) => {
           htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
-          if (taskWithSubtasks.subtasks && taskWithSubtasks.subtasks.length > 0) {
+          if (
+            taskWithSubtasks.subtasks &&
+            taskWithSubtasks.subtasks.length > 0
+          ) {
             htmlContent += `<ul>`;
-            taskWithSubtasks.subtasks.forEach(subtask => {
+            taskWithSubtasks.subtasks.forEach((subtask) => {
               htmlContent += `<li>${subtask.subtaskDescription}</li>`;
             });
             htmlContent += `</ul>`;
@@ -92,8 +96,19 @@ const StatusReporting: React.FC = () => {
         htmlContent += `</ul>`;
         htmlContent += `<h4>Plan for next week:</h4>`;
         htmlContent += `<ul>`;
-        weeklyStatus?.planForNextWeek?.forEach((task: string) => {
-          htmlContent += `<li>${task}</li>`;
+        weeklyStatus?.planForNextWeek?.forEach((taskWithSubtasks) => {
+          htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
+          if (
+            taskWithSubtasks.subtasks &&
+            taskWithSubtasks.subtasks.length > 0
+          ) {
+            htmlContent += `<ul>`;
+            taskWithSubtasks.subtasks.forEach((subtask) => {
+              htmlContent += `<li>${subtask.subtaskDescription}</li>`;
+            });
+            htmlContent += `</ul>`;
+          }
+          htmlContent += `</li>`;
         });
         htmlContent += `</ul>`;
         htmlContent += `<h4>Blockers:</h4>`;
@@ -117,28 +132,19 @@ const StatusReporting: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="card mt-5 div__container">
+    <div className="div__container">
+      <h5 style={{ textAlign: "center", paddingTop: "20px" }}>
+        This is a readonly view. The changes done here are not persisted in the
+        database.
+      </h5>
+
+      <div className="card mt-5 ">
         <div className="card-body card-content">
           <CKEditor
             editor={ClassicEditor}
             data={editorData}
             config={{
-              toolbar: [
-                "heading",
-                "|",
-                "bold",
-                "italic",
-                "link",
-                "bulletedList",
-                "numberedList",
-                "blockQuote",
-                "insertTable",
-                "undo",
-                "redo",
-                "selectAll",
-                "copy",
-              ],
+              toolbar: ["selectAll"],
             }}
           />
         </div>
@@ -156,7 +162,7 @@ const StatusReporting: React.FC = () => {
           Back
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 

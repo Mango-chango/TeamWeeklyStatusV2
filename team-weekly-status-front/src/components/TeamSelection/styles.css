@@ -7,3 +7,7 @@
 .team-selection-container .list-group {
   min-width: 300px; 
 }
+
+.team-selection-container .list-group-item {
+  cursor: pointer;
+}
