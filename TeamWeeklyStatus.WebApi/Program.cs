@@ -4,6 +4,10 @@ using System.Text.Json;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.WebApi.Services;
 using TeamWeeklyStatus.CompositionRoot;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,23 +31,34 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
-var googleClientId = builder.Configuration["GoogleClientId"];
-var googleClientSecret = builder.Configuration["GoogleClientSecret"];
+var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
-builder.Services.AddAuthentication(options =>
+if (isDevelopment)
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-    .AddCookie(options =>
+    builder.Services.AddAuthentication("DevelopmentScheme")
+        .AddScheme<AuthenticationSchemeOptions, DevelopmentAuthHandler>("DevelopmentScheme", options => { });
+}
+else
+{
+
+    var googleClientId = builder.Configuration["GoogleClientId"];
+    var googleClientSecret = builder.Configuration["GoogleClientSecret"];
+
+    builder.Services.AddAuthentication(options =>
     {
-        options.LoginPath = "/";
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     })
-    .AddGoogle(options =>
-    {
-        options.ClientId = googleClientId;
-        options.ClientSecret = googleClientSecret;
-    });
+        .AddCookie(options =>
+        {
+            options.LoginPath = "/";
+        })
+        .AddGoogle(options =>
+        {
+            options.ClientId = googleClientId;
+            options.ClientSecret = googleClientSecret;
+        });
+}
 
 var app = builder.Build();
 
@@ -66,3 +81,21 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+public class DevelopmentAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+{
+    public DevelopmentAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        : base(options, logger, encoder, clock)
+    {
+    }
+
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        var claims = new[] { new Claim(ClaimTypes.Name, "Dev User"), new Claim(ClaimTypes.Email, "dev@example.com") };
+        var identity = new ClaimsIdentity(claims, "DevelopmentScheme");
+        var principal = new ClaimsPrincipal(identity);
+        var ticket = new AuthenticationTicket(principal, "DevelopmentScheme");
+
+        return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
+}
