@@ -17,7 +17,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamWeeklyStatus.Applicatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamWeeklyStatus.WebApi.Tests", "TeamWeeklyStatus.WebApi.Tests\TeamWeeklyStatus.WebApi.Tests.csproj", "{C6A78E02-D7CF-4AE7-88DE-34857EEA4188}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamWeeklyStatus.CompositionRoot", "TeamWeeklyStatus.CompositionRoot\TeamWeeklyStatus.CompositionRoot.csproj", "{6DB6F770-D185-480F-8EA9-68B00638131F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamWeeklyStatus.CompositionRoot", "TeamWeeklyStatus.CompositionRoot\TeamWeeklyStatus.CompositionRoot.csproj", "{6DB6F770-D185-480F-8EA9-68B00638131F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2478EA82-16A8-4AC1-9A00-812606ADC7D6}"
+	ProjectSection(SolutionItems) = preProject
+		README.MD = README.MD
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
