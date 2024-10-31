@@ -4,14 +4,9 @@ Welcome to the **Team Weekly Status Frontend** application! This project is the 
 
 ## Table of Contents
 
-- [Features](#features)
-- [Demo](#demo)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
+- [Development Setup](#development-setup)
 - [HTTPS Configuration](#https-configuration)
 - [Available Scripts](#available-scripts)
-- [Project Structure](#project-structure)
-- [Technologies Used](#technologies-used)
 - [Routing](#routing)
 - [State Management](#state-management)
 - [API Interaction](#api-interaction)
@@ -20,21 +15,9 @@ Welcome to the **Team Weekly Status Frontend** application! This project is the 
 - [License](#license)
 - [Contact](#contact)
 
-## Features
+## Development Setup
 
-- **User Authentication**: Secure login and logout functionality.
-- **Weekly Status Management**: Create, edit, and view weekly status reports.
-- **Team Selection**: Choose and switch between different teams.
-- **Administrative Tasks**: Manage users, teams, and permissions (admin only).
-- **Rich Text Editing**: Utilize CKEditor for a rich text editing experience.
-- **Responsive Design**: Mobile-friendly layouts and components.
-- **Error Handling**: User-friendly error messages and notifications.
-- **Performance Optimization**: Lazy loading and code splitting.
-- **HTTPS Support**: Runs over HTTPS for secure communication.
-- **API Integration**: Interacts with the backend API using Axios.
-
-
-## Prerequisites
+### Prerequisites
 
 Before you begin, ensure you have met the following requirements:
 
@@ -44,7 +27,7 @@ Before you begin, ensure you have met the following requirements:
 - **Access to the Backend API**: Ensure the backend API is running and accessible.
 - **HTTPS Certificates**: SSL certificate and key files (`reactapp.pem` and `reactapp.key`)
 
-## Getting Started
+### Getting Started
 
 To get started with the project, follow these steps:
 
@@ -170,45 +153,6 @@ In the project directory, you can run:
 - **`npm run format`**: Formats the code using Prettier.
 - **`npm run test`**: Runs unit tests using your configured testing library.
 
-## Project Structure
-
-```
-team-weekly-status-frontend/
-├── public/                     # Static assets
-├── src/
-│   ├── assets/                 # Images, icons, etc.
-│   ├── components/             # Reusable components
-│   ├── pages/                  # Page components for routes
-│   ├── services/               # API calls and service functions
-│   ├── store/                  # State management (e.g., Zustand store)
-│   ├── routing/                # Route definitions and guards
-│   ├── types/                  # TypeScript type definitions
-│   ├── utils/                  # Utility functions and helpers
-│   ├── styles/                 # Global and component-specific styles
-│   ├── App.tsx                 # Root component
-│   ├── main.tsx                # Entry point
-│   └── index.css               # Global styles
-├── .env                        # Environment variables
-├── .gitignore                  # Git ignore rules
-├── index.html                  # HTML template
-├── package.json                # Project dependencies and scripts
-├── tsconfig.json               # TypeScript configuration
-├── vite.config.js              # Vite configuration
-└── README.md                   # Project documentation
-```
-
-## Technologies Used
-
-- **React**: JavaScript library for building user interfaces.
-- **TypeScript**: Typed superset of JavaScript.
-- **Vite**: Fast development build tool.
-- **React Router**: Client-side routing.
-- **Zustand**: State management library.
-- **React Bootstrap**: UI components.
-- **CKEditor 5**: Rich text editor.
-- **Axios**: Promise-based HTTP client for API requests.
-- **ESLint**: Linting utility.
-- **Prettier**: Code formatter.
 
 ## Routing
 
