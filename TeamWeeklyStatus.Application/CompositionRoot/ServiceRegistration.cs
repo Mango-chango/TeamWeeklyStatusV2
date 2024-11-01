@@ -21,7 +21,7 @@ namespace TeamWeeklyStatus.Application.CompositionRoot
             services.AddScoped<ITeamMemberService, TeamMemberService>();
             services.AddScoped<IMemberService, MemberService>();
             services.AddScoped<ITeamService, TeamService>();
-
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             return services;
         }
     }
