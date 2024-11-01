@@ -8,10 +8,9 @@ namespace TeamWeeklyStatus.Application.DTOs
 {
     public class AuthenticationResult
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Jwt { get; set; }
+        public int MemberId { get; set; }
+        public string MemberName { get; set; }
+        public string JwtToken { get; set; }
         public bool IsAdmin { get; set; }
     }
 

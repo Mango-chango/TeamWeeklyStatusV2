@@ -15,7 +15,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             _authenticationService = authenticationService;
         }
 
-        [HttpPost("login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             var result = await _authenticationService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);

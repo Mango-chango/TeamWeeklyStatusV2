@@ -55,10 +55,10 @@ namespace TeamWeeklyStatus.Infrastructure.Services
 
             return new AuthenticationResult
             {
-                Id = member.Id,
-                Name = member.Name,
-                Email = member.Email,
-                Jwt = token
+                MemberId = member.Id,
+                MemberName = member.Name,
+                JwtToken = token,
+                IsAdmin = (bool)member.IsAdmin
             };
         }
 
