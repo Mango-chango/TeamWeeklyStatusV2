@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using System.Text.Json;
 using TeamWeeklyStatus.Domain.Entities;
-using TeamWeeklyStatus.WebApi.Services;
 using TeamWeeklyStatus.CompositionRoot;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -29,20 +28,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
-
-var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-
-if (isDevelopment)
-{
-    builder.Services.AddAuthentication("DevelopmentScheme")
-        .AddScheme<AuthenticationSchemeOptions, DevelopmentAuthHandler>("DevelopmentScheme", options => { });
-}
-else
-{
-
-    var googleClientId = builder.Configuration["GoogleClientId"];
-    var googleClientSecret = builder.Configuration["GoogleClientSecret"];
+var googleClientId = builder.Configuration["GoogleClientId"];
+var googleClientSecret = builder.Configuration["GoogleClientSecret"];
 
     builder.Services.AddAuthentication(options =>
     {

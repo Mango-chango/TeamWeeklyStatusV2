@@ -5,6 +5,7 @@ import { MemberTeams } from '../types/WeeklyStatus.types';
 
 interface FeatureFlags {
   showContentModal: boolean;
+  useJungleAuthentication: boolean;
 }
 
 type UserState = {
@@ -52,6 +53,7 @@ const userStore = create<UserState>((set) => ({
   setIsCurrentWeekReporter: (isCurrentWeekReporter: boolean) => set({ isCurrentWeekReporter }),
   featureFlags: {
     showContentModal: import.meta.env.VITE_SHOW_CONTENT_MODAL === 'true',
+    useJungleAuthentication: import.meta.env.VITE_USE_JUNGLE_AUTHENTICATION === 'true',
   },
   setFeatureFlags: (featureFlags: FeatureFlags) => set({ featureFlags }),
 }));
