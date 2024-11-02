@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
+using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.Infrastructure.Services
 {
@@ -78,6 +79,12 @@ namespace TeamWeeklyStatus.Infrastructure.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+
+        Task<GoogleAuthenticationResult> IAuthenticationProvider.ValidateGoogleUser(string idToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

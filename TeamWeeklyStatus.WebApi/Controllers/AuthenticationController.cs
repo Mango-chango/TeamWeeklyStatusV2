@@ -25,5 +25,18 @@ namespace TeamWeeklyStatus.WebApi.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("GoogleLogin")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthDto dto)
+        {
+            var validationResult = await _authenticationService.AuthenticateWithGoogleAsync(dto.IdToken);
+            if (!validationResult.Success)
+            {
+                return BadRequest(validationResult.ErrorMessage);
+            }
+
+            return Ok(validationResult);
+        }
+
     }
 }

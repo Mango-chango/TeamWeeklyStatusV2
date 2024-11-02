@@ -1,19 +1,26 @@
-﻿using Google.Apis.Auth;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
+using Google.Apis.Auth;
 using TeamWeeklyStatus.WebApi.DTOs;
 
-namespace TeamWeeklyStatus.WebApi.Services
+
+namespace TeamWeeklyStatus.Infrastructure.Services
 {
-    public class GoogleAuthService : IGoogleAuthService
+    public class GoogleAuthenticationProvider: IAuthenticationProvider
     {
         private readonly IUserService _userService;
 
-        public GoogleAuthService(IUserService userService)
+        public GoogleAuthenticationProvider(IUserService userService)
         {
             _userService = userService;
         }
 
-        public async Task<UserValidationResult> ValidateGoogleUser(string idToken)
+        public async Task<GoogleAuthenticationResult> ValidateGoogleUser(string idToken)
         {
             try
             {
@@ -26,7 +33,7 @@ namespace TeamWeeklyStatus.WebApi.Services
             }
         }
 
-        private async Task<UserValidationResult> ValidateUserWithPayload(GoogleJsonWebSignature.Payload payload)
+        private async Task<GoogleAuthenticationResult> ValidateUserWithPayload(GoogleJsonWebSignature.Payload payload)
         {
             if (payload == null)
             {
@@ -39,7 +46,7 @@ namespace TeamWeeklyStatus.WebApi.Services
                 return UserNotFoundResult();
             }
 
-            return new UserValidationResult
+            return new GoogleAuthenticationResult
             {
                 Success = true,
                 Email = payload.Email,
@@ -50,22 +57,27 @@ namespace TeamWeeklyStatus.WebApi.Services
             };
         }
 
-        private static UserValidationResult InvalidTokenResult()
+        private static GoogleAuthenticationResult InvalidTokenResult()
         {
-            return new UserValidationResult
+            return new GoogleAuthenticationResult
             {
                 Success = false,
                 ErrorMessage = "Invalid Google token."
             };
         }
 
-        private static UserValidationResult UserNotFoundResult()
+        private static GoogleAuthenticationResult UserNotFoundResult()
         {
-            return new UserValidationResult
+            return new GoogleAuthenticationResult
             {
                 Success = false,
                 ErrorMessage = "User not found."
             };
+        }
+
+        public Task<AuthenticationResult> AuthenticateAsync(string email, string password)
+        {
+            throw new NotImplementedException();
         }
     }
 }

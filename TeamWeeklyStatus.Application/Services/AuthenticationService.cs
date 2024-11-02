@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.Application.Services
 {
@@ -20,6 +21,13 @@ namespace TeamWeeklyStatus.Application.Services
         {
             var result = await _authenticationProvider.AuthenticateAsync(email, password);
             return result;
+        }
+
+        public async Task<GoogleAuthenticationResult> AuthenticateWithGoogleAsync(string idToken)
+        {
+            var result = await _authenticationProvider.ValidateGoogleUser(idToken);
+            return result;
+
         }
     }
 
