@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Alert, Button, Form } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Alert, Button, Form, InputGroup } from "react-bootstrap";
 import { userStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../services/apiHelper";
@@ -9,6 +9,7 @@ import {
   JungleLoginResponse,
 } from "../../types/WeeklyStatus.types";
 import { GoogleLogin } from "@react-oauth/google";
+//import { EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
 import "./styles.css";
 
 const SignIn: React.FC = () => {
@@ -25,9 +26,20 @@ const SignIn: React.FC = () => {
     setIsCurrentWeekReporter,
     featureFlags, // Feature flag from userStore
   } = userStore();
-  const [email, setEmail] = useState<string>(""); // For new auth
-  const [password, setPassword] = useState<string>(""); // For new auth
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+  
 
   const navigateToAppropriatePage = async (memberId: number) => {
     const teamsResponse: MemberTeams = await makeApiRequest(
@@ -98,6 +110,10 @@ const SignIn: React.FC = () => {
         setIsAdmin(jungleLoginResponse.isAdmin as boolean);
         setIsAuthenticated(true);
 
+        if (rememberMe) {
+          localStorage.setItem("email", email);
+        }
+
         await navigateToAppropriatePage(jungleLoginResponse.memberId);
       } else {
         setError("Could not authenticate with The Jungle. Please try again.");
@@ -107,16 +123,17 @@ const SignIn: React.FC = () => {
       setError("An unexpected error occurred. Please try again.");
     }
   };
+  
+
+  const handleShowPassword = () => setShowPassword(!showPassword);
 
   return (
     <div className="container-main">
       <h2>Welcome to the Team Weekly Status App!</h2>
-      <h3>Sign in</h3>
       {featureFlags.useJungleAuthentication ? (
         // Render the email/password form for Jungle login
         <Form onSubmit={handleJungleLogin}>
-          <Form.Group controlId="email">
-            <Form.Label>Email address</Form.Label>
+          <Form.Group controlId="email" className="mt-2 pt-3">
             <Form.Control
               type="email"
               placeholder="Enter email"
@@ -126,18 +143,60 @@ const SignIn: React.FC = () => {
             />
           </Form.Group>
 
-          <Form.Group controlId="password" className="mt-2">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+          <Form.Group controlId="password" className="mt-2 pt-3">
+            <InputGroup>
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                aria-describedby="passwordToggle"
+              />
+              <Button
+                variant="outline-secondary"
+                onClick={handleShowPassword}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                id="passwordToggle"
+              >
+                {showPassword ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-eye-slash-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z" />
+                    <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-eye-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                  </svg>
+                )}
+              </Button>
+            </InputGroup>
+          </Form.Group>
+          <Form.Group controlId="formBasicCheckbox" className="pt-3">
+            <Form.Check
+              type="checkbox"
+              label="Remember me"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit" className="mt-3">
+          <Button variant="primary" type="submit" className="mt-3 w-100 pt-3">
             Login
           </Button>
         </Form>
