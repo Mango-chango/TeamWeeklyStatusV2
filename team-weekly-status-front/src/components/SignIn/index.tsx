@@ -39,7 +39,6 @@ const SignIn: React.FC = () => {
       setRememberMe(true);
     }
   }, []);
-  
 
   const navigateToAppropriatePage = async (memberId: number) => {
     const teamsResponse: MemberTeams = await makeApiRequest(
@@ -118,12 +117,18 @@ const SignIn: React.FC = () => {
       } else {
         setError("Could not authenticate with The Jungle. Please try again.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Jungle login error:", error);
-      setError("An unexpected error occurred. Please try again.");
+
+      if (error.response && error.response.status === 401) {
+        // Handle unauthorized error (invalid credentials)
+        setError("Invalid email or password. Please try again.");
+      } else {
+        // Handle other types of errors
+        setError("An unexpected error occurred. Please try again.");
+      }
     }
   };
-  
 
   const handleShowPassword = () => setShowPassword(!showPassword);
 
@@ -132,7 +137,9 @@ const SignIn: React.FC = () => {
       <h2>Welcome to the Team Weekly Status App!</h2>
       {featureFlags.useJungleAuthentication ? (
         // Render the email/password form for Jungle login
+
         <Form onSubmit={handleJungleLogin}>
+          <h4>Sign in with your Jungle credentials</h4>
           <Form.Group controlId="email" className="mt-2 pt-3">
             <Form.Control
               type="email"
