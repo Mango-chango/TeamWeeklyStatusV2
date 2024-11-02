@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using System.Text.Json;
 using TeamWeeklyStatus.Domain.Entities;
-using TeamWeeklyStatus.WebApi.Services;
 using TeamWeeklyStatus.CompositionRoot;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,8 +23,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
 var googleClientId = builder.Configuration["GoogleClientId"];
 var googleClientSecret = builder.Configuration["GoogleClientSecret"];

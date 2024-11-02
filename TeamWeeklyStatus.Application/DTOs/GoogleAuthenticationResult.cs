@@ -1,6 +1,6 @@
 ﻿namespace TeamWeeklyStatus.WebApi.DTOs
 {
-    public class UserValidationResult
+    public class GoogleAuthenticationResult
     {
         public bool Success { get; set; }
         public string Email { get; set; }

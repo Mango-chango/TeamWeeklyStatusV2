@@ -80,3 +80,10 @@ export type Reporter = {
   memberName: string;
   email?: string;
 };
+
+export interface JungleLoginResponse {
+  memberId: number | 0;
+  memberName: string | "";
+  jwtToken: string,
+  isAdmin: boolean;
+}
