@@ -39,8 +39,8 @@ namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
             services.AddHttpClient();
 
             // Register services
-            services.AddScoped<IAuthenticationProvider, JungleAuthenticationProvider>();
-            services.AddScoped<IAuthenticationProvider, GoogleAuthenticationProvider>();
+            services.AddScoped<IJungleAuthenticationProvider, JungleAuthenticationProvider>();
+            services.AddScoped<IGoogleAuthenticationProvider, GoogleAuthenticationProvider>();
 
             return services;
         }

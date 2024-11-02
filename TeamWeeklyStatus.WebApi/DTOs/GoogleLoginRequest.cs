@@ -1,6 +1,6 @@
 ﻿namespace TeamWeeklyStatus.WebApi.DTOs
 {
-    public class GoogleAuthDto
+    public class GoogleLoginRequest
     {
         public string IdToken { get; set; }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,8 @@ namespace TeamWeeklyStatus.Application.CompositionRoot
             services.AddScoped<ITeamMemberService, TeamMemberService>();
             services.AddScoped<IMemberService, MemberService>();
             services.AddScoped<ITeamService, TeamService>();
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IJungleAuthenticationService, JungleAuthenticationService>();
+            services.AddScoped<IGoogleAuthenticationService, GoogleAuthenticationService>();
             return services;
         }
     }

@@ -8,10 +8,8 @@ using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.Application.Interfaces
 {
-    public interface IAuthenticationService
+    public interface IJungleAuthenticationService
     {
         Task<AuthenticationResult> AuthenticateAsync(string email, string password);
-
-        Task<GoogleAuthenticationResult> AuthenticateWithGoogleAsync(string idToken);
     }
 }

@@ -11,7 +11,7 @@ using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.Infrastructure.Services
 {
-    public class GoogleAuthenticationProvider: IAuthenticationProvider
+    public class GoogleAuthenticationProvider: IGoogleAuthenticationProvider
     {
         private readonly IUserService _userService;
 
@@ -75,9 +75,5 @@ namespace TeamWeeklyStatus.Infrastructure.Services
             };
         }
 
-        public Task<AuthenticationResult> AuthenticateAsync(string email, string password)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

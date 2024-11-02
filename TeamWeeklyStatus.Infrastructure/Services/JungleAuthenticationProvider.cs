@@ -15,7 +15,7 @@ using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.Infrastructure.Services
 {
-    public class JungleAuthenticationProvider: IAuthenticationProvider
+    public class JungleAuthenticationProvider: IJungleAuthenticationProvider
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
@@ -79,12 +79,6 @@ namespace TeamWeeklyStatus.Infrastructure.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
-        }
-
-
-        Task<GoogleAuthenticationResult> IAuthenticationProvider.ValidateGoogleUser(string idToken)
-        {
-            throw new NotImplementedException();
         }
     }
 }

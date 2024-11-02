@@ -8,18 +8,20 @@ namespace TeamWeeklyStatus.WebApi.Controllers
     [Route("api/[controller]")]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IJungleAuthenticationService _jungleAuthenticationService;
+        private readonly IGoogleAuthenticationService _googleAuthenticationService;
 
-        public AuthenticationController(IAuthenticationService authenticationService)
+        public AuthenticationController(IJungleAuthenticationService jungleAuthenticationService,
+            IGoogleAuthenticationService googleAuthenticationService)
         {
-            _authenticationService = authenticationService;
+            _jungleAuthenticationService = jungleAuthenticationService;
+            _googleAuthenticationService = googleAuthenticationService;
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            var result = await _authenticationService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
-
+            var result = await _jungleAuthenticationService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
             if (result == null)
                 return Unauthorized("Invalid credentials");
 
@@ -27,9 +29,9 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         }
 
         [HttpPost("GoogleLogin")]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthDto dto)
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest loginRequest)
         {
-            var validationResult = await _authenticationService.AuthenticateWithGoogleAsync(dto.IdToken);
+            var validationResult = await _googleAuthenticationService.AuthenticateWithGoogleAsync(loginRequest.IdToken);
             if (!validationResult.Success)
             {
                 return BadRequest(validationResult.ErrorMessage);

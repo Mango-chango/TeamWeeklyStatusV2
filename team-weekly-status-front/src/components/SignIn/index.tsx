@@ -73,7 +73,7 @@ const SignIn: React.FC = () => {
     const idToken = response.credential;
     try {
       const userResponse: GoogleLoginResponse = await makeApiRequest(
-        "/GoogleAuth",
+        "/Authentication/GoogleLogin",
         "POST",
         { idToken }
       );
