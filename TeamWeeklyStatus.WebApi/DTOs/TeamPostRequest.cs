@@ -8,6 +8,6 @@
         public bool? EmailNotificationsEnabled { get; set; } = false;
         public bool? SlackNotificationsEnabled { get; set; } = false;
         public bool IsActive { get; set; } = true;
-        public bool WeekReporterAutomaticAssignment { get; set; } = false;
+        public bool? WeekReporterAutomaticAssignment { get; set; } = false;
     }
 }

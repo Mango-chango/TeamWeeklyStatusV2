@@ -12,6 +12,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { generateHTML, generateMarkdown, generatePDF } from "./reportService";
+import { console } from "inspector";
 
 const StatusReporting: React.FC = () => {
   const { teamId, teamName } = userStore();
@@ -22,10 +23,10 @@ const StatusReporting: React.FC = () => {
     TeamMemberWeeklyStatusData[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  console.log("teamWeeklyStatusData", teamWeeklyStatusData);
 
   const initialStartDate = moment()
     .startOf("week")
-    .subtract(1, "week")
     .toDate();
   const [startDate] = useState(initialStartDate);
   const endDate = moment().endOf("week").toDate();
