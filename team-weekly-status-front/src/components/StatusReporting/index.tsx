@@ -8,13 +8,17 @@ import {
 import moment from "moment";
 import "./styles.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import {
+  generateHTML,
+  generateMarkdown,
+  generatePDF,
+} from "./reportService";
 
 const StatusReporting: React.FC = () => {
-  const { teamId, teamName, memberName, memberId } = userStore();
+  const { teamId, teamName } = userStore();
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [teamWeeklyStatusData, setTeamWeeklyStatusData] =
     useState<TeamWeeklyStatusData | null>(null);
@@ -23,8 +27,7 @@ const StatusReporting: React.FC = () => {
   >([]);
 
   const initialStartDate = moment().startOf("week").toDate();
-  const [startDate, setStartDate] = useState(initialStartDate);
-
+  const [startDate] = useState(initialStartDate);
   const endDate = moment().endOf("week").toDate();
 
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ const StatusReporting: React.FC = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [localTeamName, teamName]);
 
   useEffect(() => {
     const fetchTeamWeeklyStatus = async () => {
@@ -64,71 +67,56 @@ const StatusReporting: React.FC = () => {
     };
 
     fetchTeamWeeklyStatus();
-  }, [localTeamName, startDate]);
+  }, [localTeamName, startDate, teamId]);
 
-  const generateHTML = () => {
-    if (!teamWeeklyStatusData) return "";
+  const editorData = generateHTML(
+    localTeamName || '',
+    startDate,
+    endDate,
+    teamWeeklyStatusData || []
+  );
 
-    //let htmlContent = `<h2>${localTeamName} Weekly Status Report</h2>`;
-    let htmlContent = "";
-    htmlContent += `<h3>${startDate.toDateString()} - ${endDate.toDateString()}</h3>`;
-
-    teamWeeklyStatusData
-      .filter(({ weeklyStatus }) => weeklyStatus !== null)
-      .forEach(({ memberName, weeklyStatus }) => {
-        htmlContent += `<h3>${memberName}</h3>`;
-        htmlContent += `<h4>What was done this week:</h4>`;
-        htmlContent += `<ul>`;
-        weeklyStatus?.doneThisWeek?.forEach((taskWithSubtasks) => {
-          htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
-          if (
-            taskWithSubtasks.subtasks &&
-            taskWithSubtasks.subtasks.length > 0
-          ) {
-            htmlContent += `<ul>`;
-            taskWithSubtasks.subtasks.forEach((subtask) => {
-              htmlContent += `<li>${subtask.subtaskDescription}</li>`;
-            });
-            htmlContent += `</ul>`;
-          }
-          htmlContent += `</li>`;
-        });
-        htmlContent += `</ul>`;
-        htmlContent += `<h4>Plan for next week:</h4>`;
-        htmlContent += `<ul>`;
-        weeklyStatus?.planForNextWeek?.forEach((taskWithSubtasks) => {
-          htmlContent += `<li>${taskWithSubtasks.taskDescription}`;
-          if (
-            taskWithSubtasks.subtasks &&
-            taskWithSubtasks.subtasks.length > 0
-          ) {
-            htmlContent += `<ul>`;
-            taskWithSubtasks.subtasks.forEach((subtask) => {
-              htmlContent += `<li>${subtask.subtaskDescription}</li>`;
-            });
-            htmlContent += `</ul>`;
-          }
-          htmlContent += `</li>`;
-        });
-        htmlContent += `</ul>`;
-        htmlContent += `<h4>Blockers:</h4>`;
-        htmlContent += `<p>${weeklyStatus?.blockers ?? "None"}</p>`;
-        htmlContent += `<h4>Upcoming Time Off:</h4>`;
-        const datesList = weeklyStatus?.upcomingPTO?.map((date) =>
-          moment(date).format("MMM DD")
-        );
-        if (datesList?.length) {
-          htmlContent += datesList.join(", ");
-        }
-      });
-
-    return htmlContent;
+  const handleBack = () => {
+    navigate("/weekly-status");
   };
 
-  const editorData = generateHTML();
+  const handleDownloadMarkdown = () => {
+    if (!teamWeeklyStatusData) return;
 
-  const handleBack = async () => {
-    navigate("/weekly-status");
+    const markdownContent = generateMarkdown(
+      localTeamName,
+      startDate,
+      endDate,
+      teamWeeklyStatusData
+    );
+
+    const blob = new Blob([markdownContent], {
+      type: "text/markdown;charset=utf-8;",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute(
+      "download",
+      `${localTeamName}-Weekly-Status-${startDate.toDateString()}.md`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!teamWeeklyStatusData) return;
+
+    const doc = await generatePDF(
+      localTeamName || '',
+      startDate,
+      endDate,
+      teamWeeklyStatusData
+    );
+
+    doc.save(
+      `${localTeamName}-Weekly-Status-${startDate.toDateString()}.pdf`
+    );
   };
 
   return (
@@ -138,7 +126,7 @@ const StatusReporting: React.FC = () => {
         database.
       </h5>
 
-      <div className="card mt-5 ">
+      <div className="card mt-5 div__container">
         <div className="card-body card-content">
           <CKEditor
             editor={ClassicEditor}
@@ -160,6 +148,20 @@ const StatusReporting: React.FC = () => {
       <div className="form__buttons">
         <Button variant="secondary" onClick={handleBack} className="mt-3 ml-2">
           Back
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleDownloadMarkdown}
+          className="mt-3 ml-2"
+        >
+          Download Markdown
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleDownloadPDF}
+          className="mt-3 ml-2"
+        >
+          Download PDF
         </Button>
       </div>
     </div>
