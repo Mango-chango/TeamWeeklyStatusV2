@@ -9,13 +9,9 @@ import moment from "moment";
 import "./styles.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import {
-  generateHTML,
-  generateMarkdown,
-  generatePDF,
-} from "./reportService";
+import { generateHTML, generateMarkdown, generatePDF } from "./reportService";
 
 const StatusReporting: React.FC = () => {
   const { teamId, teamName } = userStore();
@@ -25,8 +21,12 @@ const StatusReporting: React.FC = () => {
   const [unreportedMembers, setUnreportedMembers] = useState<
     TeamMemberWeeklyStatusData[]
   >([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const initialStartDate = moment().startOf("week").toDate();
+  const initialStartDate = moment()
+    .startOf("week")
+    .subtract(1, "week")
+    .toDate();
   const [startDate] = useState(initialStartDate);
   const endDate = moment().endOf("week").toDate();
 
@@ -46,6 +46,7 @@ const StatusReporting: React.FC = () => {
 
   useEffect(() => {
     const fetchTeamWeeklyStatus = async () => {
+      setIsLoading(true);
       const requestData = {
         memberId: null,
         teamId: teamId,
@@ -64,13 +65,14 @@ const StatusReporting: React.FC = () => {
         );
         setUnreportedMembers(membersWhoDidNotReport);
       }
+      setIsLoading(false);
     };
 
     fetchTeamWeeklyStatus();
   }, [localTeamName, startDate, teamId]);
 
   const editorData = generateHTML(
-    localTeamName || '',
+    localTeamName || "",
     startDate,
     endDate,
     teamWeeklyStatusData || []
@@ -108,61 +110,65 @@ const StatusReporting: React.FC = () => {
     if (!teamWeeklyStatusData) return;
 
     const doc = await generatePDF(
-      localTeamName || '',
+      localTeamName || "",
       startDate,
       endDate,
       teamWeeklyStatusData
     );
 
-    doc.save(
-      `${localTeamName}-Weekly-Status-${startDate.toDateString()}.pdf`
-    );
+    doc.save(`${localTeamName}-Weekly-Status-${startDate.toDateString()}.pdf`);
   };
 
   return (
-    <div className="div__container">
-      <h5 style={{ textAlign: "center", paddingTop: "20px" }}>
+    <div className="status-reporting-container">
+      <h5 className="status-reporting-header">
         This is a readonly view. The changes done here are not persisted in the
         database.
       </h5>
 
-      <div className="card mt-5 div__container">
-        <div className="card-body card-content">
-          <CKEditor
-            editor={ClassicEditor}
-            data={editorData}
-            config={{
-              toolbar: ["selectAll"],
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="d-flex flex-column mt-2 div__secondary">
-        <span className="div__secondary__content">
-          Changos who haven't reported yet:
-        </span>{" "}
-        {unreportedMembers.map((member) => member.memberName).join(", ")}
-      </div>
-
-      <div className="form__buttons">
-        <Button variant="secondary" onClick={handleBack} className="mt-3 ml-2">
+      <div className="status-reporting-buttons">
+        <Button variant="secondary" onClick={handleBack} className="mt-3">
           Back
-        </Button>
-        <Button
-          variant="primary"
-          onClick={handleDownloadMarkdown}
-          className="mt-3 ml-2"
-        >
-          Download Markdown
         </Button>
         <Button
           variant="primary"
           onClick={handleDownloadPDF}
           className="mt-3 ml-2"
+          disabled={!teamWeeklyStatusData || isLoading}
         >
           Download PDF
         </Button>
+        <Button
+          variant="primary"
+          onClick={handleDownloadMarkdown}
+          className="mt-3 ml-2"
+          disabled={!teamWeeklyStatusData || isLoading}
+        >
+          Download Markdown
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="status-reporting-loading">
+          <Spinner animation="border" variant="primary" />
+        </div>
+      ) : (
+        <div className="status-reporting-editor">
+          <CKEditor
+            editor={ClassicEditor}
+            data={editorData}
+            config={{
+              toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'selectAll', 'undo', 'redo'],
+            }}
+          />
+        </div>
+      )}
+
+      <div className="status-reporting-unreported">
+        <span className="unreported-title">
+          Changos who haven't reported yet:
+        </span>{" "}
+        {unreportedMembers.map((member) => member.memberName).join(", ")}
       </div>
     </div>
   );

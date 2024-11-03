@@ -1,4 +1,5 @@
 import {
+  Subtask,
   TeamMemberWeeklyStatusData,
   TeamWeeklyStatusData,
 } from "../../types/WeeklyStatus.types";
@@ -87,7 +88,7 @@ export const generateMarkdown = (
       markdownContent += `#### What was done this week:\n`;
       weeklyStatus?.doneThisWeek?.forEach((taskWithSubtasks) => {
         markdownContent += `- ${taskWithSubtasks.taskDescription}\n`;
-        taskWithSubtasks.subtasks?.forEach((subtask) => {
+        taskWithSubtasks.subtasks?.forEach((subtask: { subtaskDescription: string }) => {
           markdownContent += `  - ${subtask.subtaskDescription}\n`;
         });
       });
@@ -114,6 +115,7 @@ export const generateMarkdown = (
   return markdownContent;
 };
 
+
 export const generatePDF = async (
   teamName: string,
   startDate: Date,
@@ -122,79 +124,191 @@ export const generatePDF = async (
 ): Promise<jsPDF> => {
   const doc = new jsPDF();
 
+  // Define page dimensions and margins
+  const pageHeight =
+    doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+  const pageWidth =
+    doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+  const marginLeft = 14;
+  const marginRight = 14;
+  const marginTop = 20;
+  const marginBottom = 20;
+  const maxYPosition = pageHeight - marginBottom;
+
   // Add content to the PDF
   doc.setFontSize(18);
-  doc.text(
-    `${teamName}
-    Weekly Status Report`,
-    14,
-    22
-  );
+  doc.setFont("helvetica", "bold");
+  doc.text(`${teamName} Weekly Status Report`, marginLeft, marginTop);
+
   doc.setFontSize(14);
+  doc.setFont("helvetica", "normal");
   doc.text(
-    `${startDate.toDateString()}
-    - ${endDate.toDateString()}`,
-    14,
-    32
+    `${startDate.toDateString()} - ${endDate.toDateString()}`,
+    marginLeft,
+    marginTop + 10
   );
 
-  let yPosition = 42;
+  let yPosition = marginTop + 20;
 
   teamWeeklyStatusData
     .filter(({ weeklyStatus }) => weeklyStatus !== null)
     .forEach(({ memberName, weeklyStatus }) => {
+      // Check if we need to add a new page before adding member name
+      if (yPosition + 10 > maxYPosition) {
+        doc.addPage();
+        yPosition = marginTop;
+      }
+
+      // Member Name in Bold
       doc.setFontSize(16);
-      doc.text(memberName, 14, yPosition);
-      yPosition += 10;
+      doc.setFont("helvetica", "bold");
+      doc.text(memberName, marginLeft, yPosition);
+      yPosition += 8;
 
+      // Section Titles in Bold
       doc.setFontSize(14);
-      doc.text("What was done this week:", 14, yPosition);
-      yPosition += 8;
+      doc.setFont("helvetica", "bold");
+      doc.text("What was done this week:", marginLeft, yPosition);
+      yPosition += 6;
 
-      weeklyStatus?.doneThisWeek?.forEach((taskWithSubtasks) => {
-        doc.text(`- ${taskWithSubtasks.taskDescription}`, 18, yPosition);
-        yPosition += 8;
-        taskWithSubtasks.subtasks?.forEach((subtask) => {
-          doc.text(`  - ${subtask.subtaskDescription}`, 22, yPosition);
-          yPosition += 8;
-        });
-      });
+      // Reset font to normal for content
+      doc.setFont("helvetica", "normal");
 
-      // Repeat for Plan for next week, Blockers, Upcoming Time Off
-      weeklyStatus?.planForNextWeek?.forEach((taskWithSubtasks) => {
-        doc.text(`- ${taskWithSubtasks.taskDescription}`, 18, yPosition);
-        yPosition += 8;
-        taskWithSubtasks.subtasks?.forEach((subtask) => {
-          doc.text(`  - ${subtask.subtaskDescription}`, 22, yPosition);
-          yPosition += 8;
-        });
-      });
+      // Content: What was done this week
+      yPosition = addContentToPDF(
+        doc,
+        weeklyStatus?.doneThisWeek ?? [],
+        marginLeft,
+        yPosition,
+        maxYPosition,
+        pageWidth,
+        marginTop
+      );
 
-      doc.text("Blockers:", 14, yPosition);
-      yPosition += 8;
-      doc.text(`${weeklyStatus?.blockers ?? "None"}`, 18, yPosition);
-      yPosition += 8;
+      // Section Title: Plan for next week
+      if (yPosition + 10 > maxYPosition) {
+        doc.addPage();
+        yPosition = marginTop;
+      }
+      doc.setFont("helvetica", "bold");
+      doc.text("Plan for next week:", marginLeft, yPosition);
+      yPosition += 6;
+      doc.setFont("helvetica", "normal");
 
-      doc.text("Upcoming Time Off:", 14, yPosition);
-      yPosition += 8;
+      // Content: Plan for next week
+      yPosition = addContentToPDF(
+        doc,
+        weeklyStatus?.planForNextWeek ?? [],
+        marginLeft,
+        yPosition,
+        maxYPosition,
+        pageWidth,
+        marginTop
+      );
+
+      // Section Title: Blockers
+      if (yPosition + 10 > maxYPosition) {
+        doc.addPage();
+        yPosition = marginTop;
+      }
+      doc.setFont("helvetica", "bold");
+      doc.text("Blockers:", marginLeft, yPosition);
+      yPosition += 6;
+      doc.setFont("helvetica", "normal");
+
+      const blockers = weeklyStatus?.blockers || "None";
+      yPosition = addTextToPDF(
+        doc,
+        blockers,
+        marginLeft + 4,
+        yPosition,
+        maxYPosition,
+        pageWidth,
+        marginTop
+      );
+
+      // Section Title: Upcoming Time Off
+      if (yPosition + 10 > maxYPosition) {
+        doc.addPage();
+        yPosition = marginTop;
+      }
+      doc.setFont("helvetica", "bold");
+      doc.text("Upcoming Time Off:", marginLeft, yPosition);
+      yPosition += 6;
+      doc.setFont("helvetica", "normal");
+
       const datesList = weeklyStatus?.upcomingPTO?.map((date) =>
         moment(date).format("MMM DD")
       );
-      if (datesList?.length) {
-        doc.text(datesList.join(", "), 18, yPosition);
-        yPosition += 8;
-      } else {
-        doc.text("None", 18, yPosition);
-        yPosition += 8;
-      }
+      const ptoText = datesList?.length ? datesList.join(", ") : "None";
+      yPosition = addTextToPDF(
+        doc,
+        ptoText,
+        marginLeft + 4,
+        yPosition,
+        maxYPosition,
+        pageWidth,
+        marginTop
+      );
 
-
-      // Check if yPosition exceeds page height
-      if (yPosition > doc.internal.pageSize.height - 20) {
-        doc.addPage();
-        yPosition = 20;
-      }
+      // Add extra space before next member
+      yPosition += 10;
     });
 
   return doc;
+};
+
+// Helper function to add content arrays to PDF
+const addContentToPDF = (
+  doc: jsPDF,
+  contentArray: any[],
+  marginLeft: number,
+  yPosition: number,
+  maxYPosition: number,
+  pageWidth: number,
+  marginTop: number
+): number => {
+  contentArray?.forEach((taskWithSubtasks) => {
+    // Check pagination before adding task
+    if (yPosition + 10 > maxYPosition) {
+      doc.addPage();
+      yPosition = marginTop;
+    }
+
+    doc.text(`- ${taskWithSubtasks.taskDescription}`, marginLeft + 4, yPosition);
+    yPosition += 6;
+
+    taskWithSubtasks.subtasks?.forEach((subtask: Subtask) => {
+      if (yPosition + 10 > maxYPosition) {
+        doc.addPage();
+        yPosition = marginTop;
+      }
+
+      doc.text(`  - ${subtask.subtaskDescription}`, marginLeft + 8, yPosition);
+      yPosition += 6;
+    });
+  });
+  return yPosition;
+};
+
+// Helper function to add plain text to PDF with wrapping
+const addTextToPDF = (
+  doc: jsPDF,
+  text: string,
+  marginLeft: number,
+  yPosition: number,
+  maxYPosition: number,
+  pageWidth: number,
+  marginTop: number
+): number => {
+  const textLines = doc.splitTextToSize(text, pageWidth - marginLeft - 20);
+  textLines.forEach((line: string) => {
+    if (yPosition + 10 > maxYPosition) {
+      doc.addPage();
+      yPosition = marginTop;
+    }
+    doc.text(line, marginLeft, yPosition);
+    yPosition += 6;
+  });
+  return yPosition;
 };
