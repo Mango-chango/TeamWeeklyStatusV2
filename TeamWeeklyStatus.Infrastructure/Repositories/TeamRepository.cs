@@ -48,21 +48,10 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
 
         public async Task<Team> UpdateTeamAsync(Team team)
         {
-            var existingTeam = await _context.Teams.FindAsync(team.Id);
-            if (existingTeam == null)
-            {
-                throw new KeyNotFoundException($"Team with Id {team.Id} not found.");
-            }
-
-            existingTeam.Name = team.Name;
-            existingTeam.Description = team.Description;
-            existingTeam.EmailNotificationsEnabled = team.EmailNotificationsEnabled;
-            existingTeam.SlackNotificationsEnabled = team.SlackNotificationsEnabled;
-
-            _context.Teams.Update(existingTeam);
+            _context.Teams.Update(team);
             await _context.SaveChangesAsync();
 
-            return existingTeam;
+            return team;
         }
 
         public async Task<Team> DeleteTeamAsync(int teamId)
