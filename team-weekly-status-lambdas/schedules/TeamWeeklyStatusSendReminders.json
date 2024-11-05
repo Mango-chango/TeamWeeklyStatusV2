@@ -1,0 +1,23 @@
+{
+    "ActionAfterCompletion": "NONE",
+    "Arn": "arn:aws:scheduler:us-east-2:891377130768:schedule/default/TeamWeeklyStatusSendReminders",
+    "CreationDate": "2024-10-25T07:54:50.110000-06:00",
+    "Description": "",
+    "FlexibleTimeWindow": {
+        "Mode": "OFF"
+    },
+    "GroupName": "default",
+    "LastModificationDate": "2024-11-01T07:51:01.372000-06:00",
+    "Name": "TeamWeeklyStatusSendReminders",
+    "ScheduleExpression": "cron(0 9 ? * FRI *)",
+    "ScheduleExpressionTimezone": "America/Guatemala",
+    "State": "ENABLED",
+    "Target": {
+        "Arn": "arn:aws:lambda:us-east-2:891377130768:function:SendReminders",
+        "RetryPolicy": {
+            "MaximumEventAgeInSeconds": 86400,
+            "MaximumRetryAttempts": 185
+        },
+        "RoleArn": "arn:aws:iam::891377130768:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_47755fc7f7"
+    }
+}
