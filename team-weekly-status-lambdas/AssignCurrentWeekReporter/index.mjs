@@ -2,27 +2,20 @@
 import axios from 'axios';
 
 // Lambda handler function
-// SendReminderSendWeeklyReport
 export const handler = async (event) => {
     try {
         // Define the endpoint URL
-        const url = 'https://misha24.azurewebsites.net//api/WeeklyStatus/SendReminders';
+        const url = 'https://misha24.azurewebsites.net/api/TeamMember/AutomaticAssignCurrentWeekReporter';
 
         // Make the POST request to the provided endpoint
-        const payload = { "eventName": "SendReport"};
-        const response = await axios.post(url, body, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload),
-        });
+        const response = await axios.post(url);
         
         // Extract the data from the response
         const data = response.data;
 
         // Log the data to CloudWatch
-        console.log('Returned Data:', data);
-
+        console.log('Fetched Data after setting the current week reporter:', data);
+        
         // Return a successful response
         return {
             statusCode: 200,
@@ -36,7 +29,7 @@ export const handler = async (event) => {
         return {
             statusCode: error.response?.status || 500,
             body: JSON.stringify({
-                message: 'Error sending reminder',
+                message: 'Error assigning the current week reporter',
                 error: error.message
             })
         };

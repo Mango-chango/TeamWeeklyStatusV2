@@ -2,26 +2,33 @@
 import axios from 'axios';
 
 // Lambda handler function
-// SendReminderPostWeeklyStatus
 export const handler = async (event) => {
     try {
         // Define the endpoint URL
-        const url = 'https://misha24.azurewebsites.net//api/WeeklyStatus/SendReminders';
+        const url = 'https://misha24.azurewebsites.net/api/WeeklyStatus/SendReminders';
 
         // Make the POST request to the provided endpoint
-        const payload = { "eventName": "Post"};
-        const response = await axios.post(url, body, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload),
-        });
+        let payload = {
+            eventName: "Post"
+        };
+        const response = await axios.post(url, payload);
         
         // Extract the data from the response
         const data = response.data;
 
         // Log the data to CloudWatch
-        console.log('Returned Data:', data);
+        console.log('Fetched Data from Post event:', data);
+        
+        payload = {
+            eventName: "SendReport"
+        }
+        const responseSendReport = await axios.post(url, payload);
+        
+        // Extract the data from the response
+        const dataSendReport = responseSendReport.data;
+
+        // Log the data to CloudWatch
+        console.log('Fetched Data from SendReport event:', dataSendReport);
 
         // Return a successful response
         return {
@@ -36,7 +43,7 @@ export const handler = async (event) => {
         return {
             statusCode: error.response?.status || 500,
             body: JSON.stringify({
-                message: 'Error sending reminder',
+                message: 'Error fetching data',
                 error: error.message
             })
         };

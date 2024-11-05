@@ -1,0 +1,26 @@
+{
+    "Schedules": [
+        {
+            "Arn": "arn:aws:scheduler:us-east-2:891377130768:schedule/default/TeamWeeklyStatusAutomaticAssignCurrentWeekReporter",
+            "CreationDate": "2024-11-05T08:43:08.263000-06:00",
+            "GroupName": "default",
+            "LastModificationDate": "2024-11-05T09:03:29.456000-06:00",
+            "Name": "TeamWeeklyStatusAutomaticAssignCurrentWeekReporter",
+            "State": "ENABLED",
+            "Target": {
+                "Arn": "arn:aws:lambda:us-east-2:891377130768:function:AssignCurrentWeekReporter"
+            }
+        },
+        {
+            "Arn": "arn:aws:scheduler:us-east-2:891377130768:schedule/default/TeamWeeklyStatusSendReminders",
+            "CreationDate": "2024-10-25T07:54:50.110000-06:00",
+            "GroupName": "default",
+            "LastModificationDate": "2024-11-01T07:51:01.372000-06:00",
+            "Name": "TeamWeeklyStatusSendReminders",
+            "State": "ENABLED",
+            "Target": {
+                "Arn": "arn:aws:lambda:us-east-2:891377130768:function:SendReminders"
+            }
+        }
+    ]
+}
