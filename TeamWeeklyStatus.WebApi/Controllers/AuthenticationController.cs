@@ -18,7 +18,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             _googleAuthenticationService = googleAuthenticationService;
         }
 
-        [HttpPost("Login")]
+        [HttpPost("JungleLogin")]
         public async Task<IActionResult> Login([FromBody] JungleLoginDTO loginRequest)
         {
             var result = await _jungleAuthenticationService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);

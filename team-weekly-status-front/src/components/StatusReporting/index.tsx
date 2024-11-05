@@ -12,7 +12,6 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { generateHTML, generateMarkdown, generatePDF } from "./reportService";
-import { console } from "inspector";
 
 const StatusReporting: React.FC = () => {
   const { teamId, teamName } = userStore();

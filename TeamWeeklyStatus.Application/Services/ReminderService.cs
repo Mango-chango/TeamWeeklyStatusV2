@@ -24,7 +24,6 @@ namespace TeamWeeklyStatus.Application.Services
 
         public async Task SendReminderEmails(EventName eventName)
         {
-            // Get all teams where EmailNotificationsEnabled is true
             var teams = await _teamRepository.GetTeamsWithEmailNotificationsEnabled();
 
             string subject = string.Empty;
@@ -43,14 +42,12 @@ namespace TeamWeeklyStatus.Application.Services
 
             foreach (var team in teams)
             {
-                // Get the team lead
                 var teamLead = team.TeamMembers.FirstOrDefault(tm => tm.IsTeamLead == true);
 
                 foreach (var member in team.TeamMembers)
                 {
                     if (eventName == EventName.Post)
-                        // Send email to each active team member for the event Post
-                        await _emailService.SendEmailAsync(member.Member.Name, member.Member.Email, subject, emailTemplate, null, null);
+                        await _emailService.SendEmailAsync(member.Member.Name, member.Member.Email, team.Name, subject, emailTemplate, null, null);
 
                     // Send emails to the current week reporter and cc to the team lead if the event is SendReport
                     else if (eventName == EventName.SendReport)
@@ -58,7 +55,7 @@ namespace TeamWeeklyStatus.Application.Services
                         var ccEmail = teamLead != null && teamLead.IsCurrentWeekReporter == false;
                         if (member.IsCurrentWeekReporter == true)
                         {
-                            await _emailService.SendEmailAsync(member.Member.Name, member.Member.Email, subject, emailTemplate, ccEmail ? teamLead.Member.Name : null, ccEmail ? teamLead.Member.Email : null);
+                            await _emailService.SendEmailAsync(member.Member.Name, member.Member.Email, team.Name, subject, emailTemplate, ccEmail ? teamLead.Member.Name : null, ccEmail ? teamLead.Member.Email : null);
                         }
                     }
                 }

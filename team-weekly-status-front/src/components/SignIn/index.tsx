@@ -99,7 +99,7 @@ const SignIn: React.FC = () => {
 
     try {
       const jungleLoginResponse: JungleLoginResponse = await makeApiRequest(
-        "/Authentication/Login",
+        "/Authentication/JungleLogin",
         "POST",
         { email, password }
       );

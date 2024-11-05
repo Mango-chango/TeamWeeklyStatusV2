@@ -21,7 +21,7 @@ namespace TeamWeeklyStatus.Application.Services
             _configuration = configuration;
         }
 
-        public async Task SendEmailAsync(string recipientName, string recipientEmail, string subject, string body, string? ccName, string? ccEmail)
+        public async Task SendEmailAsync(string recipientName, string recipientEmail, string teamName, string subject, string body, string? ccName, string? ccEmail)
         {
             var message = new MimeMessage();
             var senderEmail = _configuration["Notifications:Configuration:SenderEmail"];
@@ -38,7 +38,7 @@ namespace TeamWeeklyStatus.Application.Services
             }
             message.Subject = subject;
 
-            body = string.Format(body, recipientName);
+            body = string.Format(body, recipientName, teamName);
 
             message.Body = new TextPart("plain")
             {
