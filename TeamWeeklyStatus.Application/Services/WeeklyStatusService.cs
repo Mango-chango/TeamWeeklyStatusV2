@@ -19,11 +19,6 @@ namespace TeamWeeklyStatus.Application.Services
             var utcStartDate = startDate.ToUniversalTime();
             var weeklyStatus = await _repository.GetWeeklyStatusByMemberByStartDateAsync(memberId, teamId, utcStartDate);
 
-            if (weeklyStatus == null)
-            {
-                throw new WeeklyStatusNotFoundException(memberId, teamId, startDate);
-            }
-
             var weeklyStatusDto = new WeeklyStatusDTO
             {
                 Id = weeklyStatus.Id,
@@ -45,10 +40,6 @@ namespace TeamWeeklyStatus.Application.Services
         public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(int teamId, DateTime weekStartDate)
         {
             var teamWeeklyStatuses = await _repository.GetAllWeeklyStatusesByDateAsync(teamId, weekStartDate);
-            if (teamWeeklyStatuses == null)
-            {
-                throw new WeeklyStatusNotFoundException(teamId, weekStartDate);
-            }
             return teamWeeklyStatuses;
         }
 
