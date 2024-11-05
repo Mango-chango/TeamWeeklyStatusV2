@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.WebApi.DTOs;
+using TeamWeeklyStatus.Application.DTOs;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
@@ -18,8 +18,8 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             _googleAuthenticationService = googleAuthenticationService;
         }
 
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        [HttpPost("JungleLogin")]
+        public async Task<IActionResult> Login([FromBody] JungleLoginDTO loginRequest)
         {
             var result = await _jungleAuthenticationService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
             if (result == null)
@@ -29,7 +29,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         }
 
         [HttpPost("GoogleLogin")]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest loginRequest)
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO loginRequest)
         {
             var validationResult = await _googleAuthenticationService.AuthenticateWithGoogleAsync(loginRequest.IdToken);
             if (!validationResult.Success)

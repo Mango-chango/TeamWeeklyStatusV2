@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Application.Exceptions;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Application.Services;
-using TeamWeeklyStatus.Domain.Entities;
-using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
@@ -37,63 +36,53 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         }
 
         [HttpPost("Add", Name = "AddTeam")]
-        public async Task<IActionResult> CreateTeam(TeamPostRequest request)
+        public async Task<IActionResult> CreateTeam(TeamDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var team = new Team
-            {
-                Name = request.Name,
-                Description = request.Description,
-                EmailNotificationsEnabled = request.EmailNotificationsEnabled,
-                SlackNotificationsEnabled = request.SlackNotificationsEnabled,
-                IsActive = request.IsActive,
-                WeekReporterAutomaticAssignment = request.WeekReporterAutomaticAssignment
-            };
-
-            var newTeam = await _teamService.AddTeamAsync(team);
+            var newTeam = await _teamService.AddTeamAsync(request);
             return Ok(newTeam);
         }
 
         [HttpPut("Update", Name = "UpdateTeam")]
-        public async Task<IActionResult> UpdateTeam([FromBody] TeamPostRequest request)
+        public async Task<IActionResult> UpdateTeam([FromBody] TeamDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var existingTeam = await _teamService.GetTeamByIdAsync(request.Id);
-            if (existingTeam == null)
+            try
+            {
+                var updatedTeam = await _teamService.UpdateTeamAsync(request);
+                return Ok(updatedTeam);
+            }
+            catch (TeamNotFoundException)
             {
                 return NotFound();
             }
-
-            existingTeam.Name = request.Name;
-            existingTeam.Description = request.Description;
-            existingTeam.EmailNotificationsEnabled = request.EmailNotificationsEnabled;
-            existingTeam.SlackNotificationsEnabled = request.SlackNotificationsEnabled;
-            existingTeam.IsActive = request.IsActive;
-            existingTeam.WeekReporterAutomaticAssignment = request.WeekReporterAutomaticAssignment;
-
-            var updatedTeam = await _teamService.UpdateTeamAsync(existingTeam);
-            return Ok(updatedTeam);
         }
 
         [HttpDelete("Delete", Name = "DeleteTeam")]
-        public async Task<IActionResult> DeleteTeam([FromBody] TeamPostRequest request)
+        public async Task<IActionResult> DeleteTeam([FromBody] TeamDTO request)
         {
-            var existingTeam = await _teamService.GetTeamByIdAsync(request.Id);
-            if (existingTeam == null)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var deletedTeam = await _teamService.UpdateTeamAsync(request);
+                return Ok(deletedTeam);
+            }
+            catch (TeamNotFoundException)
             {
                 return NotFound();
             }
-
-            var deletedTeam = await _teamService.DeleteTeamAsync(existingTeam);
-            return Ok(deletedTeam);
         }
     }
 }

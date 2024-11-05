@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.WebApi.DTOs;
+using TeamWeeklyStatus.Application.DTOs;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
@@ -17,7 +17,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         }
 
         [HttpPost("validate")]
-        public async Task<IActionResult> ValidateUser([FromBody] EmailRequest request)
+        public async Task<IActionResult> ValidateUser([FromBody] EmailDTO request)
         {
             var result = await _userService.ValidateUser(request.Email);
 

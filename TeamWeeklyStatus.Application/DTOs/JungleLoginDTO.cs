@@ -1,6 +1,6 @@
-﻿namespace TeamWeeklyStatus.WebApi.DTOs
+﻿namespace TeamWeeklyStatus.Application.DTOs
 {
-    public class LoginRequest
+    public class JungleLoginDTO
     {
         public string Email { get; set; }
         public string Password { get; set; }
