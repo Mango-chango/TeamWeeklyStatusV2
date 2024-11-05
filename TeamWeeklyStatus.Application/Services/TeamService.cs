@@ -1,6 +1,8 @@
 ﻿using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
+using Org.BouncyCastle.Asn1.Ocsp;
+using TeamWeeklyStatus.Application.Exceptions;
 
 namespace TeamWeeklyStatus.Application.Services
 {
@@ -24,28 +26,52 @@ namespace TeamWeeklyStatus.Application.Services
             return await _teamRepository.GetAllTeamsAsync();
         }
 
-        public async Task<Team> AddTeamAsync(Team newTeamDto)
+        public async Task<Team> AddTeamAsync(TeamDTO newTeamDto)
         {
             var team = new Team
             {
                 Name = newTeamDto.Name,
-            }; 
+                Description = newTeamDto.Description,
+                EmailNotificationsEnabled = newTeamDto.EmailNotificationsEnabled,
+                SlackNotificationsEnabled = newTeamDto.SlackNotificationsEnabled,
+                IsActive = newTeamDto.IsActive,
+                WeekReporterAutomaticAssignment = newTeamDto.WeekReporterAutomaticAssignment
+            };
 
             var newTeam = await _teamRepository.AddTeamAsync(team);
 
             return newTeam;
         }
 
-        public async Task<Team> UpdateTeamAsync(Team team)
+        public async Task<Team> UpdateTeamAsync(TeamDTO teamDto)
         {
-            var updatedTeam = await _teamRepository.UpdateTeamAsync(team);
+            var existingTeam = await GetTeamByIdAsync(teamDto.Id);
+            if (existingTeam == null)
+            {
+                throw new TeamNotFoundException(teamDto.Id);
+            }
+
+            existingTeam.Name = teamDto.Name;
+            existingTeam.Description = teamDto.Description;
+            existingTeam.EmailNotificationsEnabled = teamDto.EmailNotificationsEnabled;
+            existingTeam.SlackNotificationsEnabled = teamDto.SlackNotificationsEnabled;
+            existingTeam.IsActive = teamDto.IsActive;
+            existingTeam.WeekReporterAutomaticAssignment = teamDto.WeekReporterAutomaticAssignment;
+
+            var updatedTeam = await _teamRepository.UpdateTeamAsync(existingTeam);
 
             return updatedTeam;
         }
 
-        public async Task<Team> DeleteTeamAsync(Team team)
+        public async Task<Team> DeleteTeamAsync(TeamDTO teamDto)
         {
-            var deletedTeam = await _teamRepository.DeleteTeamAsync(team.Id);
+            var existingTeam = await GetTeamByIdAsync(teamDto.Id);
+            if (existingTeam == null)
+            {
+                throw new TeamNotFoundException(teamDto.Id);
+            }
+
+            var deletedTeam = await _teamRepository.DeleteTeamAsync(teamDto.Id);
 
             return deletedTeam;
         }

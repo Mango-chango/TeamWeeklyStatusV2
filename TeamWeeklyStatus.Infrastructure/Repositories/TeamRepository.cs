@@ -4,6 +4,7 @@ using TeamWeeklyStatus.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using TeamWeeklyStatus.Application.Interfaces;
 using System.Collections;
+using TeamWeeklyStatus.Application.DTOs;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
 {

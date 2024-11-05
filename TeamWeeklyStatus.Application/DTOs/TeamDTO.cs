@@ -1,6 +1,6 @@
-﻿namespace TeamWeeklyStatus.WebApi.DTOs
+﻿namespace TeamWeeklyStatus.Application.DTOs
 {
-    public class TeamPostRequest
+    public class TeamDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

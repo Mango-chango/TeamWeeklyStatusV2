@@ -11,11 +11,11 @@ namespace TeamWeeklyStatus.Application.Interfaces
 
         Task<IEnumerable<Team>> GetAllTeamsAsync();
 
-        Task<Team> UpdateTeamAsync(Team team);
+        Task<Team> UpdateTeamAsync(TeamDTO team);
 
-        Task<Team> DeleteTeamAsync(Team team);
+        Task<Team> DeleteTeamAsync(TeamDTO team);
 
-        Task<Team> AddTeamAsync(Team team);
+        Task<Team> AddTeamAsync(TeamDTO team);
 
     }
 }
