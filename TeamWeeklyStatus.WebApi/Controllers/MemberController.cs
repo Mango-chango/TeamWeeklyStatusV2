@@ -2,7 +2,6 @@
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Application.Services;
-using TeamWeeklyStatus.WebApi.DTOs;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
@@ -48,7 +47,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         }
 
         [HttpPut("Update", Name ="UpdateMember")]
-        public async Task<IActionResult> UpdateMember([FromBody] MemberPostRequest request)
+        public async Task<IActionResult> UpdateMember([FromBody] MemberDTO request)
         {
             if (!ModelState.IsValid)
             {
@@ -70,7 +69,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         }
 
         [HttpDelete("Delete", Name="DeleteMember")]
-        public async Task<IActionResult> DeleteMember([FromBody] MemberPostRequest request)
+        public async Task<IActionResult> DeleteMember([FromBody] MemberDTO request)
         {
             var existingMember = await _memberService.GetMemberByIdAsync(request.Id);
             if (existingMember == null)

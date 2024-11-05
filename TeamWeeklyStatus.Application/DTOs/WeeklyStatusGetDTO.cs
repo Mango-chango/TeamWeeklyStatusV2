@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace TeamWeeklyStatus.WebApi.DTOs
+namespace TeamWeeklyStatus.Application.DTOs
 {
-    public class WeeklyStatusGetRequest
+    public class WeeklyStatusGetDTO
     {
         public int? MemberId { get; set; }
 

@@ -44,7 +44,7 @@ const SignIn: React.FC = () => {
     const teamsResponse: MemberTeams = await makeApiRequest(
       `/TeamMember/GetMemberActiveTeams`,
       "POST",
-      { memberId }
+      { id: memberId }
     );
 
     setMemberActiveTeams(teamsResponse as MemberTeams);
