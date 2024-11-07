@@ -10,22 +10,37 @@ namespace TeamWeeklyStatus.WebApi.Controllers
     {
         private readonly IJungleAuthenticationService _jungleAuthenticationService;
         private readonly IGoogleAuthenticationService _googleAuthenticationService;
+        private readonly IUserProvisioningService _userProvisioningService;
 
         public AuthenticationController(IJungleAuthenticationService jungleAuthenticationService,
-            IGoogleAuthenticationService googleAuthenticationService)
+            IGoogleAuthenticationService googleAuthenticationService,
+            IUserProvisioningService userProvisioningService)
         {
             _jungleAuthenticationService = jungleAuthenticationService;
             _googleAuthenticationService = googleAuthenticationService;
+            _userProvisioningService = userProvisioningService;
         }
 
         [HttpPost("JungleLogin")]
         public async Task<IActionResult> Login([FromBody] JungleLoginDTO loginRequest)
         {
-            var result = await _jungleAuthenticationService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
-            if (result == null)
+            var authResult = await _jungleAuthenticationService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
+            if (authResult == null)
                 return Unauthorized("Invalid credentials");
 
-            return Ok(result);
+            loginRequest.Email = "misha2@mangochango.com";
+            var provisioningResult = await _userProvisioningService.ProvisionUserAsync(loginRequest.Email);
+
+            if (provisioningResult.IsNewUser)
+            {
+                return Ok(new
+                {
+                    Message = provisioningResult.Message,
+                    ContactsNotified = string.Empty
+                });
+            }
+
+            return Ok(authResult);
         }
 
         [HttpPost("GoogleLogin")]
