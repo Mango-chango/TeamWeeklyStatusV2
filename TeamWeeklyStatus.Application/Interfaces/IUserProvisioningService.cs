@@ -10,5 +10,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
     public interface IUserProvisioningService
     {
         Task<UserProvisioningResult> ProvisionUserAsync(string email);
+
+        IEnumerable<SupportContact> GetSupportContacts();
     }
 }

@@ -49,7 +49,7 @@ namespace TeamWeeklyStatus.Application.Services
             // await _userRepository.AddMemberAsync(user);
 
             // Send notifications to contacts from appsettings.json 
-            var contacts = _configuration.GetSection("Support:Contacts").Get<List<SupportContact>>();
+            var contacts = GetSupportContacts();
 
             var notificationSubject = _configuration["Notifications:Templates:Email:NewUserMissingConfigurationsSubject"];
             string notificationTemplate = _configuration["Notifications:Templates:Email:NewUserMissingConfigurations"];
@@ -67,14 +67,11 @@ namespace TeamWeeklyStatus.Application.Services
                 Message = "User added but requires additional configuration."
             };
         }
-    }
 
-
-    public class SupportContact
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-
+        public IEnumerable<SupportContact> GetSupportContacts()
+        {
+            return _configuration.GetSection("Support:Contacts").Get<List<SupportContact>>() ?? new List<SupportContact>();
+        }
     }
 
 

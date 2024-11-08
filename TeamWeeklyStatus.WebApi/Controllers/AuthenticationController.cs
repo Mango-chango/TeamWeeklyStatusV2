@@ -36,7 +36,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
                 return Ok(new
                 {
                     Message = provisioningResult.Message,
-                    ContactsNotified = string.Empty
+                    ContactsNotified = _userProvisioningService.GetSupportContacts()
                 });
             }
 

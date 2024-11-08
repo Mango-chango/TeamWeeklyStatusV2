@@ -9,7 +9,6 @@ import {
   JungleLoginResponse,
 } from "../../types/WeeklyStatus.types";
 import { GoogleLogin } from "@react-oauth/google";
-//import { EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
 import "./styles.css";
 
 const SignIn: React.FC = () => {
@@ -29,6 +28,8 @@ const SignIn: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [contactsNotified, setContactsNotified] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -71,20 +72,25 @@ const SignIn: React.FC = () => {
   const handleGoogleLogin = async (response: any) => {
     const idToken = response.credential;
     try {
-      const userResponse: GoogleLoginResponse = await makeApiRequest(
+      const userResponse: any = await makeApiRequest(
         "/Authentication/GoogleLogin",
         "POST",
         { idToken }
       );
 
-      if (userResponse && userResponse.success) {
-        setMemberId(userResponse.memberId as number | 0);
-        setMemberName(userResponse.memberName as string | "");
+      if (userResponse && userResponse.memberId) {
+        // User exists in the application database and is authenticated
+        setMemberId(userResponse.memberId as number);
+        setMemberName(userResponse.memberName as string);
         setIsAdmin(userResponse.isAdmin as boolean);
         setIsAuthenticated(true);
 
         // Navigate to the appropriate page based on team association
         await navigateToAppropriatePage(userResponse.memberId);
+      } else if (userResponse && userResponse.message) {
+        // User has been added but requires configuration
+        setInfoMessage(userResponse.message);
+        setContactsNotified(userResponse.contactsNotified);
       } else {
         setError("Could not authenticate with Google. Please try again.");
       }
@@ -98,22 +104,27 @@ const SignIn: React.FC = () => {
     e.preventDefault();
 
     try {
-      const jungleLoginResponse: JungleLoginResponse = await makeApiRequest(
+      const userResponse: any = await makeApiRequest(
         "/Authentication/JungleLogin",
         "POST",
         { email, password }
       );
-      if (jungleLoginResponse) {
-        setMemberId(jungleLoginResponse.memberId as number | 0);
-        setMemberName(jungleLoginResponse.memberName as string | "");
-        setIsAdmin(jungleLoginResponse.isAdmin as boolean);
+      if (userResponse && userResponse.memberId) {
+        // User exists in the application database and is authenticated
+        setMemberId(userResponse.memberId as number);
+        setMemberName(userResponse.memberName as string);
+        setIsAdmin(userResponse.isAdmin as boolean);
         setIsAuthenticated(true);
 
         if (rememberMe) {
           localStorage.setItem("email", email);
         }
 
-        await navigateToAppropriatePage(jungleLoginResponse.memberId);
+        await navigateToAppropriatePage(userResponse.memberId);
+      } else if (userResponse && userResponse.message) {
+        // User has been added but requires configuration
+        setInfoMessage(userResponse.message);
+        setContactsNotified(userResponse.contactsNotified);
       } else {
         setError("Could not authenticate with The Jungle. Please try again.");
       }
@@ -220,6 +231,17 @@ const SignIn: React.FC = () => {
       {error && (
         <Alert variant="danger" className="mt-3 w-300">
           {error}
+        </Alert>
+      )}
+      {infoMessage && (
+        <Alert variant="info" className="mt-3 w-300">
+          {infoMessage}
+          {contactsNotified.length > 0 && (
+            <div>
+              The following contacts were notified:{" "}
+              {contactsNotified.join(", ")}
+            </div>
+          )}
         </Alert>
       )}
     </div>
