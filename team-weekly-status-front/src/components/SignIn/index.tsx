@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Form, InputGroup } from "react-bootstrap";
+import { Alert, Button, Form, InputGroup, Spinner } from "react-bootstrap";
 import { userStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../services/apiHelper";
 import {
-  GoogleLoginResponse,
   MemberTeams,
-  JungleLoginResponse,
   SupportContact,
   UserProvisioningResponse,
   AuthResponse,
@@ -33,9 +31,12 @@ const SignIn: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [contactsNotified, setContactsNotified] = useState<SupportContact[]>([]);
+  const [contactsNotified, setContactsNotified] = useState<SupportContact[]>(
+    []
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("email");
@@ -60,7 +61,8 @@ const SignIn: React.FC = () => {
       setTeamId(teamsResponse[0].teamId);
       setTeamName(teamsResponse[0].teamName);
       if (teamsResponse[0].isTeamLead) setIsTeamLead(true);
-      if (teamsResponse[0].isCurrentWeekReporter) setIsCurrentWeekReporter(true);
+      if (teamsResponse[0].isCurrentWeekReporter)
+        setIsCurrentWeekReporter(true);
 
       navigate("/weekly-status");
     } else {
@@ -72,6 +74,10 @@ const SignIn: React.FC = () => {
 
   const handleGoogleLogin = async (response: any) => {
     const idToken = response.credential;
+    setIsLoading(true);
+    setError(null);
+    setInfoMessage(null);
+
     try {
       const userResponse: AuthResponse = await makeApiRequest(
         "/Authentication/GoogleLogin",
@@ -98,11 +104,16 @@ const SignIn: React.FC = () => {
     } catch (error) {
       console.error("Google login error:", error);
       setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleJungleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setInfoMessage(null);
 
     try {
       const userResponse: AuthResponse = await makeApiRequest(
@@ -138,6 +149,8 @@ const SignIn: React.FC = () => {
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -211,18 +224,34 @@ const SignIn: React.FC = () => {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit" className="mt-3 w-100 pt-3">
-            Login
+          <Button
+            variant="primary"
+            type="submit"
+            className="mt-3 w-100 pt-3"
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing In..." : "Login"}
           </Button>
+          {isLoading && (
+            <div className="overlay">
+              <Spinner animation="border" variant="light" />
+            </div>
+          )}
         </Form>
       ) : (
-        <GoogleLogin
-          data-testid="google-login"
-          onSuccess={handleGoogleLogin}
-          onError={() =>
-            setError("Google Sign-In was unsuccessful. Try again later.")
-          }
-        />
+        <div className="google-login-container">
+          {isLoading ? (
+            <Spinner animation="border" variant="primary" />
+          ) : (
+            <GoogleLogin
+              data-testid="google-login"
+              onSuccess={handleGoogleLogin}
+              onError={() =>
+                setError("Google Sign-In was unsuccessful. Try again later.")
+              }
+            />
+          )}
+        </div>
       )}
       {error && (
         <Alert variant="danger" className="mt-3 w-300">

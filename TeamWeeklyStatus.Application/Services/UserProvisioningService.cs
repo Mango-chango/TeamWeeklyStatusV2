@@ -46,7 +46,7 @@ namespace TeamWeeklyStatus.Application.Services
                 IsAdmin = false,
             };
 
-            // await _userRepository.AddMemberAsync(user);
+            await _userRepository.AddMemberAsync(user);
 
             // Send notifications to contacts from appsettings.json 
             var contacts = GetSupportContacts();

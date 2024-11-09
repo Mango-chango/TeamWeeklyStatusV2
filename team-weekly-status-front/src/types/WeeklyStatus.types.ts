@@ -99,7 +99,7 @@ export interface UserProvisioningResponse {
 }
 
 // Union type for authentication responses
-type AuthResponse =
+export type AuthResponse =
   | JungleLoginResponse
   | GoogleLoginResponse
   | UserProvisioningResponse;
