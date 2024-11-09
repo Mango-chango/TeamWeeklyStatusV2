@@ -53,6 +53,7 @@ namespace TeamWeeklyStatus.Application.Services
 
             var notificationSubject = _configuration["Notifications:Templates:Email:NewUserMissingConfigurationsSubject"];
             string notificationTemplate = _configuration["Notifications:Templates:Email:NewUserMissingConfigurations"];
+            string userAddedMessage = _configuration["Notifications:Templates:OnScreen:UserAdded"];
 
             foreach (var contact in contacts)
             {
@@ -64,7 +65,7 @@ namespace TeamWeeklyStatus.Application.Services
             {
                 IsNewUser = true,
                 RequiresConfiguration = true,
-                Message = "User added but requires additional configuration."
+                Message = userAddedMessage ?? "Your user has been added to the application, but some extra settings are required. The following contacts were notified: "
             };
         }
 

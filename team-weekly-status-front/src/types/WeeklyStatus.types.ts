@@ -88,9 +88,14 @@ export interface JungleLoginResponse {
   isAdmin: boolean;
 }
 
-interface UserProvisioningResponse {
+export interface SupportContact {
+  name: string;
+  email: string;
+}
+
+export interface UserProvisioningResponse {
   message: string;
-  contactsNotified: string[];
+  contactsNotified: SupportContact[];
 }
 
 // Union type for authentication responses

@@ -7,6 +7,9 @@ import {
   GoogleLoginResponse,
   MemberTeams,
   JungleLoginResponse,
+  SupportContact,
+  UserProvisioningResponse,
+  AuthResponse,
 } from "../../types/WeeklyStatus.types";
 import { GoogleLogin } from "@react-oauth/google";
 import "./styles.css";
@@ -23,13 +26,14 @@ const SignIn: React.FC = () => {
     setTeamName,
     setIsTeamLead,
     setIsCurrentWeekReporter,
-    featureFlags, // Feature flag from userStore
+    featureFlags,
   } = userStore();
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [contactsNotified, setContactsNotified] = useState<string[]>([]);
+  const [contactsNotified, setContactsNotified] = useState<SupportContact[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -48,21 +52,18 @@ const SignIn: React.FC = () => {
       { id: memberId }
     );
 
-    setMemberActiveTeams(teamsResponse as MemberTeams);
+    setMemberActiveTeams(teamsResponse);
 
     if (teamsResponse.length > 1) {
-      // Navigate to the team selection component if multiple teams are associated
       navigate("/team-selection");
     } else if (teamsResponse.length === 1) {
-      // If only one team, set the teamName and navigate to the weekly status page
-      setTeamId(teamsResponse[0].teamId as number | 0);
-      setTeamName(teamsResponse[0].teamName as string | "");
-      teamsResponse[0].isTeamLead && setIsTeamLead(true);
-      teamsResponse[0].isCurrentWeekReporter && setIsCurrentWeekReporter(true);
+      setTeamId(teamsResponse[0].teamId);
+      setTeamName(teamsResponse[0].teamName);
+      if (teamsResponse[0].isTeamLead) setIsTeamLead(true);
+      if (teamsResponse[0].isCurrentWeekReporter) setIsCurrentWeekReporter(true);
 
       navigate("/weekly-status");
     } else {
-      // If no teams are associated, navigate to the home page
       setIsAuthenticated(false);
       setError("You are not associated with any teams.");
       navigate("/");
@@ -72,25 +73,25 @@ const SignIn: React.FC = () => {
   const handleGoogleLogin = async (response: any) => {
     const idToken = response.credential;
     try {
-      const userResponse: any = await makeApiRequest(
+      const userResponse: AuthResponse = await makeApiRequest(
         "/Authentication/GoogleLogin",
         "POST",
         { idToken }
       );
 
-      if (userResponse && userResponse.memberId) {
+      if ("memberId" in userResponse) {
         // User exists in the application database and is authenticated
-        setMemberId(userResponse.memberId as number);
-        setMemberName(userResponse.memberName as string);
-        setIsAdmin(userResponse.isAdmin as boolean);
+        setMemberId(userResponse.memberId);
+        setMemberName(userResponse.memberName);
+        setIsAdmin(userResponse.isAdmin);
         setIsAuthenticated(true);
 
-        // Navigate to the appropriate page based on team association
         await navigateToAppropriatePage(userResponse.memberId);
-      } else if (userResponse && userResponse.message) {
+      } else if ("message" in userResponse) {
         // User has been added but requires configuration
-        setInfoMessage(userResponse.message);
-        setContactsNotified(userResponse.contactsNotified);
+        const provisioningResponse = userResponse as UserProvisioningResponse;
+        setInfoMessage(provisioningResponse.message);
+        setContactsNotified(provisioningResponse.contactsNotified);
       } else {
         setError("Could not authenticate with Google. Please try again.");
       }
@@ -104,16 +105,16 @@ const SignIn: React.FC = () => {
     e.preventDefault();
 
     try {
-      const userResponse: any = await makeApiRequest(
+      const userResponse: AuthResponse = await makeApiRequest(
         "/Authentication/JungleLogin",
         "POST",
         { email, password }
       );
-      if (userResponse && userResponse.memberId) {
+      if ("memberId" in userResponse) {
         // User exists in the application database and is authenticated
-        setMemberId(userResponse.memberId as number);
-        setMemberName(userResponse.memberName as string);
-        setIsAdmin(userResponse.isAdmin as boolean);
+        setMemberId(userResponse.memberId);
+        setMemberName(userResponse.memberName);
+        setIsAdmin(userResponse.isAdmin);
         setIsAuthenticated(true);
 
         if (rememberMe) {
@@ -121,10 +122,11 @@ const SignIn: React.FC = () => {
         }
 
         await navigateToAppropriatePage(userResponse.memberId);
-      } else if (userResponse && userResponse.message) {
+      } else if ("message" in userResponse) {
         // User has been added but requires configuration
-        setInfoMessage(userResponse.message);
-        setContactsNotified(userResponse.contactsNotified);
+        const provisioningResponse = userResponse as UserProvisioningResponse;
+        setInfoMessage(provisioningResponse.message);
+        setContactsNotified(provisioningResponse.contactsNotified);
       } else {
         setError("Could not authenticate with The Jungle. Please try again.");
       }
@@ -132,10 +134,8 @@ const SignIn: React.FC = () => {
       console.error("Jungle login error:", error);
 
       if (error.response && error.response.status === 401) {
-        // Handle unauthorized error (invalid credentials)
         setError("Invalid email or password. Please try again.");
       } else {
-        // Handle other types of errors
         setError("An unexpected error occurred. Please try again.");
       }
     }
@@ -147,8 +147,6 @@ const SignIn: React.FC = () => {
     <div className="container-main">
       <h2>Welcome to the Team Weekly Status App!</h2>
       {featureFlags.useJungleAuthentication ? (
-        // Render the email/password form for Jungle login
-
         <Form onSubmit={handleJungleLogin}>
           <h4>Sign in with your Jungle credentials</h4>
           <Form.Group controlId="email" className="mt-2 pt-3">
@@ -186,8 +184,8 @@ const SignIn: React.FC = () => {
                     className="bi bi-eye-slash-fill"
                     viewBox="0 0 16 16"
                   >
-                    <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z" />
-                    <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z" />
+                    <path d="M10.477 11.89l-1.823-1.823a3 3 0 1 1 4.243-4.243l1.823 1.823a9 9 0 0 0-4.243 4.243z" />
+                    <path d="M13.359 14.36L1.639 2.64l.707-.707 11.72 11.72-.707.707z" />
                   </svg>
                 ) : (
                   <svg
@@ -198,8 +196,7 @@ const SignIn: React.FC = () => {
                     className="bi bi-eye-fill"
                     viewBox="0 0 16 16"
                   >
-                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                    <path d="M8 3C3 3 0 8 0 8s3 5 8 5 8-5 8-5-3-5-8-5zm0 8a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
                   </svg>
                 )}
               </Button>
@@ -219,7 +216,6 @@ const SignIn: React.FC = () => {
           </Button>
         </Form>
       ) : (
-        // Render the Google Login button
         <GoogleLogin
           data-testid="google-login"
           onSuccess={handleGoogleLogin}
@@ -238,8 +234,13 @@ const SignIn: React.FC = () => {
           {infoMessage}
           {contactsNotified.length > 0 && (
             <div>
-              The following contacts were notified:{" "}
-              {contactsNotified.join(", ")}
+              <ul>
+                {contactsNotified.map((contact, index) => (
+                  <li key={index}>
+                    {contact.name} ({contact.email})
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </Alert>
