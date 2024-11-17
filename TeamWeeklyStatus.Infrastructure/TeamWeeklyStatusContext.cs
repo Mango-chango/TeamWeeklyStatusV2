@@ -19,6 +19,8 @@ namespace TeamWeeklyStatus.Infrastructure
 
         public DbSet<SubtaskNextWeek> SubtasksNextWeek { get; set; }
 
+        public DbSet<WeeklyStatusRichText> WeeklyStatusRichTexts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TeamMember>().HasKey(tm => new { tm.TeamId, tm.MemberId });
@@ -67,6 +69,22 @@ namespace TeamWeeklyStatus.Infrastructure
                         c => c.ToList()
                     )
                 );
+
+            modelBuilder
+                .Entity<WeeklyStatusRichText>()
+                .Property(e => e.UpcomingPTO)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => JsonSerializer.Deserialize<List<DateTime>>(v, (JsonSerializerOptions)null)
+                )
+                .Metadata.SetValueComparer(
+                    new ValueComparer<List<DateTime>>(
+                        (c1, c2) => c1.SequenceEqual(c2),
+                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                        c => c.ToList()
+                    )
+                );
+
         }
     }
 }
