@@ -24,6 +24,7 @@ namespace TeamWeeklyStatus.Application.CompositionRoot
             services.AddScoped<IJungleAuthenticationService, JungleAuthenticationService>();
             services.AddScoped<IGoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IUserProvisioningService, UserProvisioningService>();
+            services.AddScoped<IWeeklyStatusRichTextService, WeeklyStatusRichTextService>();
             return services;
         }
     }

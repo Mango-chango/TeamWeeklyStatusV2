@@ -34,6 +34,7 @@ namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
             services.AddScoped<ITeamRepository, TeamRepository>();
             services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
             services.AddScoped<IWeeklyStatusRepository, WeeklyStatusRepository>();
+            services.AddScoped<IWeeklyStatusRichTextRepository, WeeklyStatusRichTextRepository>();
 
             // Register HttpClient
             services.AddHttpClient();
@@ -42,6 +43,7 @@ namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
             services.AddScoped<IJungleAuthenticationProvider, JungleAuthenticationProvider>();
             services.AddScoped<IGoogleAuthenticationProvider, GoogleAuthenticationProvider>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IAiService, AiService>();
 
             return services;
         }
