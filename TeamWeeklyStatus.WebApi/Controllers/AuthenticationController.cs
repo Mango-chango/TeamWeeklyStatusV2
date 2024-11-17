@@ -28,7 +28,9 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             if (authResult == null)
                 return Unauthorized("Invalid credentials");
 
-            loginRequest.Email = "misha2@mangochango.com";
+            // NOTE: Leaving this for testing and demo purposes:
+            // loginRequest.Email = "nuevochango@mangochango.com";
+
             var provisioningResult = await _userProvisioningService.ProvisionUserAsync(loginRequest.Email);
 
             if (provisioningResult.IsNewUser)
