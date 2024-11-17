@@ -87,3 +87,19 @@ export interface JungleLoginResponse {
   jwtToken: string,
   isAdmin: boolean;
 }
+
+export interface SupportContact {
+  name: string;
+  email: string;
+}
+
+export interface UserProvisioningResponse {
+  message: string;
+  contactsNotified: SupportContact[];
+}
+
+// Union type for authentication responses
+export type AuthResponse =
+  | JungleLoginResponse
+  | GoogleLoginResponse
+  | UserProvisioningResponse;
