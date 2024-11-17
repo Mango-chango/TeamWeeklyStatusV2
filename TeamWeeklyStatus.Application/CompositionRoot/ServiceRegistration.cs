@@ -16,7 +16,6 @@ namespace TeamWeeklyStatus.Application.CompositionRoot
         {
             // Register services
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IReminderService, ReminderService>();
             services.AddScoped<IWeeklyStatusService, WeeklyStatusService>();
             services.AddScoped<ITeamMemberService, TeamMemberService>();
