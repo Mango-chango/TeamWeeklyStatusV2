@@ -68,8 +68,8 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost("GetAiResponse", Name = "GetAiResponse")]
-        public async Task<IActionResult> GetAiResponse([FromBody] PromptDTO request)
+        [HttpPost("GetAIEnhancedContent", Name = "GetAIEnhancedContent")]
+        public async Task<IActionResult> GetAIEnhancedContent([FromBody] PromptDTO request)
         {
             var response = await _aiService.EnhanceTextAsync(request.Content);
             return Ok(response);

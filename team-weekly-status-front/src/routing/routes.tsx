@@ -5,7 +5,7 @@ import PrivateRoute from "./PrivateRoute";
 import AssignReporter from "../components/AssignCurrentWeekReporter";
 
 const SignIn = React.lazy(() => import("../components/SignIn"));
-const WeeklyStatus = React.lazy(() => import("../components/WeeklyStatus"));
+const WeeklyStatus1 = React.lazy(() => import("../components/WeeklyStatus"));
 const StatusReporting = React.lazy(
   () => import("../components/StatusReporting/index")
 );
@@ -26,6 +26,9 @@ const MembersManagement = React.lazy(
 const TeamsManagement = React.lazy(
   () => import("../components/Admin/TeamsManagement/index")
 );
+
+const WeeklyStatus = React.lazy(() => import("../components/WeeklyStatusRichText"));
+
 
 const AppRoutes: React.FC = () => {
   userStore();

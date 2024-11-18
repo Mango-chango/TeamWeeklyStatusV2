@@ -37,7 +37,6 @@ export type Member = {
   email?: string;
 };
 
-
 export interface GoogleLoginResponse {
   success: boolean;
   memberId: number | 0;
@@ -50,9 +49,9 @@ export type Team = {
   name: string;
   description?: string;
   emailNotificationsEnabled?: boolean;
-  slackNotificationsEnabled? : boolean;
+  slackNotificationsEnabled?: boolean;
   isActive: boolean;
-  weekReporterAutomaticAssignment? : boolean;
+  weekReporterAutomaticAssignment?: boolean;
 };
 
 export type TeamMember = {
@@ -84,7 +83,7 @@ export type Reporter = {
 export interface JungleLoginResponse {
   memberId: number | 0;
   memberName: string | "";
-  jwtToken: string,
+  jwtToken: string;
   isAdmin: boolean;
 }
 
@@ -103,3 +102,14 @@ export type AuthResponse =
   | JungleLoginResponse
   | GoogleLoginResponse
   | UserProvisioningResponse;
+
+export interface WeeklyStatusRichTextData {
+  id: number;
+  weekStartDate: Date | string;
+  doneThisWeekContent: string;
+  planForNextWeekContent: string;
+  upcomingPTO: (Date | string)[];
+  blockers: string;
+  memberId: number;
+  teamId: number;
+}
