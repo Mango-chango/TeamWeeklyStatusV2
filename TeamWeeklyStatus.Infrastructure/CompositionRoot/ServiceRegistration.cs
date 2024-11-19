@@ -41,6 +41,7 @@ namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
             // Register services
             services.AddScoped<IJungleAuthenticationProvider, JungleAuthenticationProvider>();
             services.AddScoped<IGoogleAuthenticationProvider, GoogleAuthenticationProvider>();
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }
