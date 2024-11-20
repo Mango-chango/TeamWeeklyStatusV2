@@ -2,10 +2,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamWeeklyStatus.Application.CompositionRoot;
-using TeamWeeklyStatus.Infrastructure;
-using TeamWeeklyStatus.Infrastructure.CompositionRoot;
+//using TeamWeeklyStatus.Infrastructure;
+//using TeamWeeklyStatus.Infrastructure.CompositionRoot;
 using TeamWeeklyStatus.Infrastructure.Shared;
 using TeamWeeklyStatus.Infrastructure.Shared.CompositionRoot;
+using TeamWeeklyStatus.Infrastructure.MongoDB;
+using TeamWeeklyStatus.Infrastructure.MongoDB.CompositionRoot;
 
 namespace TeamWeeklyStatus.CompositionRoot
 {
