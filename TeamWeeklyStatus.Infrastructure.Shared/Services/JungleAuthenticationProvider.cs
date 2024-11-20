@@ -11,9 +11,8 @@ using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
-using TeamWeeklyStatus.WebApi.DTOs;
 
-namespace TeamWeeklyStatus.Infrastructure.Services
+namespace TeamWeeklyStatus.Infrastructure.Shared
 {
     public class JungleAuthenticationProvider: IJungleAuthenticationProvider
     {
