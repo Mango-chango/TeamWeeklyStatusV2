@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.MD = README.MD
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamWeeklyStatus.Infrastructure.Shared", "TeamWeeklyStatus.Infrastructure.Shared\TeamWeeklyStatus.Infrastructure.Shared.csproj", "{82B87CD9-B963-432A-BF9E-8AA102589D0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{6DB6F770-D185-480F-8EA9-68B00638131F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DB6F770-D185-480F-8EA9-68B00638131F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DB6F770-D185-480F-8EA9-68B00638131F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82B87CD9-B963-432A-BF9E-8AA102589D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82B87CD9-B963-432A-BF9E-8AA102589D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82B87CD9-B963-432A-BF9E-8AA102589D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82B87CD9-B963-432A-BF9E-8AA102589D0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
