@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
+using TeamWeeklyStatus.Infrastructure.Shared.Models;
 
 namespace TeamWeeklyStatus.Infrastructure.Shared
 {
