@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamWeeklyStatus.Infrastructure.Services
+namespace TeamWeeklyStatus.Infrastructure.Shared.Models
 {
     public class JungleAuthResponse
     {

@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamWeeklyStatus.Application.CompositionRoot;
-//using TeamWeeklyStatus.Infrastructure;
-//using TeamWeeklyStatus.Infrastructure.CompositionRoot;
-using TeamWeeklyStatus.Infrastructure.MongoDB;
-using TeamWeeklyStatus.Infrastructure.MongoDB.CompositionRoot;
+using TeamWeeklyStatus.Infrastructure;
+using TeamWeeklyStatus.Infrastructure.CompositionRoot;
+using TeamWeeklyStatus.Infrastructure.Shared;
+using TeamWeeklyStatus.Infrastructure.Shared.CompositionRoot;
 
 namespace TeamWeeklyStatus.CompositionRoot
 {
@@ -13,7 +13,10 @@ namespace TeamWeeklyStatus.CompositionRoot
     {
         public static IServiceCollection AddCompositionRoot(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configure Infrastructure Layer services
+            // Configure Shared Infrastructure Layer services
+            services.AddSharedInfrastructureLayer(configuration);
+
+            // Configure Persistence Infrastructure Layer services
             services.AddInfrastructureLayer(configuration);
             //services.AddInfrastructureLayer(configuration);
 
