@@ -45,7 +45,6 @@ var googleClientSecret = builder.Configuration["GoogleClientSecret"];
             options.ClientId = googleClientId;
             options.ClientSecret = googleClientSecret;
         });
-}
 
 var app = builder.Build();
 
