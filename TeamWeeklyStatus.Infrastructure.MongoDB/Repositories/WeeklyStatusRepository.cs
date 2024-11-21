@@ -7,16 +7,17 @@ using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
+using TeamWeeklyStatus.Infrastructure.MongoDB.DataModels;
 
 namespace TeamWeeklyStatus.Infrastructure.MongoDB.Repositories
 {
     public class WeeklyStatusRepository : IWeeklyStatusRepository
     {
-        private readonly IMongoCollection<WeeklyStatus> _weeklyStatuses;
+        private readonly IMongoCollection<WeeklyStatusDataModel> _weeklyStatuses;
 
         public WeeklyStatusRepository(IMongoDatabase database)
         {
-            _weeklyStatuses = database.GetCollection<WeeklyStatus>("WeeklyStatuses");
+            _weeklyStatuses = database.GetCollection<WeeklyStatusDataModel>("WeeklyStatuses");
         }
 
         Task IWeeklyStatusRepository.AddSubtasksAsync(IEnumerable<Subtask> subtasks)
@@ -67,43 +68,36 @@ namespace TeamWeeklyStatus.Infrastructure.MongoDB.Repositories
                 startDate.Kind
             );
 
-            var filter = Builders<WeeklyStatus>.Filter.And(
-                Builders<WeeklyStatus>.Filter.Eq(ws => ws.MemberId, memberId),
-                Builders<WeeklyStatus>.Filter.Eq(ws => ws.TeamId, teamId),
-                Builders<WeeklyStatus>.Filter.Eq(ws => ws.WeekStartDate, dateOnly)
+            var filter = Builders<WeeklyStatusDataModel>.Filter.And(
+                Builders<WeeklyStatusDataModel>.Filter.Eq(ws => ws.MemberId, memberId),
+                Builders<WeeklyStatusDataModel>.Filter.Eq(ws => ws.TeamId, teamId)
             );
 
-            var weeklyStatus = await _weeklyStatuses.Find(filter).FirstOrDefaultAsync();
+            var weeklyStatusDataModel = await _weeklyStatuses.Find(filter).FirstOrDefaultAsync();
 
-            if (weeklyStatus == null)
+            if (weeklyStatusDataModel == null)
             {
                 return null;
             }
+
+            var weeklyStatus = weeklyStatusDataModel.ToDomainEntity();
 
             return new WeeklyStatusDTO
             {
                 Id = weeklyStatus.Id,
                 WeekStartDate = weeklyStatus.WeekStartDate,
-                DoneThisWeek = weeklyStatus.DoneThisWeekTasks.Select(task => new DoneThisWeekTaskDTO
+                DoneThisWeek = weeklyStatus.DoneThisWeekTasks?.Select(task => new DoneThisWeekTaskDTO
                 {
                     Id = task.Id,
-                    TaskDescription = task.TaskDescription,
-                    Subtasks = task.Subtasks.Select(subtask => new SubtaskDTO
-                    {
-                        SubtaskDescription = subtask.Description
-                    }).ToList()
-                }).ToList(),
-                PlanForNextWeek = weeklyStatus.PlanForNextWeekTasks.Select(task => new PlanForNextWeekTaskDTO
+                    TaskDescription = task.TaskDescription
+                }).ToList() ?? new List<DoneThisWeekTaskDTO>(),
+                PlanForNextWeek = weeklyStatus.PlanForNextWeekTasks?.Select(task => new PlanForNextWeekTaskDTO
                 {
                     Id = task.Id,
-                    TaskDescription = task.TaskDescription,
-                    Subtasks = task.Subtasks.Select(subtask => new SubtaskNextWeekDTO
-                    {
-                        SubtaskDescription = subtask.Description
-                    }).ToList()
-                }).ToList(),
+                    TaskDescription = task.TaskDescription
+                }).ToList() ?? new List<PlanForNextWeekTaskDTO>(),
                 Blockers = weeklyStatus.Blockers,
-                UpcomingPTO = weeklyStatus.UpcomingPTO,
+                UpcomingPTO = weeklyStatus.UpcomingPTO ?? new List<DateTime>(),
                 MemberId = weeklyStatus.MemberId
             };
         }
