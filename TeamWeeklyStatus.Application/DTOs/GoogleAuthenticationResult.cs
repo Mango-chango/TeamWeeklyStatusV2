@@ -1,4 +1,4 @@
-﻿namespace TeamWeeklyStatus.WebApi.DTOs
+﻿namespace TeamWeeklyStatus.Application.DTOs
 {
     public class GoogleAuthenticationResult
     {

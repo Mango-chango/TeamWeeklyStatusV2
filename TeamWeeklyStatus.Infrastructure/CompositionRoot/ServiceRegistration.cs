@@ -2,17 +2,8 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.Interfaces;
-using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Infrastructure.Repositories;
-using TeamWeeklyStatus.Infrastructure.Services;
-
 
 namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
 {
@@ -43,7 +34,6 @@ namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
             services.AddScoped<IJungleAuthenticationProvider, JungleAuthenticationProvider>();
             services.AddScoped<IGoogleAuthenticationProvider, GoogleAuthenticationProvider>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IAiService, AiService>();
 
             return services;
         }
