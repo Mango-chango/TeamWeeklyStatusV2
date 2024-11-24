@@ -87,6 +87,10 @@ namespace TeamWeeklyStatus.Infrastructure
                     )
                 );
 
+            modelBuilder.Entity<TeamMember>().HasKey(tm => new { tm.TeamId, tm.MemberId });
+
+            modelBuilder.Entity<TeamAIConfiguration>().HasKey(taic => new { taic.TeamId, taic.AIEngineId });
+
         }
     }
 }
