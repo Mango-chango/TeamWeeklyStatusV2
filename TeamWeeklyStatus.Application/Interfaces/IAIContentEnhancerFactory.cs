@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Domain.Entities;
 
-namespace TeamWeeklyStatus.Application.Services
+namespace TeamWeeklyStatus.Application.Interfaces
 {
     public interface IAIContentEnhancerFactory
     {

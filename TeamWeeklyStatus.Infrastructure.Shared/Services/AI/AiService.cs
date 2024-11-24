@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
 {
-    public class AiService : IAiService
+    public class AIService : IAIService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
@@ -17,7 +17,7 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
         private readonly string _model;
         private readonly Uri _openAiApiUri;
 
-        public AiService(HttpClient httpClient, IConfiguration configuration)
+        public AIService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _configuration = configuration;

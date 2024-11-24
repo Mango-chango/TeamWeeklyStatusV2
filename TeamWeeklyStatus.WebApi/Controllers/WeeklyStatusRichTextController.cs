@@ -11,9 +11,9 @@ namespace TeamWeeklyStatus.WebApi.Controllers
     {
         private readonly IWeeklyStatusRichTextService _weeklyStatusService;
         private readonly IReminderService _reminderService;
-        private readonly IAiService _aiService;
+        private readonly IAIService _aiService;
 
-        public WeeklyStatusRichTextController(IWeeklyStatusRichTextService weeklyStatusService, IReminderService reminderService, IAiService aiService)
+        public WeeklyStatusRichTextController(IWeeklyStatusRichTextService weeklyStatusService, IReminderService reminderService, IAIService aiService)
         {
             _weeklyStatusService = weeklyStatusService;
             _reminderService = reminderService;

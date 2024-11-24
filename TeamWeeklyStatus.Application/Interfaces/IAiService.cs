@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamWeeklyStatus.Application.Interfaces
 {
-    public interface IAiService
+    public interface IAIService
     {
         Task<string> EnhanceTextAsync(string prompt);
     }

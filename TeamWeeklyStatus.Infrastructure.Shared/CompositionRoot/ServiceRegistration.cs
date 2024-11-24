@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
-using TeamWeeklyStatus.Infrastructure.Shared.Services; 
-
+using TeamWeeklyStatus.Infrastructure.Shared.Services;
+using TeamWeeklyStatus.Infrastructure.Shared.Services.AI;
 
 namespace TeamWeeklyStatus.Infrastructure.Shared.CompositionRoot
 {
@@ -24,6 +24,12 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.CompositionRoot
             services.AddScoped<IJungleAuthenticationProvider, JungleAuthenticationProvider>();
             services.AddScoped<IGoogleAuthenticationProvider, GoogleAuthenticationProvider>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IAIService, AIService>();
+
+            services.AddTransient<OpenAIContentEnhancer>();
+            services.AddTransient<GeminiContentEnhancer>();
+
+            services.AddSingleton<IAIContentEnhancerFactory, AIContentEnhancerFactory>();
 
             return services;
         }
