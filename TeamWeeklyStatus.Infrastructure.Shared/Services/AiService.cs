@@ -7,7 +7,7 @@ using System.Text.Json;
 using TeamWeeklyStatus.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 
-namespace TeamWeeklyStatus.Infrastructure.Services
+namespace TeamWeeklyStatus.Infrastructure.Shared.Services
 {
     public class AiService : IAiService
     {
@@ -52,7 +52,7 @@ namespace TeamWeeklyStatus.Infrastructure.Services
             var requestBody = new
             {
                 model = _model,
-                messages = messages,
+                messages,
                 max_tokens = maxResponseTokens,
                 temperature = 0.7
             };

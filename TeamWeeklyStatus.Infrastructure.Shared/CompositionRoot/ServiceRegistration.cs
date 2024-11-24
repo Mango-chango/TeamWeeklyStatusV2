@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
-using TeamWeeklyStatus.Infrastructure.Shared; 
+using TeamWeeklyStatus.Infrastructure.Shared.Services; 
 
 
 namespace TeamWeeklyStatus.Infrastructure.Shared.CompositionRoot

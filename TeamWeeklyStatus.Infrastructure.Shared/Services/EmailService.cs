@@ -10,7 +10,7 @@ using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 using TeamWeeklyStatus.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 
-namespace TeamWeeklyStatus.Infrastructure.Shared
+namespace TeamWeeklyStatus.Infrastructure.Shared.Services
 {
     public class EmailService : IEmailService
     {

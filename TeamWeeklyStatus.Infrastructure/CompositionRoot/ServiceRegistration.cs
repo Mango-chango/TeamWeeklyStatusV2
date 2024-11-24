@@ -27,14 +27,6 @@ namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
             services.AddScoped<IWeeklyStatusRepository, WeeklyStatusRepository>();
             services.AddScoped<IWeeklyStatusRichTextRepository, WeeklyStatusRichTextRepository>();
 
-            // Register HttpClient
-            services.AddHttpClient();
-
-            // Register services
-            services.AddScoped<IJungleAuthenticationProvider, JungleAuthenticationProvider>();
-            services.AddScoped<IGoogleAuthenticationProvider, GoogleAuthenticationProvider>();
-            services.AddScoped<IEmailService, EmailService>();
-
             return services;
         }
     }

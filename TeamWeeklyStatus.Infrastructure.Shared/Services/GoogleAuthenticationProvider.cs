@@ -8,7 +8,7 @@ using TeamWeeklyStatus.Application.Interfaces;
 using Google.Apis.Auth;
 
 
-namespace TeamWeeklyStatus.Infrastructure.Shared
+namespace TeamWeeklyStatus.Infrastructure.Shared.Services
 {
     public class GoogleAuthenticationProvider: IGoogleAuthenticationProvider
     {

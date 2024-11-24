@@ -13,7 +13,7 @@ using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Infrastructure.Shared.Models;
 
-namespace TeamWeeklyStatus.Infrastructure.Shared
+namespace TeamWeeklyStatus.Infrastructure.Shared.Services
 {
     public class JungleAuthenticationProvider: IJungleAuthenticationProvider
     {
