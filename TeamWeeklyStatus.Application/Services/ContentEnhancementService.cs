@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.Interfaces;
 
-namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
+namespace TeamWeeklyStatus.Application.Services
 {
     public class ContentEnhancementService
     {

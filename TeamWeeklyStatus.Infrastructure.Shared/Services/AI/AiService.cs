@@ -92,11 +92,11 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
             return encoding.Decode(truncatedTokens);
         }
     }
-    public class TokenCounter
+    public class TokenCounter1
     {
-        public int CountTokens(string text, string model)
+        public int CountTokens1(string text, string model)
         {
-            string encodingName = GetEncodingNameForModel(model);
+            string encodingName = GetEncodingNameForModel1(model);
 
             var encoding = GptEncoding.GetEncoding(encodingName);
             var tokens = encoding.Encode(text);
@@ -104,7 +104,7 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
             return tokens.Count;
         }
 
-        private string GetEncodingNameForModel(string model)
+        private string GetEncodingNameForModel1(string model)
         {
             if (model.StartsWith("gpt-4"))
                 return "cl100k_base";

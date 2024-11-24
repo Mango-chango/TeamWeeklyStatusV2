@@ -8,6 +8,6 @@ namespace TeamWeeklyStatus.Application.Interfaces
 {
     public interface IAIContentEnhancer
     {
-        Task<string> EnhanceContentAsync(string content);
+        Task<string> EnhanceContentAsync(string prompt);
     }
 }

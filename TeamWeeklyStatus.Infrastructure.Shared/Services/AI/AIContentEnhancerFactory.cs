@@ -12,10 +12,12 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
     public class AIContentEnhancerFactory : IAIContentEnhancerFactory
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly HttpClient _httpClient;
 
-        public AIContentEnhancerFactory(IServiceProvider serviceProvider)
+        public AIContentEnhancerFactory(IServiceProvider serviceProvider, HttpClient httpClient)
         {
             _serviceProvider = serviceProvider;
+            _httpClient = httpClient;
         }
 
         public IAIContentEnhancer CreateContentEnhancer(TeamAIConfiguration config)
@@ -23,7 +25,7 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
             switch (config.AIEngine.AIEngineName)
             {
                 case nameof(AIEngineName.OpenAI):
-                    return new OpenAIContentEnhancer(config);
+                    return new OpenAIContentEnhancer(_httpClient, config);
                 case nameof(AIEngineName.Gemini):
                     return new GeminiContentEnhancer(config);
                 default:
