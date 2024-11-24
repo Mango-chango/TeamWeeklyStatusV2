@@ -20,6 +20,8 @@ namespace TeamWeeklyStatus.Infrastructure
         public DbSet<SubtaskNextWeek> SubtasksNextWeek { get; set; }
 
         public DbSet<WeeklyStatusRichText> WeeklyStatusRichTexts { get; set; }
+        public DbSet<AIEngine> AIEngines { get; set; }
+        public DbSet<TeamAIConfiguration> TeamAIConfigurations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

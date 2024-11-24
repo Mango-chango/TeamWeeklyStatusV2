@@ -10,5 +10,6 @@
         public bool? WeekReporterAutomaticAssignment { get; set; } = false;
         public bool IsActive { get; set; } = true;
         public ICollection<TeamMember> TeamMembers { get; set; }
+        public TeamAIConfiguration AIConfiguration { get; set; }
     }
 }
