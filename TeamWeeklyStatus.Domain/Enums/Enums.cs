@@ -11,4 +11,10 @@ namespace TeamWeeklyStatus.Domain.Enums
         Post,
         SendReport
     }
+
+    public enum AIEngineName
+    {
+        OpenAI,
+        Gemini
+    }
 }

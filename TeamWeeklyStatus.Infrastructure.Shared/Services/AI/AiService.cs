@@ -7,7 +7,7 @@ using System.Text.Json;
 using TeamWeeklyStatus.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 
-namespace TeamWeeklyStatus.Infrastructure.Shared.Services
+namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
 {
     public class AiService : IAiService
     {
