@@ -38,6 +38,7 @@ apiVersioningBuilder.AddApiExplorer(options =>
     options.GroupNameFormat = "'v'VVV";
     options.SubstituteApiVersionInUrl = true;
 });
+builder.Services.AddSwaggerGen();
 
 var googleClientId = builder.Configuration["GoogleClientId"];
 var googleClientSecret = builder.Configuration["GoogleClientSecret"];
@@ -63,7 +64,14 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+    }); 
     app.UseDeveloperExceptionPage();
 }
 
