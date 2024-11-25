@@ -27,9 +27,6 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.CompositionRoot
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IAIService, AIService>();
 
-            services.AddTransient<OpenAIContentEnhancer>();
-            services.AddTransient<GeminiContentEnhancer>();
-
             services.AddSingleton<IAIContentEnhancerFactory, AIContentEnhancerFactory>();
 
             return services;

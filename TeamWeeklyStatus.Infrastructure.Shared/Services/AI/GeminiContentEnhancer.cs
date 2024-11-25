@@ -10,16 +10,18 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
 {
     public class GeminiContentEnhancer : IAIContentEnhancer
     {
+        private readonly HttpClient _httpClient;
         private readonly TeamAIConfiguration _config;
 
-        public GeminiContentEnhancer(TeamAIConfiguration config)
+        public GeminiContentEnhancer(HttpClient httpClient, TeamAIConfiguration config)
         {
             _config = config;
+            _httpClient = httpClient;
         }
 
-        public async Task<string> EnhanceContentAsync(string content)
+        public async Task<string> EnhanceContentAsync(string prompt)
         {
-            return await Task.FromResult(content);
+            return await Task.FromResult(prompt);
         }
     }
 }

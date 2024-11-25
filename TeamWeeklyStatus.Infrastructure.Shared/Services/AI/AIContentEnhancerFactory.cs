@@ -11,13 +11,11 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
 {
     public class AIContentEnhancerFactory : IAIContentEnhancerFactory
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public AIContentEnhancerFactory(IServiceProvider serviceProvider, HttpClient httpClient)
+        public AIContentEnhancerFactory(IHttpClientFactory httpClientFactory)
         {
-            _serviceProvider = serviceProvider;
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
         }
 
         public IAIContentEnhancer CreateContentEnhancer(TeamAIConfiguration config)
@@ -25,9 +23,11 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
             switch (config.AIEngine.AIEngineName)
             {
                 case nameof(AIEngineName.OpenAI):
-                    return new OpenAIContentEnhancer(_httpClient, config);
+                    var openAIHttpClient = _httpClientFactory.CreateClient();
+                    return new OpenAIContentEnhancer(openAIHttpClient, config);
                 case nameof(AIEngineName.Gemini):
-                    return new GeminiContentEnhancer(config);
+                    var geminiHttpClient = _httpClientFactory.CreateClient();
+                    return new GeminiContentEnhancer(geminiHttpClient, config);
                 default:
                     throw new NotSupportedException($"AI Engine '{config.AIEngine.AIEngineName}' is not supported.");
             }
