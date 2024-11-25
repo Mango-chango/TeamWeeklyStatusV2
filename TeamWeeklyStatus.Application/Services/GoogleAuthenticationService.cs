@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
-using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Application.Interfaces.Services;
 
 namespace TeamWeeklyStatus.Application.Services
 {

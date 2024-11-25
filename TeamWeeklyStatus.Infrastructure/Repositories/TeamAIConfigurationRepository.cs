@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Application.Interfaces.Repositories;
 using TeamWeeklyStatus.Domain.Entities;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
@@ -37,10 +37,17 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
 
         public async Task SaveAsync(TeamAIConfiguration config)
         {
-            // Encrypt sensitive data before saving
             config.ApiKey = _protector.Protect(config.ApiKey);
 
-            _context.TeamAIConfigurations.Update(config);
+            if (_context.TeamAIConfigurations.Any(c => c.TeamId == config.TeamId))
+            {
+                _context.TeamAIConfigurations.Update(config);
+            }
+            else
+            {
+                _context.TeamAIConfigurations.Add(config);
+            }
+
             await _context.SaveChangesAsync();
         }
     }

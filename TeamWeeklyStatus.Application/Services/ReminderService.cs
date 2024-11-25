@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TeamWeeklyStatus.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using TeamWeeklyStatus.Domain.Enums;
+using TeamWeeklyStatus.Application.Interfaces.Repositories;
+using TeamWeeklyStatus.Application.Interfaces.Services;
 
 namespace TeamWeeklyStatus.Application.Services
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Domain.Entities;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Repositories
 {
     public interface ITeamAIConfigurationRepository
     {

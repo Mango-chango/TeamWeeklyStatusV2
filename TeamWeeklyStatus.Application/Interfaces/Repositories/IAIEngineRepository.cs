@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Domain.Entities;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Repositories
 {
-    public interface IAIContentEnhancerFactory
+    public interface IAIEngineRepository
     {
-        IAIContentEnhancer CreateContentEnhancer(TeamAIConfiguration config);
+        Task<List<AIEngine>> GetAIEnginesAsync();
     }
 }

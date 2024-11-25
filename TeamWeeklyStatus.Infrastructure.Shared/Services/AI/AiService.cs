@@ -4,8 +4,8 @@ using SharpToken;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using TeamWeeklyStatus.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
+using TeamWeeklyStatus.Application.Interfaces.AI;
 
 namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
 {

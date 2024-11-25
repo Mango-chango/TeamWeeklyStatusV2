@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
-using TeamWeeklyStatus.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
+using TeamWeeklyStatus.Application.Interfaces.Services;
 
 namespace TeamWeeklyStatus.Infrastructure.Shared.Services
 {

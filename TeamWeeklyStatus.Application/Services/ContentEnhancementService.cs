@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Application.Interfaces.AI;
+using TeamWeeklyStatus.Application.Interfaces.Repositories;
 
 namespace TeamWeeklyStatus.Application.Services
 {

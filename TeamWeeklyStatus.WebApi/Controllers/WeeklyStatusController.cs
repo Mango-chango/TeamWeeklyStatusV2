@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Domain.Enums;
 using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Application.Interfaces.Services;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {

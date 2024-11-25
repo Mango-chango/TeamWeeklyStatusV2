@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Application.Interfaces.Repositories;
 using TeamWeeklyStatus.Infrastructure.Repositories;
 
 namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
@@ -26,6 +26,8 @@ namespace TeamWeeklyStatus.Infrastructure.CompositionRoot
             services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
             services.AddScoped<IWeeklyStatusRepository, WeeklyStatusRepository>();
             services.AddScoped<IWeeklyStatusRichTextRepository, WeeklyStatusRichTextRepository>();
+            services.AddScoped<IAIEngineRepository, AIEngineRepository>();
+            services.AddScoped<ITeamAIConfigurationRepository, TeamAIConfigurationRepository>();
 
             return services;
         }
