@@ -1,8 +1,11 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using System.Text.Json;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.CompositionRoot;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,18 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+apiVersioningBuilder.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
 
 var googleClientId = builder.Configuration["GoogleClientId"];
 var googleClientSecret = builder.Configuration["GoogleClientSecret"];

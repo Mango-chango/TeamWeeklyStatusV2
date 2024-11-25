@@ -21,7 +21,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
             _aiService = aiService;
         }
 
-        [HttpPost("GetByMemberIdAndStartDate1", Name = "GetWeeklyStatusByMemberByStartDate1")]
+        [HttpPost("GetByMemberIdAndStartDate", Name = "GetWeeklyStatusByMemberByStartDate1")]
         public async Task<IActionResult> GetWeeklyStatusByMemberByStartDate([FromBody] WeeklyStatusGetDTO request)
         {
             var weeklyStatus = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, (int)request.TeamId, request.WeekStartDate);
