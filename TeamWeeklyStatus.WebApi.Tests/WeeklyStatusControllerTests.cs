@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TeamWeeklyStatus.WebApi.Controllers;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces.Services;
+using TeamWeeklyStatus.Application.Interfaces.AI;
 
 namespace TeamWeeklyStatus.WebApi.Tests
 {
@@ -12,13 +13,15 @@ namespace TeamWeeklyStatus.WebApi.Tests
         private readonly Mock<IWeeklyStatusService> _mockService;
         private readonly Mock<IReminderService> _mockReminderService;
         private readonly Mock<IWeeklyStatusRichTextService> _mockRichTextService;
+        private readonly Mock<IContentEnhancementService> _mockContentEnhancementService;
 
         public WeeklyStatusControllerTests()
         {
             _mockService = new Mock<IWeeklyStatusService>();
             _mockReminderService = new Mock<IReminderService>();
             _mockRichTextService = new Mock<IWeeklyStatusRichTextService>();
-            _controller = new WeeklyStatusController(_mockService.Object, _mockReminderService.Object, _mockRichTextService.Object);
+            _mockContentEnhancementService = new Mock<IContentEnhancementService>();
+            _controller = new WeeklyStatusController(_mockService.Object, _mockReminderService.Object, _mockRichTextService.Object, _mockContentEnhancementService.Object);
         }
 
         [Fact]

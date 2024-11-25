@@ -3,6 +3,7 @@ using Asp.Versioning;
 using TeamWeeklyStatus.Domain.Enums;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces.Services;
+using TeamWeeklyStatus.Application.Interfaces.AI;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
@@ -15,12 +16,14 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         private readonly IWeeklyStatusService _weeklyStatusService;
         private readonly IReminderService _reminderService;
         private readonly IWeeklyStatusRichTextService _weeklyStatusRichTextService;
+        private readonly IContentEnhancementService _contentEnhancementService;
 
-        public WeeklyStatusController(IWeeklyStatusService weeklyStatusService, IReminderService reminderService, IWeeklyStatusRichTextService weeklyStatusRichTextService)
+        public WeeklyStatusController(IWeeklyStatusService weeklyStatusService, IReminderService reminderService, IWeeklyStatusRichTextService weeklyStatusRichTextService, IContentEnhancementService contentEnhancementService)
         {
             _weeklyStatusService = weeklyStatusService;
             _reminderService = reminderService;
             _weeklyStatusRichTextService = weeklyStatusRichTextService;
+            _contentEnhancementService = contentEnhancementService;
         }
 
         #region Version 1.0
@@ -120,6 +123,14 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         {
             var updatedWeeklyStatus = await _weeklyStatusRichTextService.UpdateWeeklyStatusAsync(request);
             return Ok(updatedWeeklyStatus);
+        }
+
+        [HttpPost("GetAIEnhancedContent", Name = "GetAIEnhancedContent")]
+        [MapToApiVersion(2.0)]
+        public async Task<IActionResult> GetAIEnhancedContent([FromBody] PromptDTO request)
+        {
+            var response = await _contentEnhancementService.EnhanceContentAsync(request.TeamId, request.Content);
+            return Ok(response);
         }
         #endregion
 

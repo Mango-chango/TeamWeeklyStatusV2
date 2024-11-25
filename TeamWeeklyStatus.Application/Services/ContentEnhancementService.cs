@@ -8,7 +8,7 @@ using TeamWeeklyStatus.Application.Interfaces.Repositories;
 
 namespace TeamWeeklyStatus.Application.Services
 {
-    public class ContentEnhancementService
+    public class ContentEnhancementService: IContentEnhancementService
     {
         private readonly IAIContentEnhancerFactory _aiContentEnhancerFactory;
         private readonly ITeamAIConfigurationRepository _configRepository;
@@ -21,7 +21,7 @@ namespace TeamWeeklyStatus.Application.Services
             _configRepository = configRepository;
         }
 
-        public async Task<string> EnhanceContentAsync(int teamId, string content)
+        public async Task<string> EnhanceContentAsync(int teamId, string prompt)
         {
             var config = await _configRepository.GetByTeamIdAsync(teamId);
             if (config == null)
@@ -31,7 +31,7 @@ namespace TeamWeeklyStatus.Application.Services
 
             var enhancer = _aiContentEnhancerFactory.CreateContentEnhancer(config);
 
-            return await enhancer.EnhanceContentAsync(content);
+            return await enhancer.EnhanceContentAsync(prompt);
         }
     }
 }

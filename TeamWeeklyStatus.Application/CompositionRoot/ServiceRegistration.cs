@@ -27,7 +27,7 @@ namespace TeamWeeklyStatus.Application.CompositionRoot
             services.AddScoped<IUserProvisioningService, UserProvisioningService>();
             services.AddScoped<IWeeklyStatusRichTextService, WeeklyStatusRichTextService>();
             services.AddScoped<IAIEngineService, AIEngineService>();
-            services.AddScoped<ContentEnhancementService>();
+            services.AddScoped<IContentEnhancementService, ContentEnhancementService>();
 
             return services;
         }

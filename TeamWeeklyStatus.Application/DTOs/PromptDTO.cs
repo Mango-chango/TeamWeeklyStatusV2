@@ -8,6 +8,8 @@ namespace TeamWeeklyStatus.Application.DTOs
 {
     public class PromptDTO
     {
+        public int TeamId { get; set; }
+
         public string Content { get; set; }
  
     }
