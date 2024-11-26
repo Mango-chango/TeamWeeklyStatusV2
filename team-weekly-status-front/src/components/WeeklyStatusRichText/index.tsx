@@ -192,7 +192,7 @@ const WeeklyStatusRichText: React.FC = () => {
       );
       setOriginalContent(content);
       const enhancedResponse = response as any;
-      setEnhancedContent(enhancedResponse.enhancedContent); // Adjusted based on backend response
+      setEnhancedContent(enhancedResponse); // Adjusted based on backend response
       setContentToEnhance(contentType);
       setShowComparisonModal(true);
     } catch (error) {

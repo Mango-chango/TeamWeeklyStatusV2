@@ -26,11 +26,11 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .Include(c => c.AIEngine)
                 .FirstOrDefaultAsync(c => c.TeamId == teamId);
 
-            if (config != null)
-            {
-                // Decrypt sensitive data
-                config.ApiKey = _protector.Unprotect(config.ApiKey);
-            }
+            //if (config != null)
+            //{
+            //    // Decrypt sensitive data
+            //    config.ApiKey = _protector.Unprotect(config.ApiKey);
+            //}
 
             return config;
         }
