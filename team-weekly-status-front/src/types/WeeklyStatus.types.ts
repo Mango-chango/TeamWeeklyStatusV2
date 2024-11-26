@@ -44,6 +44,38 @@ export interface GoogleLoginResponse {
   isAdmin: boolean;
 }
 
+export interface AIEngine {
+  aiEngineId: number;
+  aiEngineName: string;
+}
+export interface TeamAIConfigurationRead {
+  aiEngineid?: number;
+  aiEngineName?: string;
+  apiUrl?: string;
+  apiKey?: string;
+  model?: string;
+  aiEngine?: AIEngine;
+}
+
+export type TeamRead = {
+  id: number;
+  name: string;
+  description?: string;
+  emailNotificationsEnabled?: boolean;
+  slackNotificationsEnabled?: boolean;
+  isActive: boolean;
+  weekReporterAutomaticAssignment?: boolean;
+  aiConfiguration?: TeamAIConfigurationRead;
+};
+
+export interface TeamAIConfiguration {
+  aiEngineid?: number;
+  aiEngineName?: string;
+  apiUrl?: string;
+  apiKey?: string;
+  model?: string;
+}
+
 export type Team = {
   id: number;
   name: string;
@@ -52,6 +84,7 @@ export type Team = {
   slackNotificationsEnabled?: boolean;
   isActive: boolean;
   weekReporterAutomaticAssignment?: boolean;
+  aiConfiguration?: TeamAIConfiguration;
 };
 
 export type TeamMember = {
@@ -122,3 +155,15 @@ export interface TeamMemberWeeklyStatusRichTextData {
 
 export type TeamWeeklyRichTextStatusData = TeamMemberWeeklyStatusRichTextData[];
 
+
+export interface TeamAIConfigurationResponse {
+  success: boolean;
+  teamAIConfiguration: TeamAIConfiguration;
+}
+
+export interface TeamAIConfigurationRequest {
+  aiEngineName: string;
+  apiUrl: string;
+  apiKey: string;
+  model: string;
+}

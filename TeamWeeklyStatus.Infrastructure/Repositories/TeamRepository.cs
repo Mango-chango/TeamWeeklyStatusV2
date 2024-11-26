@@ -27,7 +27,11 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 })
                 .FirstOrDefaultAsync();
 
-        public async Task<IEnumerable<Team>> GetAllTeamsAsync() => await _context.Teams
+        public async Task<IEnumerable<Team>> GetAllTeamsAsync()
+        {
+            return await _context.Teams
+                .Include(t => t.AIConfiguration)
+                    .ThenInclude(ai => ai.AIEngine)
                 .Select(t => new Team
                 {
                     Id = t.Id,
@@ -36,9 +40,24 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                     EmailNotificationsEnabled = t.EmailNotificationsEnabled,
                     SlackNotificationsEnabled = t.SlackNotificationsEnabled,
                     WeekReporterAutomaticAssignment = t.WeekReporterAutomaticAssignment,
-                    IsActive = t.IsActive
-                }).OrderBy(t => t.Name)
+                    IsActive = t.IsActive,
+                    AIConfiguration = t.AIConfiguration != null ? new TeamAIConfiguration
+                    {
+                        TeamId = t.AIConfiguration.TeamId,
+                        AIEngineId = t.AIConfiguration.AIEngineId,
+                        ApiKey = t.AIConfiguration.ApiKey,
+                        ApiUrl = t.AIConfiguration.ApiUrl,
+                        Model = t.AIConfiguration.Model,
+                        AIEngine = t.AIConfiguration.AIEngine != null ? new AIEngine
+                        {
+                            AIEngineId = t.AIConfiguration.AIEngine.AIEngineId,
+                            AIEngineName = t.AIConfiguration.AIEngine.AIEngineName
+                        } : null
+                    } : null
+                })
+                .OrderBy(t => t.Name)
                 .ToListAsync();
+        }
 
         public async Task<Team> AddTeamAsync(Team team)
         {

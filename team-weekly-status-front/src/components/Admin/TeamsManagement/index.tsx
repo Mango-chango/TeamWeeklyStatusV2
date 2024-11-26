@@ -1,8 +1,10 @@
+// TeamsManagement/index.tsx
+
 import React, { useEffect, useMemo, useState } from "react";
 import { userStore } from "../../../store";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../../../services/apiHelper";
-import { Team } from "../../../types/WeeklyStatus.types";
+import { TeamRead } from "../../../types/WeeklyStatus.types";
 import { Alert, Button, Table, Row, Col, Form } from "react-bootstrap";
 import AddEditTeamModal from "./AddEditTeamModal";
 import TeamMembersManagement from "../TeamMembersManagement";
@@ -22,7 +24,7 @@ const TeamsManagement: React.FC = () => {
   const [teamsData, setTeamsData] = useState<Team[] | null>(null);
 
   const fetchTeams = async () => {
-    const response: Team[] = await makeApiRequest("/Team/GetAll", "GET");
+    const response: TeamRead[] = await makeApiRequest("/Team/GetAll", "GET"); // Updated API endpoint
 
     if (response) {
       setTeamsData(response);
@@ -44,7 +46,7 @@ const TeamsManagement: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleEdit = (team: Team) => {
+  const handleEdit = (team: TeamRead) => {
     setSelectedTeam(team);
     setShowModal(true);
   };
@@ -55,10 +57,10 @@ const TeamsManagement: React.FC = () => {
     }
 
     try {
-      await makeApiRequest(`/Team/Delete/${id}`, "DELETE");
+      await makeApiRequest(`/api/v1.0/Team/Delete/${id}`, "DELETE"); // Updated API endpoint
       fetchTeams();
     } catch (error) {
-      // console.log(error);
+      // Handle error
     }
   };
 
@@ -185,23 +187,20 @@ const TeamsManagement: React.FC = () => {
               >
                 <h5 className="card-title">{team.name}</h5>
                 <p className="card-text">
+                  <strong>AI Engine:</strong>{" "}
+                  {team.aiConfiguration?.aiEngineName || "Not Configured"}
+                </p>
+                <p className="card-text">
                   <strong>Is Active?:</strong> {team.isActive ? "Yes" : "No"}
                 </p>
                 <p className="card-text">
                   <strong>Email Notifications:</strong>{" "}
                   {team.emailNotificationsEnabled ? "Yes" : "No"}
                 </p>
-                {/* <p className="card-text">
-                  <strong>Slack Notifications:</strong>{" "}
-                  {team.slackNotificationsEnabled ? "Yes" : "No"}
-                </p> */}
                 <p className="card-text">
                   <strong>Week Reporter Automatic Assignment:</strong>{" "}
                   {team.weekReporterAutomaticAssignment ? "Yes" : "No"}
                 </p>
-                {/* <p className="card-text">
-                  <strong>Description:</strong> {team.description}
-                </p> */}
                 <div className="d-flex flex-wrap">
                   <Button
                     variant="warning"
@@ -236,7 +235,7 @@ const TeamsManagement: React.FC = () => {
                       <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z" />
                     </svg>
                   </Button>
-                </div>
+                </div>{" "}
               </div>
             </div>
           ))}
@@ -263,26 +262,15 @@ const TeamsManagement: React.FC = () => {
               >
                 Description {renderSortIcon("description")}
               </th>
-              <th>
-                Email
-                <br />
-                Notifications
-              </th>
-              <th>
-                Slack
-                <br /> Notifications
-              </th>
-              <th>
-                Week Reporter
-                <br />
-                Automatic Assignment
-              </th>
+              <th>AI Engine</th>
+              <th>Email Notifications</th>
+              <th>Week Reporter Automatic Assignment</th>
               <th>Active</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {currentPageData.map((team: Team) => (
+            {currentPageData.map((team: TeamRead) => (
               <tr
                 key={team.id}
                 onClick={() => {
@@ -299,20 +287,14 @@ const TeamsManagement: React.FC = () => {
                 <td>{team.name}</td>
                 <td>{team.description ? team.description : ""}</td>
                 <td>
-                  <input
-                    type="checkbox"
-                    checked={team.emailNotificationsEnabled}
-                    onChange={(e) => e.preventDefault()}
-                    aria-readonly="true"
-                    className="readonly-checkbox"
-                  />
+                  {team.aiConfiguration?.aiEngine?.aiEngineName ||
+                    "Not Configured"}
                 </td>
                 <td>
                   <input
                     type="checkbox"
-                    checked={team.slackNotificationsEnabled}
-                    onChange={(e) => e.preventDefault()}
-                    aria-readonly="true"
+                    checked={team.emailNotificationsEnabled}
+                    readOnly
                     className="readonly-checkbox"
                   />
                 </td>
@@ -320,8 +302,7 @@ const TeamsManagement: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={team.weekReporterAutomaticAssignment}
-                    onChange={(e) => e.preventDefault()}
-                    aria-readonly="true"
+                    readOnly
                     className="readonly-checkbox"
                   />
                 </td>
@@ -329,8 +310,7 @@ const TeamsManagement: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={team.isActive}
-                    onChange={(e) => e.preventDefault()}
-                    aria-readonly="true"
+                    readOnly
                     className="readonly-checkbox"
                   />
                 </td>
@@ -409,7 +389,6 @@ const TeamsManagement: React.FC = () => {
         onSave={fetchTeams}
       />
       <br />
-
 
       {selectedTeamId && (
         <TeamMembersManagement
