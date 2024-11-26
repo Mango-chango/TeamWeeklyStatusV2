@@ -9,7 +9,7 @@ namespace TeamWeeklyStatus.Application.Interfaces.Repositories
         Task<WeeklyStatusRichText> UpdateWeeklyStatusAsync(WeeklyStatusRichText weeklyStatus);
         Task<WeeklyStatusRichText> DeleteWeeklyStatusAsync(int id);
         Task<WeeklyStatusRichText> GetWeeklyStatusByIdAsync(int id);
-        Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(int teamId, DateTime weekStartDate);
+        Task<IEnumerable<WeeklyStatusRichTextWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(int teamId, DateTime weekStartDate);
         Task<WeeklyStatusRichTextDTO> GetWeeklyStatusByMemberByStartDateAsync(int memberId, int teamId, DateTime startDate);
         Task<WeeklyStatusRichText> GetLatestWeeklyStatusAsync(int memberId, int teamId);
     }

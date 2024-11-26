@@ -113,3 +113,12 @@ export interface WeeklyStatusRichTextData {
   memberId: number;
   teamId: number;
 }
+
+export interface TeamMemberWeeklyStatusRichTextData {
+  memberName: string;
+  weeklyStatus: WeeklyStatusRichTextData | null;
+}
+
+
+export type TeamWeeklyRichTextStatusData = TeamMemberWeeklyStatusRichTextData[];
+

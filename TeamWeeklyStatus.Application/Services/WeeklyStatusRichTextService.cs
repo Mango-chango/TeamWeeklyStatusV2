@@ -35,6 +35,9 @@ namespace TeamWeeklyStatus.Application.Services
                         Blockers = weeklyStatus.Blockers,
                         UpcomingPTO = weeklyStatus.UpcomingPTO,
                         MemberId = weeklyStatus.MemberId,
+                        TeamId = weeklyStatus.TeamId,
+                        DoneThisWeekContent = weeklyStatus.DoneThisWeekContent,
+                        PlanForNextWeekContent = weeklyStatus.PlanForNextWeekContent,
                     };
 
                     return weeklyStatusDto;
@@ -42,7 +45,7 @@ namespace TeamWeeklyStatus.Application.Services
             }
         }
 
-        public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(int teamId, DateTime weekStartDate)
+        public async Task<IEnumerable<WeeklyStatusRichTextWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(int teamId, DateTime weekStartDate)
         {
             var teamWeeklyStatuses = await _repository.GetAllWeeklyStatusesByDateAsync(teamId, weekStartDate);
             return teamWeeklyStatuses;
@@ -57,6 +60,8 @@ namespace TeamWeeklyStatus.Application.Services
                 UpcomingPTO = weeklyStatusDto.UpcomingPTO,
                 MemberId = weeklyStatusDto.MemberId,
                 TeamId = weeklyStatusDto.TeamId,
+                DoneThisWeekContent = weeklyStatusDto.DoneThisWeekContent,
+                PlanForNextWeekContent = weeklyStatusDto.PlanForNextWeekContent,
                 CreatedDate = DateTime.UtcNow,
             };
 
@@ -78,6 +83,8 @@ namespace TeamWeeklyStatus.Application.Services
             existingStatus.WeekStartDate = weeklyStatusDto.WeekStartDate;
             existingStatus.Blockers = weeklyStatusDto.Blockers;
             existingStatus.UpcomingPTO = weeklyStatusDto.UpcomingPTO;
+            existingStatus.DoneThisWeekContent = weeklyStatusDto.DoneThisWeekContent;
+            existingStatus.PlanForNextWeekContent = weeklyStatusDto.PlanForNextWeekContent;
             existingStatus.CreatedDate = DateTime.UtcNow;
 
             var updatedStatus = await _repository.UpdateWeeklyStatusAsync(existingStatus);

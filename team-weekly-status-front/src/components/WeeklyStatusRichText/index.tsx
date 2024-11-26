@@ -445,14 +445,6 @@ const WeeklyStatusRichText: React.FC = () => {
             </Button>
           )}
 
-          <Button
-            onClick={handleShowModal}
-            variant="primary"
-            className="form__btn"
-          >
-            Preview Report
-          </Button>
-
           {memberActiveTeams && memberActiveTeams.length > 1 && (
             <Button
               variant="primary"

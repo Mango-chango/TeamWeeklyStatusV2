@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { userStore } from "../../store";
 import { makeApiRequest } from "../../services/apiHelper";
 import {
-  TeamMemberWeeklyStatusData,
-  TeamWeeklyStatusData,
+  TeamMemberWeeklyStatusRichTextData,
+  TeamWeeklyRichTextStatusData,
 } from "../../types/WeeklyStatus.types";
 import moment from "moment";
 import "./styles.css";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { generateHTML, generateMarkdown, generatePDF } from "./reportService";
@@ -17,16 +17,13 @@ const StatusReporting: React.FC = () => {
   const { teamId, teamName } = userStore();
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [teamWeeklyStatusData, setTeamWeeklyStatusData] =
-    useState<TeamWeeklyStatusData | null>(null);
+    useState<TeamWeeklyRichTextStatusData | null>(null);
   const [unreportedMembers, setUnreportedMembers] = useState<
-    TeamMemberWeeklyStatusData[]
+  TeamMemberWeeklyStatusRichTextData[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  console.log("teamWeeklyStatusData", teamWeeklyStatusData);
 
-  const initialStartDate = moment()
-    .startOf("week")
-    .toDate();
+  const initialStartDate = moment().startOf("week").toDate();
   const [startDate] = useState(initialStartDate);
   const endDate = moment().endOf("week").toDate();
 
@@ -52,8 +49,8 @@ const StatusReporting: React.FC = () => {
         teamId: teamId,
         weekStartDate: startDate.toISOString(),
       };
-      const response: TeamWeeklyStatusData = await makeApiRequest(
-        "/WeeklyStatus/GetAllWeeklyStatusesByStartDate",
+      const response: TeamWeeklyRichTextStatusData = await makeApiRequest(
+        "/v2.0/WeeklyStatus/GetAllWeeklyStatusesByStartDate", // Updated endpoint
         "POST",
         requestData
       );
@@ -72,7 +69,7 @@ const StatusReporting: React.FC = () => {
   }, [localTeamName, startDate, teamId]);
 
   const editorData = generateHTML(
-    localTeamName || "",
+    localTeamName ?? "",
     startDate,
     endDate,
     teamWeeklyStatusData || []
@@ -122,7 +119,7 @@ const StatusReporting: React.FC = () => {
   return (
     <div className="status-reporting-container">
       <h5 className="status-reporting-header">
-        This is a readonly view. The changes done here are not persisted in the
+        This is a read-only view. The changes done here are not persisted in the
         database.
       </h5>
 
@@ -154,19 +151,18 @@ const StatusReporting: React.FC = () => {
         </div>
       ) : (
         <div className="status-reporting-editor">
-          <CKEditor
-            editor={ClassicEditor}
-            data={editorData}
-            config={{
-              toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'selectAll', 'undo', 'redo'],
-            }}
+          <ReactQuill
+            value={editorData}
+            readOnly={true}
+            theme="bubble" // Or "snow" based on your preference
+            modules={{ toolbar: false }}
           />
         </div>
       )}
 
       <div className="status-reporting-unreported">
         <span className="unreported-title">
-          Changos who haven't reported yet:
+          Members who haven't reported yet:
         </span>{" "}
         {unreportedMembers.map((member) => member.memberName).join(", ")}
       </div>

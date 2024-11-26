@@ -67,87 +67,50 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<
-            IEnumerable<WeeklyStatusWithMemberNameDTO>
-        > GetAllWeeklyStatusesByDateAsync(int teamId, DateTime weekStartDate)
+        public async Task<IEnumerable<WeeklyStatusRichTextWithMemberNameDTO>> GetAllWeeklyStatusesByDateAsync(
+            int teamId,
+            DateTime weekStartDate)
         {
             var dateOnly = weekStartDate.Date;
 
-            // Get all team members
+            // Get all active team members
             var allTeamMembers = await _context.TeamMembers
                 .Include(tm => tm.Member)
-                .Where(tm => tm.TeamId == teamId && (tm.EndActiveDate == null || (tm.StartActiveDate <= DateTime.Now && tm.EndActiveDate >= DateTime.Now)))
+                .Where(tm => tm.TeamId == teamId &&
+                    (tm.EndActiveDate == null ||
+                     (tm.StartActiveDate <= DateTime.Now && tm.EndActiveDate >= DateTime.Now)))
                 .ToListAsync();
 
             // Get existing weekly statuses for the date
-            var weeklyStatusesForDate = await _context.WeeklyStatuses
-                .Include(ws => ws.Member)
-                .Include(ws => ws.DoneThisWeekTasks)
-                .ThenInclude(dtw => dtw.Subtasks)
-                .Include(ws => ws.PlanForNextWeekTasks)
-                .ThenInclude(pfnwt => pfnwt.Subtasks)
+            var weeklyStatusesForDate = await _context.WeeklyStatusRichTexts
+                .AsNoTracking()
                 .Where(ws => ws.TeamId == teamId && ws.WeekStartDate.Date == dateOnly)
                 .ToListAsync();
 
-            // Combine existing statuses with missing members
+            // Combine members with their weekly statuses
             var result = allTeamMembers
                 .Select(member =>
                 {
                     var existingStatus = weeklyStatusesForDate.FirstOrDefault(
                         ws => ws.MemberId == member.MemberId
                     );
-                    return new WeeklyStatusWithMemberNameDTO
+
+                    return new WeeklyStatusRichTextWithMemberNameDTO
                     {
                         MemberName = member.Member.Name,
-                        WeeklyStatus =
-                            existingStatus != null
-                                ? new WeeklyStatusDTO
-                                {
-                                    Id = existingStatus.Id,
-                                    WeekStartDate = existingStatus.WeekStartDate,
-                                    DoneThisWeek = existingStatus.DoneThisWeekTasks
-                                        .Select(
-                                            dtw =>
-                                                new DoneThisWeekTaskDTO
-                                                {
-                                                    TaskDescription = dtw.TaskDescription,
-                                                    Subtasks = dtw.Subtasks
-                                                        .Select(
-                                                            st =>
-                                                                new SubtaskDTO
-                                                                {
-                                                                    SubtaskDescription =
-                                                                        st.Description
-                                                                }
-                                                        )
-                                                        .ToList()
-                                                }
-                                        )
-                                        .ToList(),
-                                    PlanForNextWeek = existingStatus.PlanForNextWeekTasks
-                                    .Select(
-                                            pfnw =>
-                                                new PlanForNextWeekTaskDTO
-                                                {
-                                                    TaskDescription = pfnw.TaskDescription,
-                                                    Subtasks = pfnw.Subtasks
-                                                        .Select(
-                                                            st =>
-                                                                new SubtaskNextWeekDTO
-                                                                {
-                                                                    SubtaskDescription =
-                                                                        st.Description
-                                                                }
-                                                        )
-                                                        .ToList()
-                                                }
-                                        )
-                                        .ToList(),
-                                    Blockers = existingStatus.Blockers,
-                                    UpcomingPTO = existingStatus.UpcomingPTO,
-                                    MemberId = existingStatus?.MemberId ?? 0, // Set 0 for missing reports
-                                }
-                                : null, // Set null for missing reports
+                        WeeklyStatus = existingStatus != null
+                            ? new WeeklyStatusRichTextDTO
+                            {
+                                Id = existingStatus.Id,
+                                MemberId = existingStatus.MemberId,
+                                TeamId = existingStatus.TeamId ?? 0,
+                                WeekStartDate = existingStatus.WeekStartDate,
+                                DoneThisWeekContent = existingStatus.DoneThisWeekContent ?? string.Empty,
+                                PlanForNextWeekContent = existingStatus.PlanForNextWeekContent ?? string.Empty,
+                                Blockers = existingStatus.Blockers ?? string.Empty,
+                                UpcomingPTO = existingStatus.UpcomingPTO ?? new List<DateTime>()
+                            }
+                            : new WeeklyStatusRichTextDTO()
                     };
                 })
                 .OrderBy(dto => dto.MemberName)
