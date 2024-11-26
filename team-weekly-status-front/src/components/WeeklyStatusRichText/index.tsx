@@ -45,7 +45,7 @@ const WeeklyStatusRichText: React.FC = () => {
 
   const initialStartDate = moment().startOf("week").toDate();
   const [startDate, setStartDate] = useState(initialStartDate);
-  const isWeekday = (date) => {
+  const isWeekday = (date: Date) => {
     const day = date.getDay();
     return day !== 0 && day !== 6;
   };
@@ -103,7 +103,7 @@ const WeeklyStatusRichText: React.FC = () => {
 
     // Cleanup subscription on component unmount
     return () => unsubscribe();
-  }, []);
+  }, [localMemberId]);
 
   useEffect(() => {
     // Subscribe to teamId changes
@@ -115,7 +115,7 @@ const WeeklyStatusRichText: React.FC = () => {
 
     // Cleanup subscription on component unmount
     return () => unsubscribe();
-  }, []);
+  }, [localTeamId]);
 
   useEffect(() => {
     const fetchExistingStatus = async () => {
@@ -125,7 +125,7 @@ const WeeklyStatusRichText: React.FC = () => {
         weekStartDate: startDate.toISOString(),
       };
       const response: WeeklyStatusRichTextData = await makeApiRequest(
-        "/WeeklyStatusRichText/GetByMemberIdAndStartDate",
+        "/v2.0/WeeklyStatus/GetByMemberIdAndStartDate", // Updated endpoint
         "POST",
         requestData
       );
@@ -181,16 +181,18 @@ const WeeklyStatusRichText: React.FC = () => {
   ) => {
     setIsEnhancing(true);
     try {
+      const payload = {
+        teamId,
+        content,
+      };
       const response = await makeApiRequest(
-        "/WeeklyStatusRichText/GetAIEnhancedContent",
+        `/v2.0/WeeklyStatus/GetAIEnhancedContent`,
         "POST",
-        {
-          content,
-        }
+        payload
       );
       setOriginalContent(content);
       const enhancedResponse = response as any;
-      setEnhancedContent(enhancedResponse);
+      setEnhancedContent(enhancedResponse.enhancedContent); // Adjusted based on backend response
       setContentToEnhance(contentType);
       setShowComparisonModal(true);
     } catch (error) {
@@ -217,8 +219,8 @@ const WeeklyStatusRichText: React.FC = () => {
 
     try {
       const endpoint = existingWeeklyStatus
-        ? "/WeeklyStatusRichText/Edit"
-        : "/WeeklyStatusRichText/Add";
+        ? "/v2.0/WeeklyStatus/Edit" // Updated endpoint
+        : "/v2.0/WeeklyStatus/Add"; // Updated endpoint
       const method = existingWeeklyStatus ? "PUT" : "POST";
 
       const response = await makeApiRequest<
@@ -359,7 +361,7 @@ const WeeklyStatusRichText: React.FC = () => {
               handleEnhanceContent(
                 planForNextWeekContent,
                 setIsEnhancingPlanForNextWeek,
-                "doneThisWeek"
+                "planForNextWeek" // Fixed content type
               )
             }
             disabled={isEnhancingPlanForNextWeek}

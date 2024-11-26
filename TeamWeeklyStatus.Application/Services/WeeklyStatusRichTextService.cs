@@ -17,19 +17,29 @@ namespace TeamWeeklyStatus.Application.Services
 
         public async Task<WeeklyStatusRichTextDTO> GetWeeklyStatusByMemberByStartDateAsync(int memberId, int teamId, DateTime startDate)
         {
-            var utcStartDate = startDate.ToUniversalTime();
-            var weeklyStatus = await _repository.GetWeeklyStatusByMemberByStartDateAsync(memberId, teamId, utcStartDate);
-
-            var weeklyStatusDto = new WeeklyStatusRichTextDTO
+            if (memberId == 0 || teamId == 0)
+                return null;
+            else
             {
-                Id = weeklyStatus.Id,
-                WeekStartDate = weeklyStatus.WeekStartDate,
-                Blockers = weeklyStatus.Blockers,
-                UpcomingPTO = weeklyStatus.UpcomingPTO,
-                MemberId = weeklyStatus.MemberId,
-            };
+                var utcStartDate = startDate.ToUniversalTime();
+                var weeklyStatus = await _repository.GetWeeklyStatusByMemberByStartDateAsync(memberId, teamId, utcStartDate);
 
-            return weeklyStatusDto;
+                if (weeklyStatus == null)
+                    return null;
+                else
+                {
+                    var weeklyStatusDto = new WeeklyStatusRichTextDTO
+                    {
+                        Id = weeklyStatus.Id,
+                        WeekStartDate = weeklyStatus.WeekStartDate,
+                        Blockers = weeklyStatus.Blockers,
+                        UpcomingPTO = weeklyStatus.UpcomingPTO,
+                        MemberId = weeklyStatus.MemberId,
+                    };
+
+                    return weeklyStatusDto;
+                }
+            }
         }
 
         public async Task<IEnumerable<WeeklyStatusWithMemberNameDTO>> GetAllWeeklyStatusesByStartDateAsync(int teamId, DateTime weekStartDate)

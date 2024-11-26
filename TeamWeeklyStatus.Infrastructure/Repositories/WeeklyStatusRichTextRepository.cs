@@ -36,78 +36,35 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
         public async Task<WeeklyStatusRichTextDTO> GetWeeklyStatusByMemberByStartDateAsync(
             int memberId,
             int teamId,
-            DateTime startDate
-        )
+            DateTime startDate)
         {
-            throw new NotImplementedException();
-            //// Ensure that startDate only contains the date component
-            //var dateOnly = new DateTime(
-            //    startDate.Year,
-            //    startDate.Month,
-            //    startDate.Day,
-            //    0,
-            //    0,
-            //    0,
-            //    startDate.Kind
-            //);
+            var dateOnly = startDate.Date;
 
-            //var weeklyStatus = await _context.WeeklyStatuses
-            //    .Include(ws => ws.Member)
-            //    .Include(ws => ws.DoneThisWeekTasks)
-            //    .ThenInclude(dtw => dtw.Subtasks)
-            //    .Include(ws => ws.PlanForNextWeekTasks)
-            //    .ThenInclude(pfnwt => pfnwt.Subtasks)
-            //    .FirstOrDefaultAsync(
-            //        ws =>
-            //            ws.Member.Id == memberId
-            //            && ws.Team.Id == teamId
-            //            && ws.WeekStartDate.Year == dateOnly.Year
-            //            && ws.WeekStartDate.Month == dateOnly.Month
-            //            && ws.WeekStartDate.Day == dateOnly.Day
-            //    );
+            var weeklyStatus = await _context.WeeklyStatusRichTexts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ws =>
+                    ws.MemberId == memberId &&
+                    ws.TeamId == teamId &&
+                    ws.WeekStartDate.Date == dateOnly);
 
-            //if (weeklyStatus == null)
-            //{
-            //    return null;
-            //}
+            if (weeklyStatus == null)
+            {
+                return null;
+            }
 
-            //var result = new WeeklyStatusDTO
-            //{
-            //    Id = weeklyStatus.Id,
-            //    WeekStartDate = weeklyStatus.WeekStartDate,
-            //    DoneThisWeek = weeklyStatus.DoneThisWeekTasks
-            //        .Select(
-            //            dtw =>
-            //                new DoneThisWeekTaskDTO
-            //                {
-            //                    TaskDescription = dtw.TaskDescription,
-            //                    Subtasks = dtw.Subtasks
-            //                        .Select(
-            //                            st => new SubtaskDTO { SubtaskDescription = st.Description }
-            //                        )
-            //                        .ToList() // Map subtasks descriptions
-            //                }
-            //        )
-            //        .ToList(),
-            //    PlanForNextWeek = weeklyStatus.PlanForNextWeekTasks
-            //        .Select(
-            //            pfnw =>
-            //                new PlanForNextWeekTaskDTO
-            //                {
-            //                    TaskDescription = pfnw.TaskDescription,
-            //                    Subtasks = pfnw.Subtasks
-            //                        .Select(
-            //                            st => new SubtaskNextWeekDTO { SubtaskDescription = st.Description }
-            //                        )
-            //                        .ToList() // Map subtasks descriptions
-            //                })
-            //        .ToList(),
-            //    Blockers = weeklyStatus.Blockers,
-            //    UpcomingPTO = weeklyStatus.UpcomingPTO,
-            //    MemberId = weeklyStatus.MemberId,
-            //};
+            var result = new WeeklyStatusRichTextDTO
+            {
+                Id = weeklyStatus.Id,
+                MemberId = weeklyStatus.MemberId,
+                TeamId = weeklyStatus.TeamId ?? 0,
+                WeekStartDate = weeklyStatus.WeekStartDate,
+                DoneThisWeekContent = weeklyStatus.DoneThisWeekContent ?? string.Empty,
+                PlanForNextWeekContent = weeklyStatus.PlanForNextWeekContent ?? string.Empty,
+                Blockers = weeklyStatus.Blockers ?? string.Empty,
+                UpcomingPTO = weeklyStatus.UpcomingPTO ?? new List<DateTime>()
+            };
 
-            //return result;
+            return result;
         }
 
         public async Task<

@@ -7,7 +7,7 @@ using TeamWeeklyStatus.Application.Interfaces.AI;
 
 namespace TeamWeeklyStatus.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
@@ -88,7 +88,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [MapToApiVersion(2.0)]
         public async Task<IActionResult> GetWeeklyStatusByMemberByStartDateV2([FromBody] WeeklyStatusGetDTO request)
         {
-            var weeklyStatus = await _weeklyStatusService.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, (int)request.TeamId, request.WeekStartDate);
+            var weeklyStatus = await _weeklyStatusRichTextService.GetWeeklyStatusByMemberByStartDateAsync((int)request.MemberId, (int)request.TeamId, request.WeekStartDate);
             if (weeklyStatus == null)
             {
                 return NotFound();
@@ -100,7 +100,7 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [MapToApiVersion(2.0)]
         public async Task<IActionResult> GetAllWeeklyStatusesByStartDateV2([FromBody] WeeklyStatusGetDTO request)
         {
-            var weeklyStatuses = await _weeklyStatusService.GetAllWeeklyStatusesByStartDateAsync((int)request.TeamId, request.WeekStartDate);
+            var weeklyStatuses = await _weeklyStatusRichTextService.GetAllWeeklyStatusesByStartDateAsync((int)request.TeamId, request.WeekStartDate);
             if (weeklyStatuses == null)
             {
                 return NotFound();
