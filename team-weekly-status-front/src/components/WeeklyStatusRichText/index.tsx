@@ -214,9 +214,9 @@ const WeeklyStatusRichText: React.FC = () => {
 
       // Store the enhanced content
       setEnhancedContent({
-        doneThisWeekContent: enhancedResponse.doneThisWeekContent,
-        planForNextWeekContent: enhancedResponse.planForNextWeekContent,
-        blockersContent: enhancedResponse.blockersContent,
+        doneThisWeekContent: enhancedResponse.enhancedDoneThisWeekContent,
+        planForNextWeekContent: enhancedResponse.enhancedPlanForNextWeekContent,
+        blockersContent: enhancedResponse.enhancedBlockersContent,
       });
 
       setShowComparisonModal(true);

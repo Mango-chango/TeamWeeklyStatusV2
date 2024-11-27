@@ -1,5 +1,3 @@
-// EnhancementComparisonModal.tsx
-
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import ReactQuill from "react-quill";

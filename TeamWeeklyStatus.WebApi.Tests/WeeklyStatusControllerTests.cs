@@ -4,6 +4,7 @@ using TeamWeeklyStatus.WebApi.Controllers;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Application.Interfaces.Services;
 using TeamWeeklyStatus.Application.Interfaces.AI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamWeeklyStatus.WebApi.Tests
 {
@@ -14,6 +15,7 @@ namespace TeamWeeklyStatus.WebApi.Tests
         private readonly Mock<IReminderService> _mockReminderService;
         private readonly Mock<IWeeklyStatusRichTextService> _mockRichTextService;
         private readonly Mock<IContentEnhancementService> _mockContentEnhancementService;
+        private readonly Mock<IContentEnhancementOrchestrationService> _mockContentEnhancementOrchestrationService;
 
         public WeeklyStatusControllerTests()
         {
@@ -21,7 +23,8 @@ namespace TeamWeeklyStatus.WebApi.Tests
             _mockReminderService = new Mock<IReminderService>();
             _mockRichTextService = new Mock<IWeeklyStatusRichTextService>();
             _mockContentEnhancementService = new Mock<IContentEnhancementService>();
-            _controller = new WeeklyStatusController(_mockService.Object, _mockReminderService.Object, _mockRichTextService.Object, _mockContentEnhancementService.Object);
+            _controller = new WeeklyStatusController(_mockService.Object, _mockReminderService.Object, _mockRichTextService.Object, _mockContentEnhancementService.Object,
+                _mockContentEnhancementOrchestrationService.Object);
         }
 
         [Fact]

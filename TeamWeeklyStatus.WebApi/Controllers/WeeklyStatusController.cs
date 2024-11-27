@@ -17,13 +17,15 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         private readonly IReminderService _reminderService;
         private readonly IWeeklyStatusRichTextService _weeklyStatusRichTextService;
         private readonly IContentEnhancementService _contentEnhancementService;
+        private readonly IContentEnhancementOrchestrationService _contentEnhancementOrchestrationService;
 
-        public WeeklyStatusController(IWeeklyStatusService weeklyStatusService, IReminderService reminderService, IWeeklyStatusRichTextService weeklyStatusRichTextService, IContentEnhancementService contentEnhancementService)
+        public WeeklyStatusController(IWeeklyStatusService weeklyStatusService, IReminderService reminderService, IWeeklyStatusRichTextService weeklyStatusRichTextService, IContentEnhancementService contentEnhancementService, IContentEnhancementOrchestrationService contentEnhancementOrchestrationService)
         {
             _weeklyStatusService = weeklyStatusService;
             _reminderService = reminderService;
             _weeklyStatusRichTextService = weeklyStatusRichTextService;
             _contentEnhancementService = contentEnhancementService;
+            _contentEnhancementOrchestrationService = contentEnhancementOrchestrationService;
         }
 
         #region Version 1.0
@@ -129,51 +131,10 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [MapToApiVersion(2.0)]
         public async Task<IActionResult> GetAIEnhancedContent([FromBody] PromptDTO request)
         {
-            var enhancementTasks = new List<Task<KeyValuePair<string, string>>>();
-
-            if (!string.IsNullOrWhiteSpace(request.DoneThisWeekContent))
-            {
-                enhancementTasks.Add(EnhanceContentAsync("DoneThisWeekContent", request.TeamId, request.DoneThisWeekContent));
-            }
-
-            if (!string.IsNullOrWhiteSpace(request.PlanForNextWeekContent))
-            {
-                enhancementTasks.Add(EnhanceContentAsync("PlanForNextWeekContent", request.TeamId, request.PlanForNextWeekContent));
-            }
-
-            if (!string.IsNullOrWhiteSpace(request.BlockersContent))
-            {
-                enhancementTasks.Add(EnhanceContentAsync("BlockersContent", request.TeamId, request.BlockersContent));
-            }
-
-            var results = await Task.WhenAll(enhancementTasks);
-
-            var enhancedContent = new EnhancedContentDTO();
-
-            foreach (var result in results)
-            {
-                switch (result.Key)
-                {
-                    case "DoneThisWeekContent":
-                        enhancedContent.EnhancedDoneThisWeekContent = result.Value;
-                        break;
-                    case "PlanForNextWeekContent":
-                        enhancedContent.EnhancedPlanForNextWeekContent = result.Value;
-                        break;
-                    case "BlockersContent":
-                        enhancedContent.EnhancedBlockersContent = result.Value;
-                        break;
-                }
-            }
-
+            var enhancedContent = await _contentEnhancementOrchestrationService.EnhanceContentAsync(request);
             return Ok(enhancedContent);
         }
 
-        private async Task<KeyValuePair<string, string>> EnhanceContentAsync(string contentType, int teamId, string content)
-        {
-            var enhancedContent = await _contentEnhancementService.EnhanceContentAsync(teamId, content);
-            return new KeyValuePair<string, string>(contentType, enhancedContent);
-        }
         #endregion
 
     }
