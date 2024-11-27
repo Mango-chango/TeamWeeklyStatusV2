@@ -10,7 +10,11 @@ namespace TeamWeeklyStatus.Application.DTOs
     {
         public int TeamId { get; set; }
 
-        public string Content { get; set; }
- 
+        public string DoneThisWeekContent { get; set; }
+
+        public string PlanForNextWeekContent { get; set; }
+
+        public string BlockersContent { get; set; }
+
     }
 }

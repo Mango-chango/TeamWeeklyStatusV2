@@ -129,8 +129,50 @@ namespace TeamWeeklyStatus.WebApi.Controllers
         [MapToApiVersion(2.0)]
         public async Task<IActionResult> GetAIEnhancedContent([FromBody] PromptDTO request)
         {
-            var response = await _contentEnhancementService.EnhanceContentAsync(request.TeamId, request.Content);
-            return Ok(response);
+            var enhancementTasks = new List<Task<KeyValuePair<string, string>>>();
+
+            if (!string.IsNullOrWhiteSpace(request.DoneThisWeekContent))
+            {
+                enhancementTasks.Add(EnhanceContentAsync("DoneThisWeekContent", request.TeamId, request.DoneThisWeekContent));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.PlanForNextWeekContent))
+            {
+                enhancementTasks.Add(EnhanceContentAsync("PlanForNextWeekContent", request.TeamId, request.PlanForNextWeekContent));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.BlockersContent))
+            {
+                enhancementTasks.Add(EnhanceContentAsync("BlockersContent", request.TeamId, request.BlockersContent));
+            }
+
+            var results = await Task.WhenAll(enhancementTasks);
+
+            var enhancedContent = new EnhancedContentDTO();
+
+            foreach (var result in results)
+            {
+                switch (result.Key)
+                {
+                    case "DoneThisWeekContent":
+                        enhancedContent.EnhancedDoneThisWeekContent = result.Value;
+                        break;
+                    case "PlanForNextWeekContent":
+                        enhancedContent.EnhancedPlanForNextWeekContent = result.Value;
+                        break;
+                    case "BlockersContent":
+                        enhancedContent.EnhancedBlockersContent = result.Value;
+                        break;
+                }
+            }
+
+            return Ok(enhancedContent);
+        }
+
+        private async Task<KeyValuePair<string, string>> EnhanceContentAsync(string contentType, int teamId, string content)
+        {
+            var enhancedContent = await _contentEnhancementService.EnhanceContentAsync(teamId, content);
+            return new KeyValuePair<string, string>(contentType, enhancedContent);
         }
         #endregion
 

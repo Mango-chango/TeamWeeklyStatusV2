@@ -1,3 +1,5 @@
+// WeeklyStatusRichText/index.tsx
+
 import React, { useEffect, useState } from "react";
 import { Button, Form, Alert, Container, Spinner } from "react-bootstrap";
 import ReactQuill from "react-quill";
@@ -39,12 +41,13 @@ const WeeklyStatusRichText: React.FC = () => {
   const [planForNextWeekContent, setPlanForNextWeekContent] =
     useState<string>("");
 
-  const [blockers, setBlockers] = useState<string>("");
+  const [blockersContent, setBlockersContent] = useState<string>(""); // Updated
+
   const [upcomingPTO, setUpcomingPTO] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const initialStartDate = moment().startOf("week").toDate();
-  const [startDate, setStartDate] = useState(initialStartDate);
+  const [startDate] = useState(initialStartDate);
   const isWeekday = (date: Date) => {
     const day = date.getDay();
     return day !== 0 && day !== 6;
@@ -60,17 +63,13 @@ const WeeklyStatusRichText: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const [localIsAdmin, setLocalIsAdmin] = useState<boolean>(isAdmin);
-  const [localIsTeamLead, setLocalIsTeamLead] = useState<boolean>(isTeamLead);
-  const [localIsCurrentWeekReporter, setLocalIsCurrentWeekReporter] =
-    useState<boolean>(isCurrentWeekReporter);
+  const [localIsAdmin] = useState<boolean>(isAdmin);
+  const [localIsTeamLead] = useState<boolean>(isTeamLead);
+  const [localIsCurrentWeekReporter] = useState<boolean>(isCurrentWeekReporter);
 
   const [showContentModal, setShowContentModal] = useState<boolean>(false);
 
-  const [isEnhancingDoneThisWeek, setIsEnhancingDoneThisWeek] =
-    useState<boolean>(false);
-  const [isEnhancingPlanForNextWeek, setIsEnhancingPlanForNextWeek] =
-    useState<boolean>(false);
+  const [isEnhancing, setIsEnhancing] = useState<boolean>(false); // Updated
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -78,13 +77,28 @@ const WeeklyStatusRichText: React.FC = () => {
     "success"
   );
 
-  const [originalContent, setOriginalContent] = useState<string>("");
-  const [enhancedContent, setEnhancedContent] = useState<string>("");
+  const [originalContent, setOriginalContent] = useState<{
+    doneThisWeekContent: string;
+    planForNextWeekContent: string;
+    blockersContent: string;
+  }>({
+    doneThisWeekContent: "",
+    planForNextWeekContent: "",
+    blockersContent: "",
+  });
+
+  const [enhancedContent, setEnhancedContent] = useState<{
+    doneThisWeekContent: string;
+    planForNextWeekContent: string;
+    blockersContent: string;
+  }>({
+    doneThisWeekContent: "",
+    planForNextWeekContent: "",
+    blockersContent: "",
+  });
+
   const [showComparisonModal, setShowComparisonModal] =
     useState<boolean>(false);
-  const [contentToEnhance, setContentToEnhance] = useState<
-    "doneThisWeek" | "planForNextWeek" | null
-  >(null);
 
   useEffect(() => {
     // Check if the feature flag is enabled
@@ -125,7 +139,7 @@ const WeeklyStatusRichText: React.FC = () => {
         weekStartDate: startDate.toISOString(),
       };
       const response: WeeklyStatusRichTextData = await makeApiRequest(
-        "/v2.0/WeeklyStatus/GetByMemberIdAndStartDate", // Updated endpoint
+        "/v2.0/WeeklyStatus/GetByMemberIdAndStartDate",
         "POST",
         requestData
       );
@@ -134,13 +148,13 @@ const WeeklyStatusRichText: React.FC = () => {
         setExistingWeeklyStatus(response);
         setDoneThisWeekContent(response.doneThisWeekContent || "");
         setPlanForNextWeekContent(response.planForNextWeekContent || "");
+        setBlockersContent(response.blockers || ""); // Updated
         setUpcomingPTO(
           response.upcomingPTO.map((date) => moment(date).format("YYYY-MM-DD"))
         );
         setSelectedDates(
           response.upcomingPTO.map((date) => moment(date).toDate())
         );
-        setBlockers(response.blockers);
       }
     };
 
@@ -174,26 +188,37 @@ const WeeklyStatusRichText: React.FC = () => {
     },
   ];
 
-  const handleEnhanceContent = async (
-    content: string,
-    setIsEnhancing: (value: boolean) => void,
-    contentType: "doneThisWeek" | "planForNextWeek"
-  ) => {
+  const handleEnhanceContent = async () => {
     setIsEnhancing(true);
     try {
       const payload = {
         teamId,
-        content,
+        doneThisWeekContent,
+        planForNextWeekContent,
+        blockersContent,
       };
       const response = await makeApiRequest(
         `/v2.0/WeeklyStatus/GetAIEnhancedContent`,
         "POST",
         payload
       );
-      setOriginalContent(content);
+
       const enhancedResponse = response as any;
-      setEnhancedContent(enhancedResponse); // Adjusted based on backend response
-      setContentToEnhance(contentType);
+
+      // Store the original content
+      setOriginalContent({
+        doneThisWeekContent,
+        planForNextWeekContent,
+        blockersContent,
+      });
+
+      // Store the enhanced content
+      setEnhancedContent({
+        doneThisWeekContent: enhancedResponse.doneThisWeekContent,
+        planForNextWeekContent: enhancedResponse.planForNextWeekContent,
+        blockersContent: enhancedResponse.blockersContent,
+      });
+
       setShowComparisonModal(true);
     } catch (error) {
       console.error("Error enhancing content:", error);
@@ -211,16 +236,16 @@ const WeeklyStatusRichText: React.FC = () => {
       weekStartDate: startDate,
       doneThisWeekContent,
       planForNextWeekContent,
+      blockers: blockersContent, // Updated
       upcomingPTO,
-      blockers,
       memberId,
       teamId,
     };
 
     try {
       const endpoint = existingWeeklyStatus
-        ? "/v2.0/WeeklyStatus/Edit" // Updated endpoint
-        : "/v2.0/WeeklyStatus/Add"; // Updated endpoint
+        ? "/v2.0/WeeklyStatus/Edit"
+        : "/v2.0/WeeklyStatus/Add";
       const method = existingWeeklyStatus ? "PUT" : "POST";
 
       const response = await makeApiRequest<
@@ -272,17 +297,20 @@ const WeeklyStatusRichText: React.FC = () => {
     navigate("/admin");
   };
 
-  const handleAcceptEnhancedContent = () => {
-    if (contentToEnhance === "doneThisWeek") {
-      setDoneThisWeekContent(enhancedContent);
-    } else if (contentToEnhance === "planForNextWeek") {
-      setPlanForNextWeekContent(enhancedContent);
+  const handleApplyEnhancedContent = (selections: {
+    useEnhancedDoneThisWeekContent: boolean;
+    useEnhancedPlanForNextWeekContent: boolean;
+    useEnhancedBlockersContent: boolean;
+  }) => {
+    if (selections.useEnhancedDoneThisWeekContent) {
+      setDoneThisWeekContent(enhancedContent.doneThisWeekContent);
     }
-    setShowComparisonModal(false);
-  };
-
-  const handleRejectEnhancedContent = () => {
-    // Do nothing, keep the original content
+    if (selections.useEnhancedPlanForNextWeekContent) {
+      setPlanForNextWeekContent(enhancedContent.planForNextWeekContent);
+    }
+    if (selections.useEnhancedBlockersContent) {
+      setBlockersContent(enhancedContent.blockersContent);
+    }
     setShowComparisonModal(false);
   };
 
@@ -317,33 +345,6 @@ const WeeklyStatusRichText: React.FC = () => {
             modules={quillModules}
             formats={quillFormats}
           />
-          <Button
-            variant="secondary"
-            onClick={() =>
-              handleEnhanceContent(
-                doneThisWeekContent,
-                setIsEnhancingDoneThisWeek,
-                "doneThisWeek"
-              )
-            }
-            disabled={isEnhancingDoneThisWeek}
-            className="mt-2"
-          >
-            {isEnhancingDoneThisWeek ? (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />{" "}
-                Enhancing...
-              </>
-            ) : (
-              "Improve Grammar"
-            )}
-          </Button>
         </Form.Group>
 
         {/* Plan for Next Week */}
@@ -355,34 +356,41 @@ const WeeklyStatusRichText: React.FC = () => {
             modules={quillModules}
             formats={quillFormats}
           />
-          <Button
-            variant="secondary"
-            onClick={() =>
-              handleEnhanceContent(
-                planForNextWeekContent,
-                setIsEnhancingPlanForNextWeek,
-                "planForNextWeek" // Fixed content type
-              )
-            }
-            disabled={isEnhancingPlanForNextWeek}
-            className="mt-2"
-          >
-            {isEnhancingPlanForNextWeek ? (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />{" "}
-                Enhancing...
-              </>
-            ) : (
-              "Improve Grammar"
-            )}
-          </Button>
         </Form.Group>
+
+        {/* Blockers */}
+        <Form.Group controlId="blockers" className="form__group">
+          <Form.Label className="form__label">Blockers</Form.Label>
+          <ReactQuill
+            value={blockersContent}
+            onChange={setBlockersContent}
+            modules={quillModules}
+            formats={quillFormats}
+          />
+        </Form.Group>
+
+        {/* Improve Grammar Button */}
+        <Button
+          variant="secondary"
+          onClick={handleEnhanceContent}
+          disabled={isEnhancing}
+          className="mt-2"
+        >
+          {isEnhancing ? (
+            <>
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />{" "}
+              Enhancing...
+            </>
+          ) : (
+            "Improve Grammar"
+          )}
+        </Button>
 
         {/* Upcoming PTO */}
         <Form.Group controlId="upcomingPTO" className="form__group">
@@ -411,16 +419,6 @@ const WeeklyStatusRichText: React.FC = () => {
             .join(", ")}
         </div>
 
-        {/* Blockers */}
-        <Form.Group controlId="blockers" className="form__group">
-          <Form.Label className="form__label">Blockers</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            value={blockers}
-            onChange={(e) => setBlockers(e.target.value)}
-          />
-        </Form.Group>
         <Form.Group controlId="buttons" className="form__btngroup flex-wrap">
           <Button variant="primary" type="submit" className="form__btn">
             Save Weekly Status
@@ -483,8 +481,7 @@ const WeeklyStatusRichText: React.FC = () => {
         onHide={() => setShowComparisonModal(false)}
         originalContent={originalContent}
         enhancedContent={enhancedContent}
-        onAccept={handleAcceptEnhancedContent}
-        onReject={handleRejectEnhancedContent}
+        onApply={handleApplyEnhancedContent}
       />
     </Container>
   );
