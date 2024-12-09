@@ -487,22 +487,46 @@ const WeeklyStatusRichText: React.FC = () => {
   );
 };
 
+const quillColors = [
+  "purple",
+  "#785412",
+  "#452632",
+  "#856325",
+  "#963254",
+  "#254563",
+  "white",
+];
+
 const quillModules = {
   toolbar: [
-    [{ header: [1, 2, false] }],
-    ["bold", "italic", "underline"],
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ align: ["right", "center", "justify"] }],
     [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image"],
+    [{ color: quillColors }],
+    [{ background: quillColors }],
     ["clean"],
   ],
 };
 
 const quillFormats = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "list",
-  "bullet",
+  'header',
+  'font',
+  'size',
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'blockquote',
+  'list',
+  'bullet',
+  'indent',
+  'link',
+  'image',
+  'color',
+  "background",
+  "align"
 ];
 
 export default WeeklyStatusRichText;
