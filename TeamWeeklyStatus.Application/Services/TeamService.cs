@@ -10,10 +10,12 @@ namespace TeamWeeklyStatus.Application.Services
     public class TeamService : ITeamService
     {
         private readonly ITeamRepository _teamRepository;
+        private readonly ITeamAIConfigurationRepository _teamAIConfigurationRepository;
 
-        public TeamService(ITeamRepository teamRepository)
+        public TeamService(ITeamRepository teamRepository, ITeamAIConfigurationRepository teamAIConfigurationRepository)
         {
             _teamRepository = teamRepository;
+            _teamAIConfigurationRepository = teamAIConfigurationRepository;
         }
 
         public async Task<Team> GetTeamByIdAsync(int teamId)
@@ -44,7 +46,7 @@ namespace TeamWeeklyStatus.Application.Services
             return newTeam;
         }
 
-        public async Task<Team> UpdateTeamAsync(TeamDTO teamDto)
+        public async Task<TeamDTO> UpdateTeamAsync(TeamDTO teamDto)
         {
             var existingTeam = await GetTeamByIdAsync(teamDto.Id);
             if (existingTeam == null)
@@ -59,9 +61,36 @@ namespace TeamWeeklyStatus.Application.Services
             existingTeam.IsActive = teamDto.IsActive;
             existingTeam.WeekReporterAutomaticAssignment = teamDto.WeekReporterAutomaticAssignment;
 
+            var existingTeamAIConfiguration = await _teamAIConfigurationRepository.GetByTeamIdAsync(teamDto.Id);
+            if (existingTeamAIConfiguration != null)
+            {
+                existingTeamAIConfiguration.AIEngineId = teamDto.AIConfiguration.AIEngineId;
+                existingTeamAIConfiguration.ApiKey = teamDto.AIConfiguration.ApiKey;
+                existingTeamAIConfiguration.Model = teamDto.AIConfiguration.Model;
+                existingTeamAIConfiguration.ApiUrl = teamDto.AIConfiguration.ApiUrl;
+
+                await _teamAIConfigurationRepository.SaveChangesAsync();
+            }
+
             var updatedTeam = await _teamRepository.UpdateTeamAsync(existingTeam);
 
-            return updatedTeam;
+            return new TeamDTO
+            {
+                Id = updatedTeam.Id,
+                Name = updatedTeam.Name,
+                Description = updatedTeam.Description,
+                EmailNotificationsEnabled = updatedTeam.EmailNotificationsEnabled,
+                SlackNotificationsEnabled = updatedTeam.SlackNotificationsEnabled,
+                IsActive = updatedTeam.IsActive,
+                WeekReporterAutomaticAssignment = updatedTeam.WeekReporterAutomaticAssignment,
+                AIConfiguration = new TeamAIConfigurationDTO
+                {
+                    AIEngineId = updatedTeam.AIConfiguration.AIEngineId,
+                    ApiKey = updatedTeam.AIConfiguration.ApiKey,
+                    Model = updatedTeam.AIConfiguration.Model,
+                    ApiUrl = updatedTeam.AIConfiguration.ApiUrl
+                }
+            };
         }
 
         public async Task<Team> DeleteTeamAsync(TeamDTO teamDto)

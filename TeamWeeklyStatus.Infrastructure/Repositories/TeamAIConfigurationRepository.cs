@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.Interfaces.Repositories;
 using TeamWeeklyStatus.Domain.Entities;
+using TeamWeeklyStatus.Application.DTOs;
 
 namespace TeamWeeklyStatus.Infrastructure.Repositories
 {
@@ -26,27 +27,36 @@ namespace TeamWeeklyStatus.Infrastructure.Repositories
                 .Include(c => c.AIEngine)
                 .FirstOrDefaultAsync(c => c.TeamId == teamId);
 
-            //if (config != null)
-            //{
-            //    // Decrypt sensitive data
-            //    config.ApiKey = _protector.Unprotect(config.ApiKey);
-            //}
+            if (config == null)
+            {
+                return null;
+            }
+
+            // Decrypt sensitive data
+            //config.ApiKey = _protector.Unprotect(config.ApiKey);
 
             return config;
         }
 
-        public async Task SaveAsync(TeamAIConfiguration config)
+        public async Task SaveChangesAsync()
         {
-            config.ApiKey = _protector.Protect(config.ApiKey);
+            //var config = new TeamAIConfiguration
+            //{
+            //    TeamId = configDto.TeamId,
+            //    AIEngineId = configDto.AIEngineId,
+            //    ApiKey = _protector.Protect(configDto.ApiKey),
+            //    ApiUrl = configDto.ApiUrl,
+            //    Model = configDto.Model
+            //};
 
-            if (_context.TeamAIConfigurations.Any(c => c.TeamId == config.TeamId))
-            {
-                _context.TeamAIConfigurations.Update(config);
-            }
-            else
-            {
-                _context.TeamAIConfigurations.Add(config);
-            }
+            //if (_context.TeamAIConfigurations.Any(c => c.TeamId == config.TeamId))
+            //{
+            //    _context.TeamAIConfigurations.Update(config);
+            //}
+            //else
+            //{
+            //    _context.TeamAIConfigurations.Add(config);
+            //}
 
             await _context.SaveChangesAsync();
         }

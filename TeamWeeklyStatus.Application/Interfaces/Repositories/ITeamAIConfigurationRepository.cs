@@ -11,7 +11,7 @@ namespace TeamWeeklyStatus.Application.Interfaces.Repositories
     {
         Task<TeamAIConfiguration> GetByTeamIdAsync(int teamId);
 
-        Task SaveAsync(TeamAIConfiguration config);
+        Task SaveChangesAsync();
 
     }
 }

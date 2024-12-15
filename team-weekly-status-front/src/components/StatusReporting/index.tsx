@@ -19,7 +19,7 @@ const StatusReporting: React.FC = () => {
   const [teamWeeklyStatusData, setTeamWeeklyStatusData] =
     useState<TeamWeeklyRichTextStatusData | null>(null);
   const [unreportedMembers, setUnreportedMembers] = useState<
-  TeamMemberWeeklyStatusRichTextData[]
+    TeamMemberWeeklyStatusRichTextData[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -28,6 +28,8 @@ const StatusReporting: React.FC = () => {
   const endDate = moment().endOf("week").toDate();
 
   const navigate = useNavigate();
+
+  const [editorHtml, setEditorHtml] = useState("");
 
   useEffect(() => {
     setLocalTeamName(teamName);
@@ -58,7 +60,7 @@ const StatusReporting: React.FC = () => {
       if (response) {
         setTeamWeeklyStatusData(response);
         const membersWhoDidNotReport = response.filter(
-          (member) => !member.weeklyStatus
+          (member) => (!member.weeklyStatus?.doneThisWeekContent && !member.weeklyStatus?.planForNextWeekContent)
         );
         setUnreportedMembers(membersWhoDidNotReport);
       }
@@ -74,6 +76,9 @@ const StatusReporting: React.FC = () => {
     endDate,
     teamWeeklyStatusData || []
   );
+  useEffect(() => {
+    setEditorHtml(editorData);
+  }, [editorData]);
 
   const handleBack = () => {
     navigate("/weekly-status");
@@ -116,6 +121,37 @@ const StatusReporting: React.FC = () => {
     doc.save(`${localTeamName}-Weekly-Status-${startDate.toDateString()}.pdf`);
   };
 
+  const handleDownloadHTML = () => {
+    if (!editorHtml) return;
+
+    // Wrap the content in a basic HTML structure for better email compatibility
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>${localTeamName}-Weekly-Status</title>
+<style> .ql-indent-1 { margin-left: 2em; list-style-type: disc; } </style>
+<style> h3 { font-size: 16px !important; } </style>
+</head>
+<body style="font-family: Times New Roman, sans-serif; font-size: 14px !important;">
+${editorHtml}
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${localTeamName}-Weekly-Status-${startDate.toDateString()}.html`;
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="status-reporting-container">
       <h5 className="status-reporting-header">
@@ -127,6 +163,7 @@ const StatusReporting: React.FC = () => {
         <Button variant="secondary" onClick={handleBack} className="mt-3">
           Back
         </Button>
+        {/*
         <Button
           variant="primary"
           onClick={handleDownloadPDF}
@@ -143,6 +180,15 @@ const StatusReporting: React.FC = () => {
         >
           Download Markdown
         </Button>
+        */}
+        <Button
+          variant="primary"
+          onClick={handleDownloadHTML}
+          className="mt-3 ml-2"
+          disabled={isLoading}
+        >
+          Download HTML
+        </Button>
       </div>
 
       {isLoading ? (
@@ -152,8 +198,7 @@ const StatusReporting: React.FC = () => {
       ) : (
         <div className="status-reporting-editor">
           <ReactQuill
-            value={editorData}
-            readOnly={true}
+            value={editorHtml}
             theme="bubble" // Or "snow" based on your preference
             modules={{ toolbar: false }}
           />

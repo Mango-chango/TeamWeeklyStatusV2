@@ -11,7 +11,7 @@ namespace TeamWeeklyStatus.Application.Interfaces.Services
 
         Task<IEnumerable<Team>> GetAllTeamsAsync();
 
-        Task<Team> UpdateTeamAsync(TeamDTO team);
+        Task<TeamDTO> UpdateTeamAsync(TeamDTO team);
 
         Task<Team> DeleteTeamAsync(TeamDTO team);
 

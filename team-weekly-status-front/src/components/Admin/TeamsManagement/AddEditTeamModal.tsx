@@ -1,5 +1,3 @@
-// AddEditTeamModal/index.tsx
-
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { TeamRead } from "../../../types/WeeklyStatus.types";
@@ -65,7 +63,7 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
   }, [team]);
 
   const handleSave = async () => {
-    const endpoint = team ? "/api/v1.0/Team/Update" : "/api/v1.0/Team/Add";
+    const endpoint = team ? "/Team/Update" : "/Team/Add";
     const method = team ? "PUT" : "POST";
 
     if (!team) {
@@ -83,7 +81,7 @@ const AddEditTeamModal: React.FC<AddEditTeamModalProps> = ({
 
   // AI Engine Options
   const aiEngineOptions = ["OpenAI", "Gemini"];
-  console.log("formData", formData);
+  //console.log("formData", formData);
 
   return (
     <Modal show={show} onHide={onHide} size="lg">

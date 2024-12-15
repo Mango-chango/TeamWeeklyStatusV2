@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.Interfaces.AI;
+using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Domain.Enums;
 
@@ -20,6 +21,7 @@ namespace TeamWeeklyStatus.Infrastructure.Shared.Services.AI
 
         public IAIContentEnhancer CreateContentEnhancer(TeamAIConfiguration config)
         {
+
             switch (config.AIEngine.AIEngineName)
             {
                 case nameof(AIEngineName.OpenAI):
