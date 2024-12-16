@@ -5,7 +5,7 @@ import axios from 'axios';
 export const handler = async (event) => {
     try {
         // Define the endpoint URL
-        const url = 'https://misha24.azurewebsites.net/api/WeeklyStatus/SendReminders';
+        const url = 'https://misha24.azurewebsites.net/api/v2.0/WeeklyStatus/SendReminders';
 
         // Make the POST request to the provided endpoint
         let payload = {
