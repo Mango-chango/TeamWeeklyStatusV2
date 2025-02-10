@@ -169,6 +169,7 @@ const SignIn: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              data-testid="email-input"
             />
           </Form.Group>
 
@@ -181,6 +182,7 @@ const SignIn: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 aria-describedby="passwordToggle"
+                data-testid="password-input"
               />
               <Button
                 variant="outline-secondary"

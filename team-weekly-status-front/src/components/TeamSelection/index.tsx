@@ -45,7 +45,7 @@ const TeamSelection: React.FC = () => {
             Please select a team.
           </Alert>
         )}
-        <ListGroup>
+        <ListGroup data-testid="team-list">
           {memberActiveTeams &&
             memberActiveTeams.map((memberTeam) => (
               <ListGroup.Item
