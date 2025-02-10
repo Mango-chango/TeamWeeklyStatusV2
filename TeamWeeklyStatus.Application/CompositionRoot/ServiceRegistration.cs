@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Application.Interfaces.AI;
+using TeamWeeklyStatus.Application.Interfaces.Services;
 using TeamWeeklyStatus.Application.Services;
 
 namespace TeamWeeklyStatus.Application.CompositionRoot
@@ -24,6 +25,11 @@ namespace TeamWeeklyStatus.Application.CompositionRoot
             services.AddScoped<IJungleAuthenticationService, JungleAuthenticationService>();
             services.AddScoped<IGoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IUserProvisioningService, UserProvisioningService>();
+            services.AddScoped<IWeeklyStatusRichTextService, WeeklyStatusRichTextService>();
+            services.AddScoped<IAIEngineService, AIEngineService>();
+            services.AddScoped<IContentEnhancementService, ContentEnhancementService>();
+            services.AddScoped<IContentEnhancementOrchestrationService, ContentEnhancementOrchestrationService>();
+
             return services;
         }
     }

@@ -1,7 +1,7 @@
 using Moq;
-using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Application.DTOs;
 using TeamWeeklyStatus.Domain.Entities;
+using TeamWeeklyStatus.Application.Interfaces.Services;
 
 namespace TeamWeeklyStatus.Application.Tests
 {

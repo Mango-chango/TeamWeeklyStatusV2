@@ -1,10 +1,10 @@
 ﻿using TeamWeeklyStatus.Domain.Entities;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Repositories
 {
     public interface IMemberRepository
     {
-        Task<Member> GetMemberByIdAsync (int memberId);
+        Task<Member> GetMemberByIdAsync(int memberId);
         Task<IEnumerable<Member>> GetAllMembersAsync();
         Task<Member> AddMemberAsync(Member member);
         Task<Member> UpdateMemberAsync(Member member);

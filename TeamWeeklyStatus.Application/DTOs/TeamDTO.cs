@@ -1,4 +1,6 @@
-﻿namespace TeamWeeklyStatus.Application.DTOs
+﻿using TeamWeeklyStatus.Domain.Entities;
+
+namespace TeamWeeklyStatus.Application.DTOs
 {
     public class TeamDTO
     {
@@ -9,5 +11,7 @@
         public bool? SlackNotificationsEnabled { get; set; } = false;
         public bool IsActive { get; set; } = true;
         public bool? WeekReporterAutomaticAssignment { get; set; } = false;
+        public TeamAIConfigurationDTO AIConfiguration { get; set; }
+
     }
 }

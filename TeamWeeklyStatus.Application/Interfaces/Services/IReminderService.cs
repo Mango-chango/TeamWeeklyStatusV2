@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Domain.Enums;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Services
 {
     public interface IReminderService
     {

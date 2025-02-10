@@ -37,7 +37,6 @@ export type Member = {
   email?: string;
 };
 
-
 export interface GoogleLoginResponse {
   success: boolean;
   memberId: number | 0;
@@ -45,14 +44,47 @@ export interface GoogleLoginResponse {
   isAdmin: boolean;
 }
 
+export interface AIEngine {
+  aiEngineId: number;
+  aiEngineName: string;
+}
+export interface TeamAIConfigurationRead {
+  aiEngineid?: number;
+  aiEngineName?: string;
+  apiUrl?: string;
+  apiKey?: string;
+  model?: string;
+  aiEngine?: AIEngine;
+}
+
+export type TeamRead = {
+  id: number;
+  name: string;
+  description?: string;
+  emailNotificationsEnabled?: boolean;
+  slackNotificationsEnabled?: boolean;
+  isActive: boolean;
+  weekReporterAutomaticAssignment?: boolean;
+  aiConfiguration?: TeamAIConfigurationRead;
+};
+
+export interface TeamAIConfiguration {
+  aiEngineid?: number;
+  aiEngineName?: string;
+  apiUrl?: string;
+  apiKey?: string;
+  model?: string;
+}
+
 export type Team = {
   id: number;
   name: string;
   description?: string;
   emailNotificationsEnabled?: boolean;
-  slackNotificationsEnabled? : boolean;
+  slackNotificationsEnabled?: boolean;
   isActive: boolean;
-  weekReporterAutomaticAssignment? : boolean;
+  weekReporterAutomaticAssignment?: boolean;
+  aiConfiguration?: TeamAIConfiguration;
 };
 
 export type TeamMember = {
@@ -84,7 +116,7 @@ export type Reporter = {
 export interface JungleLoginResponse {
   memberId: number | 0;
   memberName: string | "";
-  jwtToken: string,
+  jwtToken: string;
   isAdmin: boolean;
 }
 
@@ -103,3 +135,35 @@ export type AuthResponse =
   | JungleLoginResponse
   | GoogleLoginResponse
   | UserProvisioningResponse;
+
+export interface WeeklyStatusRichTextData {
+  id: number;
+  weekStartDate: Date | string;
+  doneThisWeekContent: string;
+  planForNextWeekContent: string;
+  upcomingPTO: (Date | string)[];
+  blockers: string;
+  memberId: number;
+  teamId: number;
+}
+
+export interface TeamMemberWeeklyStatusRichTextData {
+  memberName: string;
+  weeklyStatus: WeeklyStatusRichTextData | null;
+}
+
+
+export type TeamWeeklyRichTextStatusData = TeamMemberWeeklyStatusRichTextData[];
+
+
+export interface TeamAIConfigurationResponse {
+  success: boolean;
+  teamAIConfiguration: TeamAIConfiguration;
+}
+
+export interface TeamAIConfigurationRequest {
+  aiEngineName: string;
+  apiUrl: string;
+  apiKey: string;
+  model: string;
+}

@@ -1,6 +1,6 @@
 ﻿using TeamWeeklyStatus.Application.DTOs;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Services
 {
     public interface IUserService
     {

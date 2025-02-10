@@ -9,11 +9,12 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
-using TeamWeeklyStatus.Application.Interfaces;
+using TeamWeeklyStatus.Application.Interfaces.Repositories;
+using TeamWeeklyStatus.Application.Interfaces.Services;
 using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Infrastructure.Shared.Models;
 
-namespace TeamWeeklyStatus.Infrastructure.Shared
+namespace TeamWeeklyStatus.Infrastructure.Shared.Services
 {
     public class JungleAuthenticationProvider: IJungleAuthenticationProvider
     {

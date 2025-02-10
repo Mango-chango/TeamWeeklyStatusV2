@@ -1,8 +1,10 @@
 ﻿using Moq;
 using Microsoft.AspNetCore.Mvc;
 using TeamWeeklyStatus.WebApi.Controllers;
-using TeamWeeklyStatus.Application.Interfaces;
 using TeamWeeklyStatus.Application.DTOs;
+using TeamWeeklyStatus.Application.Interfaces.Services;
+using TeamWeeklyStatus.Application.Interfaces.AI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TeamWeeklyStatus.WebApi.Tests
 {
@@ -11,12 +13,18 @@ namespace TeamWeeklyStatus.WebApi.Tests
         private readonly WeeklyStatusController _controller;
         private readonly Mock<IWeeklyStatusService> _mockService;
         private readonly Mock<IReminderService> _mockReminderService;
+        private readonly Mock<IWeeklyStatusRichTextService> _mockRichTextService;
+        private readonly Mock<IContentEnhancementService> _mockContentEnhancementService;
+        private readonly Mock<IContentEnhancementOrchestrationService> _mockContentEnhancementOrchestrationService;
 
         public WeeklyStatusControllerTests()
         {
             _mockService = new Mock<IWeeklyStatusService>();
             _mockReminderService = new Mock<IReminderService>();
-            _controller = new WeeklyStatusController(_mockService.Object, _mockReminderService.Object);
+            _mockRichTextService = new Mock<IWeeklyStatusRichTextService>();
+            _mockContentEnhancementService = new Mock<IContentEnhancementService>();
+            _controller = new WeeklyStatusController(_mockService.Object, _mockReminderService.Object, _mockRichTextService.Object, _mockContentEnhancementService.Object,
+                _mockContentEnhancementOrchestrationService.Object);
         }
 
         [Fact]

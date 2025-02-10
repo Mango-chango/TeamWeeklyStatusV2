@@ -3,7 +3,7 @@ using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Application.DTOs;
 using System.Dynamic;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Services
 {
     public interface IMemberService
     {

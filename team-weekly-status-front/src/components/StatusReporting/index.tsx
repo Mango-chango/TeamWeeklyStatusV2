@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { userStore } from "../../store";
 import { makeApiRequest } from "../../services/apiHelper";
 import {
-  TeamMemberWeeklyStatusData,
-  TeamWeeklyStatusData,
+  TeamMemberWeeklyStatusRichTextData,
+  TeamWeeklyRichTextStatusData,
 } from "../../types/WeeklyStatus.types";
 import moment from "moment";
 import "./styles.css";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { generateHTML, generateMarkdown, generatePDF } from "./reportService";
@@ -17,20 +17,19 @@ const StatusReporting: React.FC = () => {
   const { teamId, teamName } = userStore();
   const [localTeamName, setLocalTeamName] = useState(teamName);
   const [teamWeeklyStatusData, setTeamWeeklyStatusData] =
-    useState<TeamWeeklyStatusData | null>(null);
+    useState<TeamWeeklyRichTextStatusData | null>(null);
   const [unreportedMembers, setUnreportedMembers] = useState<
-    TeamMemberWeeklyStatusData[]
+    TeamMemberWeeklyStatusRichTextData[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  console.log("teamWeeklyStatusData", teamWeeklyStatusData);
 
-  const initialStartDate = moment()
-    .startOf("week")
-    .toDate();
+  const initialStartDate = moment().startOf("week").toDate();
   const [startDate] = useState(initialStartDate);
   const endDate = moment().endOf("week").toDate();
 
   const navigate = useNavigate();
+
+  const [editorHtml, setEditorHtml] = useState("");
 
   useEffect(() => {
     setLocalTeamName(teamName);
@@ -52,8 +51,8 @@ const StatusReporting: React.FC = () => {
         teamId: teamId,
         weekStartDate: startDate.toISOString(),
       };
-      const response: TeamWeeklyStatusData = await makeApiRequest(
-        "/WeeklyStatus/GetAllWeeklyStatusesByStartDate",
+      const response: TeamWeeklyRichTextStatusData = await makeApiRequest(
+        "/v2.0/WeeklyStatus/GetAllWeeklyStatusesByStartDate", // Updated endpoint
         "POST",
         requestData
       );
@@ -61,7 +60,7 @@ const StatusReporting: React.FC = () => {
       if (response) {
         setTeamWeeklyStatusData(response);
         const membersWhoDidNotReport = response.filter(
-          (member) => !member.weeklyStatus
+          (member) => (!member.weeklyStatus?.doneThisWeekContent && !member.weeklyStatus?.planForNextWeekContent)
         );
         setUnreportedMembers(membersWhoDidNotReport);
       }
@@ -72,11 +71,14 @@ const StatusReporting: React.FC = () => {
   }, [localTeamName, startDate, teamId]);
 
   const editorData = generateHTML(
-    localTeamName || "",
+    localTeamName ?? "",
     startDate,
     endDate,
     teamWeeklyStatusData || []
   );
+  useEffect(() => {
+    setEditorHtml(editorData);
+  }, [editorData]);
 
   const handleBack = () => {
     navigate("/weekly-status");
@@ -119,10 +121,41 @@ const StatusReporting: React.FC = () => {
     doc.save(`${localTeamName}-Weekly-Status-${startDate.toDateString()}.pdf`);
   };
 
+  const handleDownloadHTML = () => {
+    if (!editorHtml) return;
+
+    // Wrap the content in a basic HTML structure for better email compatibility
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>${localTeamName}-Weekly-Status</title>
+<style> .ql-indent-1 { margin-left: 2em; list-style-type: disc; } </style>
+<style> h3 { font-size: 16px !important; } </style>
+</head>
+<body style="font-family: Times New Roman, sans-serif; font-size: 14px !important;">
+${editorHtml}
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${localTeamName}-Weekly-Status-${startDate.toDateString()}.html`;
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="status-reporting-container">
       <h5 className="status-reporting-header">
-        This is a readonly view. The changes done here are not persisted in the
+        This is a read-only view. The changes done here are not persisted in the
         database.
       </h5>
 
@@ -130,6 +163,7 @@ const StatusReporting: React.FC = () => {
         <Button variant="secondary" onClick={handleBack} className="mt-3">
           Back
         </Button>
+        {/*
         <Button
           variant="primary"
           onClick={handleDownloadPDF}
@@ -146,6 +180,15 @@ const StatusReporting: React.FC = () => {
         >
           Download Markdown
         </Button>
+        */}
+        <Button
+          variant="primary"
+          onClick={handleDownloadHTML}
+          className="mt-3 ml-2"
+          disabled={isLoading}
+        >
+          Download HTML
+        </Button>
       </div>
 
       {isLoading ? (
@@ -154,19 +197,17 @@ const StatusReporting: React.FC = () => {
         </div>
       ) : (
         <div className="status-reporting-editor">
-          <CKEditor
-            editor={ClassicEditor}
-            data={editorData}
-            config={{
-              toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'selectAll', 'undo', 'redo'],
-            }}
+          <ReactQuill
+            value={editorHtml}
+            theme="bubble" // Or "snow" based on your preference
+            modules={{ toolbar: false }}
           />
         </div>
       )}
 
       <div className="status-reporting-unreported">
         <span className="unreported-title">
-          Changos who haven't reported yet:
+          Members who haven't reported yet:
         </span>{" "}
         {unreportedMembers.map((member) => member.memberName).join(", ")}
       </div>

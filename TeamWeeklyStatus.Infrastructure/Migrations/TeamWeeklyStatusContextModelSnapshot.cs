@@ -17,10 +17,27 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.AIEngine", b =>
+                {
+                    b.Property<int>("AIEngineId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AIEngineId"));
+
+                    b.Property<string>("AIEngineName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AIEngineId");
+
+                    b.ToTable("AIEngines");
+                });
 
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.DoneThisWeekTask", b =>
                 {
@@ -166,6 +183,36 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.ToTable("Teams");
                 });
 
+            modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.TeamAIConfiguration", b =>
+                {
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AIEngineId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApiKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApiUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TeamId", "AIEngineId");
+
+                    b.HasIndex("AIEngineId");
+
+                    b.HasIndex("TeamId")
+                        .IsUnique();
+
+                    b.ToTable("TeamAIConfigurations");
+                });
+
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.TeamMember", b =>
                 {
                     b.Property<int>("TeamId")
@@ -228,6 +275,47 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.ToTable("WeeklyStatuses");
                 });
 
+            modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.WeeklyStatusRichText", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Blockers")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DoneThisWeekContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlanForNextWeekContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpcomingPTO")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("WeekStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("WeeklyStatusRichTexts");
+                });
+
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.DoneThisWeekTask", b =>
                 {
                     b.HasOne("TeamWeeklyStatus.Domain.Entities.WeeklyStatus", "WeeklyStatus")
@@ -272,6 +360,25 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.Navigation("Task");
                 });
 
+            modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.TeamAIConfiguration", b =>
+                {
+                    b.HasOne("TeamWeeklyStatus.Domain.Entities.AIEngine", "AIEngine")
+                        .WithMany()
+                        .HasForeignKey("AIEngineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TeamWeeklyStatus.Domain.Entities.Team", "Team")
+                        .WithOne("AIConfiguration")
+                        .HasForeignKey("TeamWeeklyStatus.Domain.Entities.TeamAIConfiguration", "TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AIEngine");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.TeamMember", b =>
                 {
                     b.HasOne("TeamWeeklyStatus.Domain.Entities.Member", "Member")
@@ -308,6 +415,23 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.WeeklyStatusRichText", b =>
+                {
+                    b.HasOne("TeamWeeklyStatus.Domain.Entities.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TeamWeeklyStatus.Domain.Entities.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId");
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.DoneThisWeekTask", b =>
                 {
                     b.Navigation("Subtasks");
@@ -327,6 +451,9 @@ namespace TeamWeeklyStatus.Infrastructure.Migrations
 
             modelBuilder.Entity("TeamWeeklyStatus.Domain.Entities.Team", b =>
                 {
+                    b.Navigation("AIConfiguration")
+                        .IsRequired();
+
                     b.Navigation("TeamMembers");
                 });
 

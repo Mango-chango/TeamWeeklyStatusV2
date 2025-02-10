@@ -1,6 +1,6 @@
 ﻿using TeamWeeklyStatus.Domain.Entities;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Repositories
 {
     public interface ITeamRepository
     {

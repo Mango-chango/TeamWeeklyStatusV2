@@ -3,7 +3,7 @@ using TeamWeeklyStatus.Domain.Entities;
 using TeamWeeklyStatus.Application.DTOs;
 using System.Dynamic;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Services
 {
     public interface ITeamService
     {
@@ -11,7 +11,7 @@ namespace TeamWeeklyStatus.Application.Interfaces
 
         Task<IEnumerable<Team>> GetAllTeamsAsync();
 
-        Task<Team> UpdateTeamAsync(TeamDTO team);
+        Task<TeamDTO> UpdateTeamAsync(TeamDTO team);
 
         Task<Team> DeleteTeamAsync(TeamDTO team);
 

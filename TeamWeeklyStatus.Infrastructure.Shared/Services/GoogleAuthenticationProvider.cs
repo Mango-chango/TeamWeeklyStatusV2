@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
-using TeamWeeklyStatus.Application.Interfaces;
 using Google.Apis.Auth;
+using TeamWeeklyStatus.Application.Interfaces.Services;
 
 
-namespace TeamWeeklyStatus.Infrastructure.Shared
+namespace TeamWeeklyStatus.Infrastructure.Shared.Services
 {
     public class GoogleAuthenticationProvider: IGoogleAuthenticationProvider
     {

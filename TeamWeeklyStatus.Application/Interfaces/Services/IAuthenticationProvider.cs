@@ -5,10 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamWeeklyStatus.Application.DTOs;
 
-namespace TeamWeeklyStatus.Application.Interfaces
+namespace TeamWeeklyStatus.Application.Interfaces.Services
 {
-    public interface IJungleAuthenticationService
+    public interface IJungleAuthenticationProvider
     {
         Task<AuthenticationResult> AuthenticateAsync(string email, string password);
+    }
+
+    public interface IGoogleAuthenticationProvider
+    {
+        Task<GoogleAuthenticationResult> ValidateGoogleUser(string idToken);
     }
 }
