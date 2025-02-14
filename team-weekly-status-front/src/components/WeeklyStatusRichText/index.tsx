@@ -7,7 +7,7 @@ import "react-quill/dist/quill.snow.css";
 
 import moment from "moment";
 import { userStore } from "../../store";
-import { WeeklyStatusRichTextData } from "../../types/WeeklyStatus.types";
+import { WeeklyStatusRichTextData, UserValidationResult } from '../../types/WeeklyStatus.types';
 import { makeApiRequest } from "../../services/apiHelper";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -375,6 +375,7 @@ const WeeklyStatusRichText: React.FC = () => {
           onClick={handleEnhanceContent}
           disabled={isEnhancing}
           className="mt-2"
+          style={{ visibility: "hidden" }}
         >
           {isEnhancing ? (
             <>

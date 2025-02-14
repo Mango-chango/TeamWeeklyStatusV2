@@ -231,6 +231,7 @@ const SignIn: React.FC = () => {
             type="submit"
             className="mt-3 w-100 pt-3"
             disabled={isLoading}
+            data-testid="login-button"
           >
             {isLoading ? "Signing In..." : "Login"}
           </Button>

@@ -60,7 +60,7 @@ const TeamSelection: React.FC = () => {
               </ListGroup.Item>
             ))}
         </ListGroup>
-        <Button type="submit" className="mt-3" variant="primary" size="lg">
+        <Button type="submit" className="mt-3" variant="primary" size="lg" data-testid="continue-button">
           Continue
         </Button>
       </Form>
